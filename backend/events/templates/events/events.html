@@ -1,0 +1,36 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<h3>Hello, you are on the {{page}} page</h3>
+
+<hr>
+
+<h1>Events</h1>
+
+<table>
+    <tr>
+        <th>Events</th>
+        <th>Positive votes</th>
+        <th>Votes</th>
+        <th></th>
+        <th></th>
+    </tr>
+
+    {% for eventdetail in events %}
+        <tr>
+            <td>{{eventdetail.name}}</td>
+            <td>{{eventdetail.vote_ratio}}%</td>
+            <td>{{eventdetail.vote_total}}</td>
+            <td>{{eventdetail.created}}</td>
+            <td><a href="{% url 'update-event' eventdetail.id %}">Edit</a></td>
+            <td><a href="{% url 'delete-event' eventdetail.id %}">Delete</a></td>
+            <td><a href="{% url 'eventdetail' eventdetail.id %}">View</a></td>
+        </tr>
+    {% endfor %}
+    </table>
+
+
+
+{% endblock content %}
+#no matter what you change your urls to, the content stays the same

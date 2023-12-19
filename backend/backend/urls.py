@@ -22,6 +22,7 @@ from users.views import CurrentUserDetails
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('events.urls')),
     path('users/',include('users.urls')),
     path('auth/',include('djoser.urls')),
     path('auth/',include('djoser.urls.jwt')),
