@@ -5,7 +5,7 @@
 #     #event= models.ForeignKey(Event, on_delete = models.CASCADE)
 #     id=models.AutoField()
 #     description=models.CharField(max_length=255)
-#     issued_to=models.ForeignKey(Attendee, on_delte=models.CASCADE)
+#     issued_to=models.ForeignKey(Attendee, on_delete=models.CASCADE)
 #     created_at=models.DateTimeField(auto_created=True)
 #     quantity= models.PositiveIntegerField()
 
