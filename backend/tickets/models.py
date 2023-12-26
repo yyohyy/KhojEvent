@@ -9,5 +9,3 @@
 #     created_at=models.DateTimeField(auto_created=True)
 #     quantity= models.PositiveIntegerField()
 
-
-

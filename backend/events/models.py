@@ -15,7 +15,7 @@ class Events(models.Model):
     categories = models.ManyToManyField('category')
     venue = models.CharField(max_length=100, null=True)
     description = models.TextField(null=True)  #in a databases but may not contain info and blank is for we are allowed to submit the form with the value being empty
-    tags = models.ManyToManyField('Tag', null=True)
+    tags = models.ManyToManyField('Tag')
     #image = models.ImageField(upload_to=None, null=True)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)

@@ -9,7 +9,9 @@ def getRoutes(request):
     routes = [
         {'GET':'/api/events'},
         {'GET':'/api/events/id'},
-        {'POST':'/api/events/id/vote'},
+        {'POST':'/api/create-event/'},
+        {'PUT':'/api/update-event/'},
+        {'Delete':'/api/delete-event/'},
     ]
     
     return Response(routes)
@@ -21,7 +23,31 @@ def getEvents(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-def getEvent(request, pk):
+def getEventdetail(request, pk):
     event = Events.objects.get(id=pk)  #queries the events
     serializer = EventsSerializer(event, many=False)  #serializes the data
     return Response(serializer.data)
+
+@api_view(['POST'])
+def postEventCreate(request):
+    serializer = EventsSerializer(data=request.data)  #serializes the data
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
+@api_view(['PUT'])
+def putEventUpdate(request, pk):
+    event = Events.objects.get(id=pk)  #queries the events
+    serializer = EventsSerializer(instance=event, data=request.data)  #serializes the data
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
+@api_view(['DELETE'])
+def deleteEventDelete(request, pk):
+    event = Events.objects.get(id=pk)  #queries the events
+    event.delete()
+    return Response("Item is successfully deleted!")
+
+
+
