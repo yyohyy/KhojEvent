@@ -1,0 +1,70 @@
+/* EventForm.css */
+
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+}
+
+.navbar {
+  background-color: #333;
+  padding: 10px;
+  color: white;
+  text-align: center;
+}
+
+.event-form {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  background-color: white; /* Changed background color to white */
+  border: 1px solid #ccc;
+  border-radius: 15px; /* Increased roundness for the form container */
+  margin-top: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px; /* Increased roundness for input fields */
+}
+
+button {
+  background-color: #82173b;
+  color: white;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px; /* Increased roundness for the button */
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #a35558;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 600px) {
+  input,
+  select,
+  textarea {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  input,
+  select,
+  textarea {
+    font-size: 12px;
+  }
+}
