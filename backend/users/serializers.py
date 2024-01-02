@@ -57,7 +57,7 @@ class CurrentUserDetails(UserSerializer):
         fields='__all__'
         
 
-class UserDetails(serializers.ModelSerializer):
+class AllUserDetails(serializers.ModelSerializer):
     class Meta:
         model= User
         fields= ['id','email','phone_number','is_active','is_staff','is_attendee','is_organiser']
@@ -65,27 +65,34 @@ class UserDetails(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         is_attendee = data.get('is_attendee')
-        is_organiser= data.get('is_organiser')
+        is_organiser = data.get('is_organiser')
 
         if is_attendee == True:
             try:
-                attendee= Attendee.objects.get(user=instance)
+                attendee = Attendee.objects.get(user=instance)
                 attendee_serializer = AttendeeSerializer(attendee)
                 data['attendee_details'] = attendee_serializer.data
             except Attendee.DoesNotExist:
                 pass
 
-        if is_organiser== True:
+        if is_organiser == True:
+            organiser = None  # Initialize organiser with None
             try:
                 organiser = Organiser.objects.get(user=instance)
                 organiser_serializer = OrganiserSerializer(organiser)
                 data['organiser_details'] = organiser_serializer.data
-            except organiser.DoesNotExist:
+            except Organiser.DoesNotExist:
                 pass    
 
         return data
 
+class UserDetails(serializers.ModelSerializer):
+    attendee_details = AttendeeSerializer(source='attendee', read_only=True)
+    organiser_details = OrganiserSerializer(source='organiser', read_only=True)
 
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'phone_number', 'is_active', 'is_staff', 'is_attendee', 'is_organiser', 'attendee_details', 'organiser_details']
 
 
       
