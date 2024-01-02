@@ -1,57 +1,48 @@
-from django.shortcuts import render #, redirect
-from django.http import HttpResponse
-from .models import Events
-#from .forms import EventForm
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import generics
+from rest_framework import status
+from .serializers import EventsSerializer
+from events.models import Events
+from .permissions import OrganiserCanUpdate
 
-#def events(request):
-    #return render(request, 'events/events.html')
+class GetRoutesView(APIView):
+    def get(self, request):
+        routes = [
+            {'GET': '/events'},
+            {'PATCH': '/events/id'},
+            {'POST': '/create-event/'}
+        ]
+        return Response(routes)
 
-#def eventdetail(request, pk):
-    #return render(request, 'events/eventdetail.html')
+class GetEventsView(APIView):
+    def get(self, request):
+        events = Events.objects.all()
+        serializer = EventsSerializer(events, many=True)
+        return Response(serializer.data)
 
-#def events(request):
-    #events = Events.objects.all
-    #context= {'events':events}
-    #return render(request,'events/events.html', context)     #rendering templates
+#class GetEventDetailView(APIView):
+    #def get(self, request, pk):
+        #event = Events.objects.get(id=pk)
+        #serializer = EventsSerializer(event, many=False)
+        #return Response(serializer.data)
 
-def events(request):
-    return HttpResponse('events') 
+class PostEventCreateView(APIView):
+    def post(self, request):
+        serializer = EventsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-def eventdetail(request, pk):
-    return HttpResponse('eventdetail' + ' ' + str(pk)) 
-    
-#def eventdetail(request, pk):       #pk is an id or primary key
-    #eventdetailObj = Events.objects.get(id=pk)
-    #return render(request, 'events/eventdetail.html', {'eventdetail':eventdetailObj}) 
-#def createEvent(request):
-    #form = EventForm()
-     
-    #if request.method == 'POST':
-        #form = EventForm(request.POST)
-        #if form.is_valid():
-            #form.save()
-            #return redirect('events')
-        
-    #context = {'form' : form}
-    #return render(request, "events/event_form.html", context)
 
-#def updateEvent(request, pk):
-    #eventdetail = Events.objects.get(id=pk)
-    #form = EventForm(instance=eventdetail)
-     
-    #if request.method == 'POST':
-        #form = EventForm(request.POST, instance=eventdetail)
-        #if form.is_valid():
-            #form.save()
-            #return redirect('events')
-        
-    #context = {'form' : form}
-    #return render(request, "events/event_form.html", context)
+class PatchEventdetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Events.objects.all()
+    serializer_class = EventsSerializer
+    permission_classes = [OrganiserCanUpdate]
 
-#def deleteEvent(request, pk):
-    #eventdetail = Events.objects.get(id=pk)
-    #if request.method =="POST":
-        #eventdetail.delete()
-        #return redirect('events')
-    #context={'object': eventdetail}
-    #return render(request, 'events/delete_template.html', context) 
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response("Item is successfully deleted!", status=status.HTTP_204_NO_CONTENT)
+

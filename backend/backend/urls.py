@@ -26,8 +26,11 @@ urlpatterns = [
     path('users/',include('users.urls')),
     path('auth/',include('djoser.urls')),
     path('auth/',include('djoser.urls.jwt')),
+<<<<<<< HEAD
     path('api/', include('api.urls')),
     path('tickets/',include('tickets.urls')),
+=======
+>>>>>>> 2801f5bd3a9929d3ff53f620bd9177924d32848e
   
 ]
 
