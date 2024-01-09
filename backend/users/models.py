@@ -11,7 +11,7 @@ from .managers import UserManager
 class User(AbstractBaseUser,PermissionsMixin):
     email=models.EmailField(unique=True)
     phone_number=models.CharField(max_length=15,null=True)
-    profile_picture=models.ImageField(null=True)
+    profile_picture=models.ImageField(upload_to='images/profile',null=True) 
     is_active=models.BooleanField(default=True)
     is_staff=models.BooleanField(default=False)
     is_superuser = models.BooleanField(default = False) 
@@ -34,12 +34,16 @@ class Attendee(models.Model):
     last_name=models.CharField(max_length=255)
     birth_date=models.DateField(null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.first_name}  {self.last_name}"    
+
 @receiver(post_save, sender=Attendee)
 def set_user_as_attendee(sender, instance, created, **kwargs):
     if created:  
         user = instance.user
         user.is_attendee = True
         user.save(update_fields=['is_attendee'])
+
 
 class Organiser(models.Model):
     user= models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True,unique=True)
@@ -51,6 +55,9 @@ class Organiser(models.Model):
     instagram=models.URLField(blank=True)
     twitter=models.URLField(blank=True)
     website=models.URLField(blank=True)
+
+    def __str__(self):
+        return self.name   
 
 @receiver(post_save, sender=Organiser)
 def set_user_as_organiser(sender, instance, created, **kwargs):

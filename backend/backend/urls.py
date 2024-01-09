@@ -26,7 +26,12 @@ urlpatterns = [
     path('users/',include('users.urls')),
     path('auth/',include('djoser.urls')),
     path('auth/',include('djoser.urls.jwt')),
+<<<<<<< HEAD
     #path('api/', include('events.urls')),
+=======
+   # path('tickets/',include('tickets.urls')),
+  
+>>>>>>> bd916b8764c45e4a518045652a1738f29d85ac45
 ]
   
 

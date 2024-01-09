@@ -3,7 +3,7 @@ from rest_framework import generics
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from .models import *
-from .serializers import UserSerializer, AttendeeSignUpSerializer, OrganiserSignUpSerializer,UserDetails, CurrentUserDetails
+from .serializers import AttendeeSignUpSerializer, OrganiserSignUpSerializer,AllUserDetails, CurrentUserDetails, UserDetails
 
    
 class AttendeeSignUpView(generics.CreateAPIView):
@@ -33,9 +33,13 @@ class OrganiserSignUpView(generics.CreateAPIView):
 
 class CurrentUserDetails(RetrieveUpdateDestroyAPIView):
     serializer_class= CurrentUserDetails
-    querset= User.objects.all()
+    queryset= User.objects.all()
 
-class UserDetails(ListAPIView):
-    serializer_class= UserDetails
+class AllUserDetails(ListAPIView):
+    serializer_class= AllUserDetails
     queryset=User.objects.all()
 
+class UserDetails(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserDetails
+    lookup_field = 'pk' 
