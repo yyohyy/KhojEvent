@@ -45,4 +45,11 @@ class PatchEventdetailView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response("Item is successfully deleted!", status=status.HTTP_204_NO_CONTENT)
+    
+#class GoogleAPIProxy(APIView):
+    #def get(self, request):
+        # Handle Google API requests here
+        # Make API requests using the 'requests' library
+        # Return the response to the ReactJS frontend
+        #return Response(data, status=status.HTTP_200_OK)
 
