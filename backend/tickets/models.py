@@ -77,8 +77,6 @@ class SelectedTicket(models.Model):
                 self.ticket.quantity_available += self.quantity            
             self.ticket.save(update_fields=['quantity_available'])
 
-
-
         self.amount = self.quantity * self.ticket.price
         super().save(*args, **kwargs)
 

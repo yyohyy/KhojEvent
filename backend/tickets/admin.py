@@ -46,3 +46,26 @@ class SelectedTicketsAdmin(admin.ModelAdmin):
         return []
 
 admin.site.register(SelectedTickets, SelectedTicketsAdmin)
+
+
+class TicketPurchaseAdmin(admin.ModelAdmin):
+    list_display = ['user', 'event', 'quantity', 'price', 'payment_status']
+    actions = ['generate_invoice']
+
+    def generate_invoice(self, request, queryset):
+        for ticket_purchase in queryset:
+            if ticket_purchase.payment_status:
+                # Generate the invoice using WeasyPrint
+                # For brevity, assume you have a method to generate the invoice
+                invoice_pdf = generate_invoice_pdf(ticket_purchase)
+
+                # Display the PDF invoice in the browser
+                response = HttpResponse(invoice_pdf, content_type='application/pdf')
+                response['Content-Disposition'] = f'inline; filename="invoice_{ticket_purchase.id}.pdf"'
+                return response
+            else:
+                self.message_user(request, "Invoice not available for selected tickets.", level='ERROR')
+
+    generate_invoice.short_description = "Generate and View Invoice"
+
+admin.site.register(TicketPurchase, TicketPurchaseAdmin)
