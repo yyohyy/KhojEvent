@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.db.models import Sum
+from django.db.models import Sum, F
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from users.models import Attendee
@@ -22,16 +22,7 @@ def update_quantity_available(sender, instance, created, **kwargs):
     if created:
         instance.quantity_available = instance.quantity
         instance.save(update_fields=['quantity_available'])
-
-
-@receiver([post_save, post_delete], sender=TicketType)
-def update_ticket_quantity_available(sender, instance, **kwargs):
-    ticket = instance.ticket
-    if ticket:
-        total_quantity_available = TicketType.objects.filter(ticket=ticket).aggregate(total=Sum('quantity_available'))['total'] or 0
-        ticket.quantity_available = total_quantity_available
-        ticket.save() 
-        
+   
 class Ticket(models.Model):
     STATUS_CHOICES = [
         ('AVAILABLE', 'Available'),
@@ -39,8 +30,8 @@ class Ticket(models.Model):
     ]
     event = models.ForeignKey(Events, on_delete=models.CASCADE)
     total_quantity = models.PositiveIntegerField(default=0, editable=False)
-    quantity_available = models.PositiveIntegerField(default=1)
-    max_limit = models.PositiveIntegerField(default=0)
+    quantity_available = models.PositiveIntegerField(default=1) #not updating
+    max_limit = models.PositiveIntegerField(default=0) #limit logic left
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='AVAILABLE')
     
     def __str__(self):
@@ -80,6 +71,16 @@ class SelectedTicket(models.Model):
         self.amount = self.quantity * self.ticket.price
         super().save(*args, **kwargs)
 
+        if self.status == 'BOOKED' or self.status == 'CONFIRMED':
+            total_selected_tickets = SelectedTicket.objects.filter(
+                issued_to=self.issued_to,
+                ticket__ticket__event=self.ticket.ticket.event,
+                status__in=['BOOKED', 'CONFIRMED']
+            ).exclude(id=self.id).aggregate(total=Sum('quantity'))['total'] or 0
+
+            if total_selected_tickets + self.quantity > self.ticket.ticket.max_limit:
+                raise ValidationError(f"Cannot select more than {self.ticket.ticket.max_limit} tickets for {self.ticket.ticket.event.name}.Limit exceeded.")
+    
     def __str__(self):
         return f"{self.issued_to.first_name} {self.issued_to.last_name} - Status: {self.status} - Amount: {self.amount}"
 
@@ -97,6 +98,25 @@ def increase_tickettype_quantity_on_delete(sender, instance, **kwargs):
     ticket_type = instance.ticket
     ticket_type.quantity_available += instance.quantity
     ticket_type.save(update_fields=['quantity_available'])
+
+
+@receiver([post_save, post_delete], sender=SelectedTicket)
+def update_quantity_available(sender, instance, **kwargs):
+    ticket_type = instance.ticket
+    total_selected_quantity = SelectedTicket.objects.filter(
+        ticket=ticket_type,
+        issued_to=instance.issued_to,
+        status__in=['BOOKED', 'CONFIRMED']
+    ).exclude(id=instance.id).aggregate(total=Sum('quantity'))['total'] or 0
+
+    remaining_quantity = ticket_type.quantity - total_selected_quantity
+    if instance.quantity > remaining_quantity:
+        raise ValidationError(f"Cannot select more than {remaining_quantity} tickets for {ticket_type.name}.")
+
+    Ticket.objects.filter(event=ticket_type.ticket.event).update(
+        quantity_available=F('total_quantity') - total_selected_quantity
+    )
+
 
 class SelectedTickets(models.Model):
     attendee = models.OneToOneField(Attendee, on_delete=models.CASCADE)
@@ -120,3 +140,5 @@ class SelectedTickets(models.Model):
 
     def __str__(self):
         return f"Cart for {self.attendee.first_name} {self.attendee.last_name}"
+    
+    
