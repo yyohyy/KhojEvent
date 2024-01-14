@@ -1,11 +1,41 @@
 // CreateEvent.js
 import React, { useState } from 'react';
 import './CreateEvent.css'; // Import the CSS file for styling
-
+import AxiosInstance from './axios'
 // TODO: Need to have a database that can store the input data which is stored in formData
 // TODO: 
 
 const CreateEvent = () => {
+
+  const defaultValues ={
+    name: '',
+    category: 'music', // Default category
+    venue: '',
+    description: '',
+    startDate: '',
+    endDate: '',
+    startTime: '',
+    endTime: '',
+    tags: [], // Store tags as an array
+    ticketType: 'free',
+
+
+  }
+  const submission =(data) => {
+    AxiosInstance.post( 'create-event/',{
+      name:data.name,
+      category: data.category,
+      venue: data.venue,
+      description:data.description,
+      startDate: data.startDate,
+      endDate:data.endDate,
+      startTime:data.startTime,
+      endTime:data.endTime,
+      tags:data.tags,
+      ticketType:data.ticketType,
+    })
+  }
+
   const [formData, setFormData] = useState({
     name: '',
     category: 'music', // Default category
@@ -28,7 +58,7 @@ const CreateEvent = () => {
 
   const handleTagInputChange = (e) => {
     const { value } = e.target;
-    setFormData({ ...formData, tags: value.split(',') });
+    setFormData({ ...formData, tags: value.split(',').map((tag) => tag.trim()) });
   };
 
   const handleSubmit = (e) => {
@@ -91,7 +121,10 @@ const CreateEvent = () => {
         </div>
       </div>
 
-      {/* ... (remaining form fields) */}
+      <label>
+        Tags:
+        <input type="text" name="tags" value={formData.tags.join(',')} onChange={handleTagInputChange} />
+      </label>
 
       <div className="ticket-type-container">
         <label className="ticket-type-label">Event Type:</label>
