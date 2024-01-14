@@ -49,13 +49,12 @@ import { Router, Route, Link, Routes, BrowserRouter, Switch } from 'react-router
 
 import AppHeader from './components/header';
 import AppHero from './components/hero';
-import AppAbout from './components/about';
 import AppWorks from './components/works';
 import AppTestimonials from './components/testimonials';
 import AppEventDetails from './components/AppEventDetails';
-import AppBlog from './components/blog';
 import AppContact from './components/contact';
 import AppFooter from './components/footer';
+import Appsignup from './components/signup';
 import CreateEvent from './components/CreateEvent'; // Import the new page
 
 function App() {
@@ -72,10 +71,9 @@ function App() {
               <Route path="/home" element={<AppHero />} />
               <Route path="/works" element={<AppWorks />} />
               <Route path="/testimonials" element={<AppTestimonials />} />
-              <Route path="/blog" element={<AppBlog />} />
               <Route path="/services" element={<CreateEvent />} />
               <Route path="/contact" element={<AppContact />} />
-              <Route path="/about" element={<AppAbout />} />
+              <Route path="/signup" element={<Appsignup />} />
               <Route path="/works/:id" element={<AppEventDetails />} />
             </Routes>
           </BrowserRouter>

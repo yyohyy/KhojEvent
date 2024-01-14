@@ -1,5 +1,12 @@
 import Carousel from 'react-bootstrap/Carousel';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Image from 'react-bootstrap/Image';
+import Card from 'react-bootstrap/Card';
 
+
+import img1 from '../assets/images/img1.jpg';
 var heroData = [
   {
     id: 1,
@@ -23,7 +30,32 @@ var heroData = [
     link: 'https://www.twitter.com'
   }
 ]
-
+const blogData = [
+  {
+    id: 1,
+    image: require('../assets/images/blog1.jpg'),
+    time: ' 01 Jan 2024',
+    title: 'New Year Carnival',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt, asperiores eaque quibusdam eum quod cum nesciunt.',
+    link: 'https://www.google.com'
+  },
+  {
+    id: 2,
+    image: require('../assets/images/blog2.jpg'),
+    time: '27 Jan 2024',
+    title: 'Art Exhibition',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt, asperiores eaque quibusdam eum quod cum nesciunt.',
+    link: 'https://www.facebook.com'
+  },
+  {
+    id: 3,
+    image: require('../assets/images/blog3.jpg'),
+    time: '15 Feb 2024',
+    title: 'Bartika Eam Rai Concert',
+    description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt, asperiores eaque quibusdam eum quod cum nesciunt.',
+    link: 'https://www.twitter.com'
+  }
+]
 function AppHero() {
   return (
     <section id="home" className="hero-block">
@@ -47,6 +79,51 @@ function AppHero() {
             })
           }
       </Carousel>
+      <Container fluid>
+        <div className="title-holder">
+          <h2>About Us</h2>
+          <div className="subtitle">learn more about us</div>
+        </div>
+        <Row>
+          <Col sm={6}>
+            <Image src={img1} />
+          </Col>
+          <Col sm={6}>
+            <p>KhojEvent is more than just a website; it's a dynamic ecosystem. Dive into our curated vendor directory, explore insightful blogs, connect with fellow organizers in our community forum, and discover the latest trends shaping the world of events.
+                At the heart of KhojEvent is a team driven by passion and a shared love for celebrations. We're here to support you at every step, providing resources, inspiration, and a helping hand to ensure your events are nothing short of spectacular</p>
+            <p>Join us on this exciting journey as we redefine the art of event planning. KhojEvent – Where Every Occasion Becomes an Extraordinary Experience. Start planning with us and let your events take center stage.</p>
+           
+          </Col>
+        </Row>
+        <div className="title-holder">
+          <h2>Coming Soon</h2>
+          <div className="subtitle">Stay Tuned</div>
+        </div>
+        <Row>
+          {
+            blogData.map(blog => {
+              return (
+                <Col sm={4} key={blog.id}>
+                  <div className='holder'>
+                    <Card>
+                      <Card.Img variant="top" src={blog.image} />
+                      <Card.Body>
+                        <time>{blog.time}</time>
+                        <Card.Title>{blog.title}</Card.Title>
+                        <Card.Text>
+                          {blog.description}
+                        </Card.Text>
+                        <a href={blog.link} className="btn btn-primary">Read More <i className="fas fa-chevron-right"></i></a>
+                      </Card.Body>
+                    </Card>
+                  </div>
+                </Col>
+              )
+            })
+          }
+        </Row>
+      </Container>
+
     </section>
   );
 }
