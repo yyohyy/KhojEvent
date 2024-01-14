@@ -117,7 +117,7 @@ def update_quantity_available(sender, instance, **kwargs):
         quantity_available=F('total_quantity') - total_selected_quantity
     )
 
-
+#rename this cart for convenience
 class SelectedTickets(models.Model):
     attendee = models.OneToOneField(Attendee, on_delete=models.CASCADE)
     selected_tickets = models.ManyToManyField(SelectedTicket)
