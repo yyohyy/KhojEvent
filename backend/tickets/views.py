@@ -13,3 +13,4 @@ class TicketDetails(RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({"message": "Ticket deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    
