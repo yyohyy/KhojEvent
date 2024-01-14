@@ -35,7 +35,8 @@ function AppContact() {
         </Form>
       </Container>
       <div className='google-map'>
-        <iframe title="map" src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d14048.211570060965!2d-0.1228208876550775!3d51.505942908931324!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2suk!4v1481805868782"></iframe>
+       
+        <iframe title='map' src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14130.359290659457!2d85.28176416799907!3d27.6990696678221!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb1860ae22d385%3A0x7c2444e8284cef52!2sKalimati%2C%20Kathmandu%2044600!5e0!3m2!1sen!2snp!4v1704909731306!5m2!1sen!2snp"  allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
       <Container fluid>
         <div className='contact-info'>
