@@ -127,7 +127,7 @@ const CreateEvent = () => {
       </label>
 
       <div className="ticket-type-container">
-        <label className="ticket-type-label">Event Type:</label>
+        <label className="ticket-type-label"></label>
 
         <div className="ticket-options">
           <label>
