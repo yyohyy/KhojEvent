@@ -9,64 +9,64 @@ const worksData = [
     id: 1,
     link: '/works/1',
     image: require('../assets/images/img2.jpg'),
-    title: 'Lonely Path',
-    subtitle: 'Web Design'
+    title: 'The Eras Tour ',
+    subtitle: 'Concert'
   },
   {
     id: 2,
     link: '/works/2',
     image: require('../assets/images/img3.jpg'),
-    title: 'Photographer Girl',
-    subtitle: 'Branding'
+    title: 'PhotoKTM',
+    subtitle: 'Art Exhibition'
   },
   {
     id: 3,
     link: '/works/3',
     image: require('../assets/images/img4.jpg'),
-    title: 'The Difference',
-    subtitle: 'Web Design'
+    title: 'Farmers market',
+    subtitle: 'Local market'
   },
   {
     id: 4,
     link: '/works/4',
     image: require('../assets/images/img5.jpg'),
-    title: 'Nature Patterns',
-    subtitle: 'Branding'
+    title: 'Trekking',
+    subtitle: 'Nature'
   },
   {
     id: 5,
     link: '/works/5',
     image: require('../assets/images/img6.jpg'),
-    title: 'The Difference',
-    subtitle: 'Photography'
+    title: 'Yoga Retreat',
+    subtitle: 'Healing and Meditation'
   },
   {
     id: 6,
     link: '/works/6',
     image: require('../assets/images/img7.jpg'),
-    title: 'Winter Sonata',
-    subtitle: 'Web Design'
+    title: 'ROBO',
+    subtitle: 'Tech and innovation'
   },
   {
     id: 7,
     link: '/works/7',
     image: require('../assets/images/img8.jpg'),
-    title: 'Lonely Path',
-    subtitle: 'Branding'
+    title: 'Donation Campaign',
+    subtitle: 'Social Service'
   },
   {
     id: 8,
     link: '/works/8',
     image: require('../assets/images/img9.jpg'),
-    title: 'Appreciation',
-    subtitle: 'Photography'
+    title: 'KTM Football Cup',
+    subtitle: 'Sports'
   },
   {
     id: 9,
     link: '/works/9',
-    image: require('../assets/images/img2.jpg'),
-    title: 'Happy Days',
-    subtitle: 'Web Design'
+    image: require('../assets/images/img10.jpg'),
+    title: 'Ted Talk',
+    subtitle: 'Motivation'
   }
 ]
 
@@ -86,8 +86,8 @@ function AppWorks() {
     <section id="works" className="block works-block">
       <Container fluid>
         <div className="title-holder">
-          <h2>Our works</h2>
-          <div className="subtitle">our awesome works</div>
+          <h2>EVENTS</h2>
+          <div className="subtitle">our awesome events</div>
         </div>
         <Row className='portfoliolist'>
           {

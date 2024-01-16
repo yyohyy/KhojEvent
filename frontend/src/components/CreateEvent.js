@@ -94,7 +94,7 @@ const CreateEvent = () => {
       {/* ... (remaining form fields) */}
 
       <div className="ticket-type-container">
-        <label className="ticket-type-label">Event Type:</label>
+        <label className="ticket-type-label"></label>
 
         <div className="ticket-options">
           <label>
