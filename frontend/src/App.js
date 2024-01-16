@@ -56,7 +56,7 @@ import AppContact from './components/contact';
 import AppFooter from './components/footer';
 import Appsignup from './components/signup';
 import CreateEvent from './components/CreateEvent'; // Import the new page
-
+import Applogin from './components/login';
 function App() {
   return (
    
@@ -74,6 +74,7 @@ function App() {
               <Route path="/services" element={<CreateEvent />} />
               <Route path="/contact" element={<AppContact />} />
               <Route path="/signup" element={<Appsignup />} />
+              <Route path="/login" element={<Applogin />} />
               <Route path="/works/:id" element={<AppEventDetails />} />
             </Routes>
           </BrowserRouter>
