@@ -9,7 +9,7 @@ const CreateEvent = () => {
 
   const defaultValues ={
     name: '',
-    category: 'music', // Default category
+    categories: 'music', // Default category
     venue: '',
     description: '',
     startDate: '',
@@ -17,14 +17,14 @@ const CreateEvent = () => {
     startTime: '',
     endTime: '',
     tags: [], // Store tags as an array
-    ticketType: 'free',
+    is_paid: 'free',
 
 
   }
   const submission =(data) => {
     AxiosInstance.post( 'create-event/',{
       name:data.name,
-      category: data.category,
+      categories: data.categories,
       venue: data.venue,
       description:data.description,
       startDate: data.startDate,
@@ -32,13 +32,13 @@ const CreateEvent = () => {
       startTime:data.startTime,
       endTime:data.endTime,
       tags:data.tags,
-      ticketType:data.ticketType,
+      is_paid:data.is_paid,
     })
   }
 
   const [formData, setFormData] = useState({
     name: '',
-    category: 'music', // Default category
+    categories: 'music', // Default category
     venue: '',
     description: '',
     startDate: '',
@@ -46,19 +46,26 @@ const CreateEvent = () => {
     startTime: '',
     endTime: '',
     tags: [], // Store tags as an array
-    ticketType: 'free', // Default ticket type
+    is_paid: 'free', // Default ticket type
   });
 
-  const categories = ['music', 'art', 'fashion', 'education', 'theatre', 'standup', 'market', 'others'];
-
+  const categories = ['Music', 'Art', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Others'];
+  const [availableTags, setAvailableTags] = useState(['Fun', 'Dance', 'Music','Seminar','Night','Games','Food','Crafts','Zen','Comedy','Film','Photography','Tech','Thrift','Donation','Marathon','Cycling','Nature','Health','Pottery','Book','Meet & Greet']); // Replace with your actual tags
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleTagInputChange = (e) => {
-    const { value } = e.target;
-    setFormData({ ...formData, tags: value.split(',').map((tag) => tag.trim()) });
+  // const handleTagInputChange = (e) => {
+  //   const { value } = e.target;
+  //   setFormData({ ...formData, tags: value.split(',').map((tag) => tag.trim()) });
+  // };
+  const toggleTag = (tag) => {
+    const updatedTags = formData.tags.includes(tag)
+      ? formData.tags.filter((t) => t !== tag)
+      : [...formData.tags, tag];
+  
+    setFormData({ ...formData, tags: updatedTags });
   };
 
   const handleSubmit = (e) => {
@@ -75,8 +82,8 @@ const CreateEvent = () => {
       </label>
 
       <label>
-        Category:
-        <select name="category" value={formData.category} onChange={handleInputChange}>
+        Categories:
+        <select name="categories" value={formData.categories} onChange={handleInputChange}>
           {categories.map((cat) => (
             <option key={cat} value={cat}>
               {cat}
@@ -121,10 +128,22 @@ const CreateEvent = () => {
         </div>
       </div>
 
-      <label>
+      {/* <label>
         Tags:
         <input type="text" name="tags" value={formData.tags.join(',')} onChange={handleTagInputChange} />
-      </label>
+      </label> */}
+
+          <label>
+             Tags:
+              <div className="tags-container">
+                {availableTags.map((tag) => (
+                 <div key={tag} className={`tag ${formData.tags.includes(tag) ? 'selected' : ''}`} onClick={() => toggleTag(tag)}>
+                   {tag}
+              </div>
+              ))}
+              </div>
+          </label>
+
 
       <div className="ticket-type-container">
         <label className="ticket-type-label"></label>
@@ -135,7 +154,7 @@ const CreateEvent = () => {
               type="radio"
               name="ticketType"
               value="free"
-              checked={formData.ticketType === 'free'}
+              checked={formData.is_paid === 'free'}
               onChange={handleInputChange}
             />
             Free

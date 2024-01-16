@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 import React from 'react'
 
  const AppSignup = () => {
@@ -36,3 +38,4 @@ import React from 'react'
   )
 }
 export default AppSignup;
+>>>>>>> 5ec8cae15024b48eba2260b409662f0c2b5639a7
