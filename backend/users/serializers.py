@@ -1,13 +1,13 @@
 from django.conf import settings
 from django.forms import ValidationError
+from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
 from rest_framework import serializers
 from .models import User,Attendee,Organiser
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserCreateSerializer(BaseUserCreateSerializer):
     class Meta:
-        model = User
-        fields = [ 'id','email','password']
+        fields = [ 'id','email','password','phone_number']
         extra_kwargs = {
           "password": {"write_only": True},
         }
@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
 class AttendeeSignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendee
-        fields = ['first_name', 'last_name']  
+        fields = ['first_name', 'last_name','birth_date']  
 
     def create(self, validated_data):
         user = validated_data.pop('user', None)
@@ -29,7 +29,7 @@ class AttendeeSignUpSerializer(serializers.ModelSerializer):
 class OrganiserSignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organiser
-        fields = ['first_name', 'last_name']  
+        fields = ['name', 'address','description','website','facebook','instagram','twitter']  
 
     def create(self, validated_data):
    
@@ -51,10 +51,10 @@ class OrganiserSerializer(serializers.ModelSerializer):
         model=Organiser
         fields=['name','description','address']
 
-class CurrentUserDetails(UserSerializer):
-    class Meta:
-        model=User
-        fields='__all__'
+# class CurrentUserDetails(UserSerializer):
+#     class Meta:
+#         model=User
+#         fields='__all__'
         
 
 class AllUserDetails(serializers.ModelSerializer):
@@ -87,8 +87,8 @@ class AllUserDetails(serializers.ModelSerializer):
         return data
 
 class UserDetails(serializers.ModelSerializer):
-    attendee_details = AttendeeSerializer(source='attendee', read_only=True)
-    organiser_details = OrganiserSerializer(source='organiser', read_only=True)
+    attendee_details = AttendeeSerializer(source='attendee')#, read_only=True)
+    organiser_details = OrganiserSerializer(source='organiser')#, read_only=True)
 
     class Meta:
         model = User

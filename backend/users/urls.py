@@ -8,5 +8,5 @@ urlpatterns = [
     path('organiser/',OrganiserSignUpView.as_view()),
     path('details/',AllUserDetails.as_view() ),
     path('details/<int:pk>/', UserDetails.as_view(), name='user-details'),
-
+    
 ]

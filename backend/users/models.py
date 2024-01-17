@@ -6,6 +6,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from .managers import UserManager
+# from .signals import set_user_as_attendee,set_user_as_organiser
 
 
 class User(AbstractBaseUser,PermissionsMixin):
@@ -37,12 +38,21 @@ class Attendee(models.Model):
     def __str__(self):
         return f"{self.first_name}  {self.last_name}"    
 
-@receiver(post_save, sender=Attendee)
-def set_user_as_attendee(sender, instance, created, **kwargs):
-    if created:  
-        user = instance.user
-        user.is_attendee = True
-        user.save(update_fields=['is_attendee'])
+    def save(self, *args, **kwargs):
+        # Set is_attendee to True when the Attendee instance is created
+        if not self.pk:  # Check if the instance is being created (not updated)
+            self.user.is_attendee = True
+            self.user.save()
+        super(Attendee,self).save(*args,**kwargs)
+
+    #     super().save(*args, **kwargs)
+
+# @receiver(post_save, sender=Attendee)
+# def set_user_as_attendee(sender, instance, created, **kwargs):
+#     if created:  
+#         user = instance.user
+#         user.is_attendee = True
+#         user.save(update_fields=['is_attendee'])
 
 
 class Organiser(models.Model):
@@ -59,9 +69,9 @@ class Organiser(models.Model):
     def __str__(self):
         return self.name   
 
-@receiver(post_save, sender=Organiser)
-def set_user_as_organiser(sender, instance, created, **kwargs):
-    if created:  
-        user = instance.user
-        user.is_organiser = True
-        user.save(update_fields=['is_organiser'])
+# @receiver(post_save, sender=Organiser)
+# def set_user_as_organiser(sender, instance, created, **kwargs):
+#     if created:  
+#         user = instance.user
+#         user.is_organiser = True
+#         user.save(update_fields=['is_organiser'])
