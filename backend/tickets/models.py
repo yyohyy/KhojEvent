@@ -30,9 +30,9 @@ class Ticket(models.Model):
     ]
     event = models.ForeignKey(Events, on_delete=models.CASCADE)
     total_quantity = models.PositiveIntegerField(default=0, editable=False)
-    quantity_available = models.PositiveIntegerField(default=1) #not updating
-    max_limit = models.PositiveIntegerField(default=0) #limit logic left
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='AVAILABLE')
+    quantity_available = models.PositiveIntegerField(default=1) 
+    max_limit = models.PositiveIntegerField(default=0) 
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='AVAILABLE') #update
     
     def __str__(self):
         return f"{self.event} - {self.status}"
@@ -117,7 +117,7 @@ def update_quantity_available(sender, instance, **kwargs):
         quantity_available=F('total_quantity') - total_selected_quantity
     )
 
-
+#rename this cart for convenience
 class SelectedTickets(models.Model):
     attendee = models.OneToOneField(Attendee, on_delete=models.CASCADE)
     selected_tickets = models.ManyToManyField(SelectedTicket)

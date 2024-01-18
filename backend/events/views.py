@@ -37,6 +37,7 @@ class PostEventCreateView(APIView):
 
 
 class PatchEventdetailView(generics.RetrieveUpdateDestroyAPIView):
+    # http_method_names=['get','patch','delete']
     queryset = Events.objects.all()
     serializer_class = EventsSerializer
     permission_classes = [OrganiserCanUpdate]

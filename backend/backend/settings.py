@@ -175,15 +175,14 @@ DJOSER= {
 
 
     'SERIALIZERS' : {
-        'user_create' :'users.serializers.UserSerializer',
-        'user_delete' : 'djoser.serializers.UserDeleteSerializer',
-        # 'organiser_create': 'users.serializers.OrganiserSignUpSerializer',
-    }
+        'user_create' :'users.serializers.UserCreateSerializer',
+        'user' :'users.serializers.UserCreateSerializer',
+      },
 }
 
 AUTH_USER_MODEL = "users.User"
 
 #CORS_ALLOWED_ORIGIN = []
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL= True
 

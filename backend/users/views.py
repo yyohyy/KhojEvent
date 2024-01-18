@@ -1,9 +1,11 @@
 
-from rest_framework import generics
-from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework import generics, status
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from .models import *
-from .serializers import AttendeeSignUpSerializer, OrganiserSignUpSerializer,AllUserDetails, CurrentUserDetails, UserDetails
+from .permissions import IsOwnerOrReadOnly
+from .serializers import AttendeeSignUpSerializer, OrganiserSignUpSerializer,AllUserDetails, UserDetailsSerializer, AttendeeSerializer, OrganiserSerializer,AttendeeDetailsSerializer,OrganiserDetailsSerializer
 
    
 class AttendeeSignUpView(generics.CreateAPIView):
@@ -15,9 +17,7 @@ class AttendeeSignUpView(generics.CreateAPIView):
         user = self.request.user
         user.is_attendee = True 
         user.save(update_fields=['is_attendee'])
-        
         serializer.save(user=user)
-
    
 class OrganiserSignUpView(generics.CreateAPIView):
     serializer_class = OrganiserSignUpSerializer
@@ -31,15 +31,31 @@ class OrganiserSignUpView(generics.CreateAPIView):
         
         serializer.save(user=user)
 
-class CurrentUserDetails(RetrieveUpdateDestroyAPIView):
-    serializer_class= CurrentUserDetails
-    queryset= User.objects.all()
-
 class AllUserDetails(ListAPIView):
     serializer_class= AllUserDetails
     queryset=User.objects.all()
 
-class UserDetails(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserDetails
+class UserDetails(generics.RetrieveUpdateAPIView):
+    permission_classes=[IsOwnerOrReadOnly]
+    queryset= User.objects.all()
     lookup_field = 'pk' 
+
+    def get_serializer_class(self):
+        user = self.get_object()
+        if user.is_attendee:
+            return AttendeeDetailsSerializer
+        elif user.is_organiser:
+            return OrganiserDetailsSerializer    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        # Customize the response as needed
+        response_data = {
+            'message': 'DETAILS UPDATED.',
+            'instance': serializer.data
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
