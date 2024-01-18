@@ -176,9 +176,8 @@ DJOSER= {
 
     'SERIALIZERS' : {
         'user_create' :'users.serializers.UserCreateSerializer',
-        'user_delete' : 'djoser.serializers.UserDeleteSerializer',
-        # 'organiser_create': 'users.serializers.OrganiserSignUpSerializer',
-    }
+        'user' :'users.serializers.UserCreateSerializer',
+      },
 }
 
 AUTH_USER_MODEL = "users.User"

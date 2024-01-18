@@ -1,13 +1,18 @@
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.forms import ValidationError
 from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
-from rest_framework import serializers
+from rest_framework import serializers,status
+from rest_framework.response import Response
 from .models import User,Attendee,Organiser
 
+User=get_user_model()
 
 class UserCreateSerializer(BaseUserCreateSerializer):
-    class Meta:
+    class Meta(BaseUserCreateSerializer.Meta):
+        model=User
         fields = [ 'id','email','password','phone_number']
+        #REQUIRED_FIELDS=['phone_number']
         extra_kwargs = {
           "password": {"write_only": True},
         }
@@ -21,6 +26,10 @@ class AttendeeSignUpSerializer(serializers.ModelSerializer):
         user = validated_data.pop('user', None)
 
         if user:
+            if Attendee.objects.filter(user=user).exists(): 
+                raise serializers.ValidationError("An attendee account with this email is already in use.")
+            if Organiser.objects.filter(user=user).exists():
+                 raise serializers.ValidationError("An organiser account with this email is already in use.")
             attendee = Attendee.objects.create(user=user, **validated_data)
             return attendee
         else:
@@ -36,6 +45,10 @@ class OrganiserSignUpSerializer(serializers.ModelSerializer):
         user = validated_data.pop('user', None)
 
         if user:
+            if Attendee.objects.filter(user=user).exists(): 
+                raise serializers.ValidationError("An attendee account with this email is already in use.")
+            if Organiser.objects.filter(user=user).exists():
+                 raise serializers.ValidationError("An organiser account with this email is already in use.")
             organiser = Organiser.objects.create(user=user, **validated_data)
             return organiser
         else:
@@ -50,12 +63,6 @@ class OrganiserSerializer(serializers.ModelSerializer):
     class Meta:
         model=Organiser
         fields=['name','description','address']
-
-# class CurrentUserDetails(UserSerializer):
-#     class Meta:
-#         model=User
-#         fields='__all__'
-        
 
 class AllUserDetails(serializers.ModelSerializer):
     class Meta:
@@ -86,14 +93,62 @@ class AllUserDetails(serializers.ModelSerializer):
 
         return data
 
-class UserDetails(serializers.ModelSerializer):
+class UserDetailsSerializer(serializers.ModelSerializer):
     attendee_details = AttendeeSerializer(source='attendee')#, read_only=True)
     organiser_details = OrganiserSerializer(source='organiser')#, read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'phone_number', 'is_active', 'is_staff', 'is_attendee', 'is_organiser', 'attendee_details', 'organiser_details']
+        fields = ['id', 'email', 'phone_number', 'profile_picture', 'attendee_details', 'organiser_details',]
 
+class AttendeeDetailsSerializer(serializers.ModelSerializer):
+    attendee_details = AttendeeSerializer(source='attendee')#, read_only=True)
+    
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'phone_number', 'profile_picture', 'attendee_details',]
+    
+    def update(self, instance, validated_data):
+        attendee_data = validated_data.pop('attendee', {})
+        attendee_instance = instance.attendee
+        attendee_serializer = AttendeeSerializer(attendee_instance, data=attendee_data, partial=True)
 
-      
-#class UserDetails(serializers.ModelSerializer):
+        if attendee_serializer.is_valid():
+            attendee_serializer.save()
+
+        instance.email = validated_data.get('email', instance.email)
+        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
+        instance.profile_picture = validated_data.get('profile_picture', instance.profile_picture)
+        instance.save()
+
+        response_data = {
+            'message': 'DETAILS UPDATED.',
+            'instance': instance
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
+    
+class OrganiserDetailsSerializer(serializers.ModelSerializer):
+    organiser_details = OrganiserSerializer(source='organiser')#, read_only=True)
+    
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'phone_number', 'profile_picture', 'organiser_details',]
+    
+    def update(self, instance, validated_data):
+        organiser_data = validated_data.pop('organiser', {})
+        organiser_instance = instance.organiser
+        organiser_serializer = OrganiserSerializer(organiser_instance, data=organiser_data, partial=True)
+
+        if organiser_serializer.is_valid():
+            organiser_serializer.save()
+
+        instance.email = validated_data.get('email', instance.email)
+        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
+        instance.profile_picture = validated_data.get('profile_picture', instance.profile_picture)
+        instance.save()
+
+        response_data = {
+            'message': 'DETAILS UPDATED.',
+            'instance': instance
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
