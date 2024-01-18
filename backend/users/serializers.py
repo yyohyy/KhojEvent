@@ -122,7 +122,7 @@ class AttendeeDetailsSerializer(serializers.ModelSerializer):
         instance.save()
 
         response_data = {
-            'message': 'DETAILS UPDATED.',
+            'message': 'ATTENDEE DETAILS UPDATED.',
             'instance': instance
         }
         return Response(response_data, status=status.HTTP_200_OK)
@@ -148,7 +148,7 @@ class OrganiserDetailsSerializer(serializers.ModelSerializer):
         instance.save()
 
         response_data = {
-            'message': 'DETAILS UPDATED.',
+            'message': 'ORGANISER DETAILS UPDATED.',
             'instance': instance
         }
         return Response(response_data, status=status.HTTP_200_OK)

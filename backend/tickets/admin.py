@@ -8,6 +8,7 @@ class TicketTypeInline(admin.TabularInline):
     model = TicketType
     list_display = ('name', 'description', 'price', 'quantity')
     fields=('name','description','price','quantity',)
+
 @admin.register(Ticket)
 class TicketAdmin(admin.ModelAdmin):
     list_display = ('event', 'status', 'total_quantity','quantity_available') 

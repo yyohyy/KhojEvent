@@ -19,9 +19,19 @@ class OrganiserSerializer(serializers.ModelSerializer):
         
 
 class EventsSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(many=True)
-    categories = CategorySerializer(many=True)
-    organizer = OrganiserSerializer(many=False)
+    # tags = TagSerializer(many=True)
+    # categories = CategorySerializer(many=True)
+    # organizer = OrganiserSerializer(many=False,read_only=True)
+
+    # def create(self, validated_data):
+    #     tags=validated_data.pop("tags")
+    #     categories=validated_data.pop("categories")
+
+    #     for tag in tags: 
+
+    #     return super().create(validated_data)
+    
+
     class Meta:
         model = Events
         fields = '__all__'

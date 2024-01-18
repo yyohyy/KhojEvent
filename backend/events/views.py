@@ -28,6 +28,7 @@ class GetEventsView(APIView):
         #return Response(serializer.data)
 
 class PostEventCreateView(APIView):
+    serializer_class = EventsSerializer
     def post(self, request):
         serializer = EventsSerializer(data=request.data)
         if serializer.is_valid():

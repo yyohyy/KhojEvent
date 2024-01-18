@@ -141,4 +141,7 @@ class SelectedTickets(models.Model):
     def __str__(self):
         return f"Cart for {self.attendee.first_name} {self.attendee.last_name}"
     
+# class Order(models.Model):
+#     placed_at=models.DateField(auto_now_add=true)    
+#     payment_status=
     

@@ -18,11 +18,12 @@ const navigate = useNavigate()
     start_time: '',
     end_time: '',
     tags: [], // Store tags as an array
-    is_paid: 'free',
+    is_paid: 'False',
 
 
   }
   const submission =(data) => {
+    console.log('Submitting data:', data);
     AxiosInstance.post( 'create-event/',{
       name:data.name,
       categories: data.categories,
@@ -35,11 +36,13 @@ const navigate = useNavigate()
       tags:data.tags,
       is_paid:data.is_paid,
     })
- 
-
-     .then((res) =>{
-         navigate('/')
-      })
+    .then((res) => {
+      console.log('Response from backend:', res);
+      navigate('/');
+    })
+    .catch((error) => {
+      console.error('Error submitting data:', error);
+    });
   }
 
   const [formData, setFormData] = useState({
@@ -52,7 +55,7 @@ const navigate = useNavigate()
     start_time: '',
     end_time: '',
     tags: [], // Store tags as an array
-    is_paid: 'free', // Default ticket type
+    is_paid: 'False', // Default ticket type
   });
 
   const categories = ['Art', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Others'];
@@ -78,7 +81,7 @@ const navigate = useNavigate()
     e.preventDefault();
     console.log('Form Data:', formData);
     // Add logic to handle form submission, e.g., send data to server
-
+    submission(formData);
     }
   
 
@@ -161,9 +164,9 @@ const navigate = useNavigate()
           <label>
             <input
               type="radio"
-              name="ticketType"
-              value="free"
-              checked={formData.is_paid === 'false'}
+              name="is_paid"
+              value="False"
+              checked={formData.is_paid === 'False'}
               onChange={handleInputChange}
             />
             Free
@@ -172,9 +175,9 @@ const navigate = useNavigate()
           <label>
             <input
               type="radio"
-              name="ticketType"
-              value="paid"
-              checked={formData.is_paid === 'true'}
+              name="is_paid"
+              value="True"
+              checked={formData.is_paid === 'True'}
               onChange={handleInputChange}
             />
             Paid
