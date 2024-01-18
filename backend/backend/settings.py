@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'djoser',
     'events',
     'users',
-    'tickets',
     'corsheaders',
 ]
 
