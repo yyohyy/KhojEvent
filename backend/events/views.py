@@ -39,6 +39,7 @@ class EventCreateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+<<<<<<< HEAD
 class EventdetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
@@ -49,6 +50,13 @@ class EventdetailView(generics.RetrieveUpdateDestroyAPIView):
         # ...
 
         return Response({"message": "Resource partially updated"}, status=200)
+=======
+class PatchEventdetailView(generics.RetrieveUpdateDestroyAPIView):
+    # http_method_names=['get','patch','delete']
+    queryset = Events.objects.all()
+    serializer_class = EventsSerializer
+    permission_classes = [OrganiserCanUpdate]
+>>>>>>> 31e0418d46df95f6311d4571c25de84445aeb4d2
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()

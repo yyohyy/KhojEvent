@@ -7,7 +7,6 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from .managers import UserManager
 
-
 class User(AbstractBaseUser,PermissionsMixin):
     email=models.EmailField(unique=True)
     phone_number=models.CharField(max_length=15,null=True)
@@ -27,7 +26,6 @@ class User(AbstractBaseUser,PermissionsMixin):
     def __str__(self):
         return self.email
 
-
 class Attendee(models.Model):
     user= models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True, unique=True)
     first_name=models.CharField(max_length=255)
@@ -43,7 +41,6 @@ def set_user_as_attendee(sender, instance, created, **kwargs):
         user = instance.user
         user.is_attendee = True
         user.save(update_fields=['is_attendee'])
-
 
 class Organiser(models.Model):
     user= models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True,unique=True)

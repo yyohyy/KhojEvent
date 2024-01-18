@@ -2,20 +2,21 @@
 import React, { useState } from 'react';
 import './CreateEvent.css'; // Import the CSS file for styling
 import AxiosInstance from './axios'
+import { useNavigate } from 'react-router-dom';
 // TODO: Need to have a database that can store the input data which is stored in formData
 // TODO: 
 
 const CreateEvent = () => {
-
+const navigate = useNavigate()
   const defaultValues ={
     name: '',
     categories: 'music', // Default category
     venue: '',
     description: '',
-    startDate: '',
-    endDate: '',
-    startTime: '',
-    endTime: '',
+    start_date: '',
+    end_date: '',
+    start_time: '',
+    end_time: '',
     tags: [], // Store tags as an array
     is_paid: 'free',
 
@@ -27,13 +28,18 @@ const CreateEvent = () => {
       categories: data.categories,
       venue: data.venue,
       description:data.description,
-      startDate: data.startDate,
-      endDate:data.endDate,
-      startTime:data.startTime,
-      endTime:data.endTime,
+      start_date: data.start_date,
+      end_date:data.end_date,
+      start_time:data.start_time,
+      end_time:data.end_time,
       tags:data.tags,
       is_paid:data.is_paid,
     })
+ 
+
+     .then((res) =>{
+         navigate('/')
+      })
   }
 
   const [formData, setFormData] = useState({
@@ -41,15 +47,15 @@ const CreateEvent = () => {
     categories: 'music', // Default category
     venue: '',
     description: '',
-    startDate: '',
-    endDate: '',
-    startTime: '',
-    endTime: '',
+    start_date: '',
+    end_date: '',
+    start_time: '',
+    end_time: '',
     tags: [], // Store tags as an array
     is_paid: 'free', // Default ticket type
   });
 
-  const categories = ['Music', 'Art', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Others'];
+  const categories = ['Art', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Others'];
   const [availableTags, setAvailableTags] = useState(['Fun', 'Dance', 'Music','Seminar','Night','Games','Food','Crafts','Zen','Comedy','Film','Photography','Tech','Thrift','Donation','Marathon','Cycling','Nature','Health','Pottery','Book','Meet & Greet']); // Replace with your actual tags
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -72,7 +78,10 @@ const CreateEvent = () => {
     e.preventDefault();
     console.log('Form Data:', formData);
     // Add logic to handle form submission, e.g., send data to server
-  };
+
+    }
+  
+
 
   return (
     <form onSubmit={handleSubmit} className="event-form">
@@ -106,24 +115,24 @@ const CreateEvent = () => {
         <div className="date-container">
           <label>
             Start Date:
-            <input type="date" name="startDate" value={formData.startDate} onChange={handleInputChange} />
+            <input type="date" name="start_date" value={formData.start_date} onChange={handleInputChange} />
           </label>
 
           <label>
             End Date:
-            <input type="date" name="endDate" value={formData.endDate} onChange={handleInputChange} />
+            <input type="date" name="end_date" value={formData.end_date} onChange={handleInputChange} />
           </label>
         </div>
 
         <div className="time-container">
           <label>
             Start Time:
-            <input type="time" name="startTime" value={formData.startTime} onChange={handleInputChange} />
+            <input type="time" name="start_time" value={formData.start_time} onChange={handleInputChange} />
           </label>
 
           <label>
             End Time:
-            <input type="time" name="endTime" value={formData.endTime} onChange={handleInputChange} />
+            <input type="time" name="end_time" value={formData.end_time} onChange={handleInputChange} />
           </label>
         </div>
       </div>
@@ -154,7 +163,7 @@ const CreateEvent = () => {
               type="radio"
               name="ticketType"
               value="free"
-              checked={formData.is_paid === 'free'}
+              checked={formData.is_paid === 'false'}
               onChange={handleInputChange}
             />
             Free
@@ -165,7 +174,7 @@ const CreateEvent = () => {
               type="radio"
               name="ticketType"
               value="paid"
-              checked={formData.ticketType === 'paid'}
+              checked={formData.is_paid === 'true'}
               onChange={handleInputChange}
             />
             Paid
