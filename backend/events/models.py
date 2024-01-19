@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import Organiser
+from users.models import Attendee
 from django.utils import timezone
 import uuid
 
@@ -7,15 +8,14 @@ class category(models.Model):
    name = models.CharField(max_length=200)
    created = models.DateTimeField(auto_now_add=True) #to know about the time and date of adding data to the db and and automatically create a time for each added model 
    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
-    
    
    def __str__(self):
-        return self.name
+        return self.name 
     
-class Events(models.Model):
+class Event(models.Model):
     name = models.CharField(max_length=100, null=True)
-    organizer = models.ForeignKey(Organiser, on_delete=models.CASCADE, null=True, blank=True)
-    categories = models.ManyToManyField('category')
+    organizer = models.ForeignKey(Organiser, on_delete=models.CASCADE, null=True)#, blank=True)
+    categories = models.ForeignKey(category, on_delete=models.CASCADE)
     venue = models.CharField(max_length=100, null=True)
     description = models.TextField(null=True)  #in a databases but may not contain info and blank is for we are allowed to submit the form with the value being empty
     tags = models.ManyToManyField('Tag')
@@ -25,7 +25,7 @@ class Events(models.Model):
     end_date = models.DateField(null=True)
     start_time = models.TimeField(null=True)
     end_time = models.TimeField(null=True)
-    site_link = models.CharField(max_length= 600, null=True, blank=True)
+    #site_link = models.CharField(max_length= 600, null=True, blank=True)
     #approved = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True) #to know about the time and date of adding data to the db and and automatically create a time for each added model 
     id = models.UUIDField(default=uuid.uuid1, unique=True, primary_key=True, editable=False) 
@@ -35,19 +35,31 @@ class Events(models.Model):
     
     
 class Review(models.Model):
-    VOTE_TYPE = (
-        ('up', 'Up Vote'),
-        ('down', 'Down Vote'),
-    )
-    
-    event = models.ForeignKey(Events, on_delete=models.CASCADE) #deletes all the review if the event is deleted
+    attendees = models.OneToOneField(Attendee, on_delete=models.CASCADE)
+    events = models.ForeignKey(Event, on_delete=models.CASCADE) #deletes all the review if the event is deleted
     body = models.TextField(null=True, blank=True)
-    value = models.CharField(max_length=200, choices=VOTE_TYPE)
     created = models.DateTimeField(auto_now_add=True) #to know about the time and date of adding data to the db and and automatically create a time for each added model 
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False) 
     
     def __str__(self):
-        return self.value
+        return f"{self.events.name} - {self.body}"
+
+class Rating(models.Model):
+    STARS_CHOICES = (
+        (1, '1 Star'),
+        (2, '2 Stars'),
+        (3, '3 Stars'),
+        (4, '4 Stars'),
+        (5, '5 Stars'),
+    )
+    attendees = models.OneToOneField(Attendee, on_delete=models.CASCADE)
+    events = models.ForeignKey(Event, on_delete=models.CASCADE)
+    stars = models.IntegerField(choices=STARS_CHOICES, default=0)
+
+    def __str__(self):
+        return f"{self.events.name} - {self.stars} Stars"
+
+
     
 class Tag(models.Model):
     name= models.CharField(max_length=200)

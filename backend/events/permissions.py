@@ -1,8 +1,9 @@
 from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 class OrganiserCanUpdate(permissions.BasePermission):
     """
-    Custom permission to only allow organizers to edit events.
+    Custom permission to only allow organizers to edit their respective events.
     """
 
     def has_permission(self, request, view):
@@ -10,5 +11,32 @@ class OrganiserCanUpdate(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        # Check if the user is an organizer
+     # Check if the user is an organizer
         return request.user and request.user.is_authenticated and request.user.is_organiser
+    
+    def has_object_permission(self, request, view, obj):
+        # Check if the requesting user is the organizer of the event
+        return obj.organizer.user == request.user
+
+class AttendeeCanRate(permissions.BasePermission):
+    
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        
+        return request.user and request.user.is_authenticated and request.user.is_attendee
+    
+    def has_object_permission(self, request, view, obj):
+        return obj.attendee.user == request.user
+    
+class AttendeeCanReview(permissions.BasePermission):
+    
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        
+        return request.user and request.user.is_authenticated and request.user.is_attendee
+    
+    def has_object_permission(self, request, view, obj):
+        return obj.attendee.user == request.user
+    

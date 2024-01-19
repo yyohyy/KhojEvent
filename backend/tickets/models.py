@@ -4,7 +4,7 @@ from django.db.models import Sum, F
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from users.models import Attendee
-from events.models import Events
+from events.models import Event
 
 class TicketType(models.Model):
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name='ticket_types')
@@ -28,7 +28,7 @@ class Ticket(models.Model):
         ('AVAILABLE', 'Available'),
         ('SOLD_OUT', 'Sold Out'),
     ]
-    event = models.ForeignKey(Events, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     total_quantity = models.PositiveIntegerField(default=0, editable=False)
     quantity_available = models.PositiveIntegerField(default=1) 
     max_limit = models.PositiveIntegerField(default=0) 
@@ -118,27 +118,36 @@ def update_quantity_available(sender, instance, **kwargs):
     )
 
 #rename this cart for convenience
-class SelectedTickets(models.Model):
+class Cart(models.Model):
     attendee = models.OneToOneField(Attendee, on_delete=models.CASCADE)
-    selected_tickets = models.ManyToManyField(SelectedTicket)
+    selected_tickets = models.ForeignKey(SelectedTicket,on_delete=models.SET_NULL, null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    def update_total_amount(self):
+        # Calculate the total amount based on the amount of associated SelectedTicket instances
+        total_amount = SelectedTicket.objects.filter(cart=self).aggregate(total=Sum('amount'))['total'] or 0.0
 
-    @property
-    def total_amount(self):
-        return sum(ticket.amount for ticket in self.selected_tickets.all())
+        # Update the total_amount field
+        self.total_amount = total_amount
+        self.save(update_fields=['total_amount'])
+    # def total_amount(self):
+    #     return sum(ticket.price for ticket in Ticket.objects.filter(selected_tickets=self.selected_tickets))
 
-    def add_selected_ticket(self, selected_ticket):
-        self.selected_tickets.add(selected_ticket)
+    # def add_selected_ticket(self, selected_tickets):
+    #     self.selected_tickets.add(selected_tickets)
 
-    def remove_selected_ticket(self, selected_ticket):
-        self.selected_tickets.remove(selected_ticket)
+    # def remove_selected_ticket(self, selected_tickets):
+    #     self.selected_tickets.remove(selected_tickets)
 
-    def clear_cart(self):
-        self.selected_tickets.clear()
+    # def clear_cart(self):
+    #     self.selected_tickets.clear()
 
     def __str__(self):
         return f"Cart for {self.attendee.first_name} {self.attendee.last_name}"
     
+# class Order(models.Model):
+#     placed_at=models.DateField(auto_now_add=true)    
+#     payment_status=
     

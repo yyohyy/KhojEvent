@@ -10,7 +10,7 @@ const CreateEvent = () => {
 const navigate = useNavigate()
   const defaultValues ={
     name: '',
-    categories: 'music', // Default category
+    categories: 'Music', // Default category
     venue: '',
     description: '',
     start_date: '',
@@ -18,33 +18,66 @@ const navigate = useNavigate()
     start_time: '',
     end_time: '',
     tags: [], // Store tags as an array
-    is_paid: 'free',
+    is_paid: 'False',
 
 
   }
-  const submission =(data) => {
-    AxiosInstance.post( 'create-event/',{
-      name:data.name,
-      categories: data.categories,
+  const submission = (data) => {
+    console.log('Submitting data:', data);
+  
+    // Transform formData to match the desired format
+    const formattedData = {
+      name: data.name,
+      categories: {
+        name: data.categories,
+      },
+      description: data.description,
       venue: data.venue,
-      description:data.description,
       start_date: data.start_date,
-      end_date:data.end_date,
-      start_time:data.start_time,
-      end_time:data.end_time,
-      tags:data.tags,
-      is_paid:data.is_paid,
-    })
- 
-
-     .then((res) =>{
-         navigate('/')
+      end_date: data.end_date,
+      start_time: data.start_time,
+      end_time: data.end_time,
+      tags: data.tags.map(tag => ({ name: tag })),
+      is_paid: data.is_paid,
+    };
+  
+    console.log(formattedData)
+    AxiosInstance.post('create-event/', formattedData)
+      .then((res) => {
+        console.log('Response from backend:', res);
+        navigate('/');
       })
-  }
+      .catch((error) => {
+        console.error('Error submitting data:', error);
+      });
+  };
+  
+  // const submission =(data) => {
+  //   console.log('Submitting data:', data);
+  //   AxiosInstance.post( 'create-event/',{
+  //     name:data.name,
+  //     categories: data.categories,
+  //     venue: data.venue,
+  //     description:data.description,
+  //     start_date: data.start_date,
+  //     end_date:data.end_date,
+  //     start_time:data.start_time,
+  //     end_time:data.end_time,
+  //     tags:data.tags,
+  //     is_paid:data.is_paid,
+  //   })
+  //   .then((res) => {
+  //     console.log('Response from backend:', res);
+  //     navigate('/');
+  //   })
+  //   .catch((error) => {
+  //     console.error('Error submitting data:', error);
+  //   });
+  // }
 
   const [formData, setFormData] = useState({
     name: '',
-    categories: 'music', // Default category
+    categories: 'Music', // Default category
     venue: '',
     description: '',
     start_date: '',
@@ -52,7 +85,7 @@ const navigate = useNavigate()
     start_time: '',
     end_time: '',
     tags: [], // Store tags as an array
-    is_paid: 'free', // Default ticket type
+    is_paid: 'False', // Default ticket type
   });
 
   const categories = ['Art', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Others'];
@@ -78,7 +111,7 @@ const navigate = useNavigate()
     e.preventDefault();
     console.log('Form Data:', formData);
     // Add logic to handle form submission, e.g., send data to server
-
+    submission(formData);
     }
   
 
@@ -161,9 +194,15 @@ const navigate = useNavigate()
           <label>
             <input
               type="radio"
+<<<<<<< HEAD
               name="ticketType"
               value="free"
               checked={formData.is_paid === 'free'}
+=======
+              name="is_paid"
+              value="False"
+              checked={formData.is_paid === 'False'}
+>>>>>>> ce552da89d3e9c6c59ccb3e65cd8828d53ab5ba3
               onChange={handleInputChange}
             />
             Free
@@ -172,9 +211,15 @@ const navigate = useNavigate()
           <label>
             <input
               type="radio"
+<<<<<<< HEAD
               name="ticketType"
               value="paid"
               checked={formData.is_paid === 'paid'}
+=======
+              name="is_paid"
+              value="True"
+              checked={formData.is_paid === 'True'}
+>>>>>>> ce552da89d3e9c6c59ccb3e65cd8828d53ab5ba3
               onChange={handleInputChange}
             />
             Paid
