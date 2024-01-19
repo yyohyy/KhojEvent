@@ -10,7 +10,7 @@ const CreateEvent = () => {
 const navigate = useNavigate()
   const defaultValues ={
     name: '',
-    categories: 'music', // Default category
+    categories: 'Music', // Default category
     venue: '',
     description: '',
     start_date: '',
@@ -22,32 +22,62 @@ const navigate = useNavigate()
 
 
   }
-  const submission =(data) => {
+  const submission = (data) => {
     console.log('Submitting data:', data);
-    AxiosInstance.post( 'create-event/',{
-      name:data.name,
-      categories: data.categories,
+  
+    // Transform formData to match the desired format
+    const formattedData = {
+      name: data.name,
+      categories: {
+        name: data.categories,
+      },
+      description: data.description,
       venue: data.venue,
-      description:data.description,
       start_date: data.start_date,
-      end_date:data.end_date,
-      start_time:data.start_time,
-      end_time:data.end_time,
-      tags:data.tags,
-      is_paid:data.is_paid,
-    })
-    .then((res) => {
-      console.log('Response from backend:', res);
-      navigate('/');
-    })
-    .catch((error) => {
-      console.error('Error submitting data:', error);
-    });
-  }
+      end_date: data.end_date,
+      start_time: data.start_time,
+      end_time: data.end_time,
+      tags: data.tags.map(tag => ({ name: tag })),
+      is_paid: data.is_paid,
+    };
+  
+    console.log(formattedData)
+    AxiosInstance.post('create-event/', formattedData)
+      .then((res) => {
+        console.log('Response from backend:', res);
+        navigate('/');
+      })
+      .catch((error) => {
+        console.error('Error submitting data:', error);
+      });
+  };
+  
+  // const submission =(data) => {
+  //   console.log('Submitting data:', data);
+  //   AxiosInstance.post( 'create-event/',{
+  //     name:data.name,
+  //     categories: data.categories,
+  //     venue: data.venue,
+  //     description:data.description,
+  //     start_date: data.start_date,
+  //     end_date:data.end_date,
+  //     start_time:data.start_time,
+  //     end_time:data.end_time,
+  //     tags:data.tags,
+  //     is_paid:data.is_paid,
+  //   })
+  //   .then((res) => {
+  //     console.log('Response from backend:', res);
+  //     navigate('/');
+  //   })
+  //   .catch((error) => {
+  //     console.error('Error submitting data:', error);
+  //   });
+  // }
 
   const [formData, setFormData] = useState({
     name: '',
-    categories: 'music', // Default category
+    categories: 'Music', // Default category
     venue: '',
     description: '',
     start_date: '',

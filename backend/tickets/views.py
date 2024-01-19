@@ -17,7 +17,15 @@ class TicketDetails(RetrieveUpdateDestroyAPIView):
         return Response({"message": "Ticket deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
 class CartDetails(RetrieveUpdateDestroyAPIView):
-    queryset = SelectedTickets.objects.all()
+    queryset = Cart.objects.all()
     serializer_class = CartSerializer
-    permission_classes= [IsCartOwnerOrReadOnly]
+    permission_classes = [IsCartOwnerOrReadOnly]
     lookup_field = 'pk'
+
+    def get_object(self):
+        cart = super().get_object()
+
+        if cart.selected_tickets:
+            selected_ticket = cart.selected_tickets
+            cart.selected_tickets = selected_ticket
+        return cart

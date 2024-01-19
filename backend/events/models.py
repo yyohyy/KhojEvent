@@ -8,7 +8,6 @@ class category(models.Model):
    name = models.CharField(max_length=200)
    created = models.DateTimeField(auto_now_add=True) #to know about the time and date of adding data to the db and and automatically create a time for each added model 
    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
-    
    
    def __str__(self):
         return self.name 

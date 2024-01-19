@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.forms.models import inlineformset_factory
 from .forms import SelectedTicketForm
-from .models import Ticket, TicketType, SelectedTicket, SelectedTickets
+from .models import Ticket, TicketType, SelectedTicket,Cart
 
 class TicketTypeInline(admin.TabularInline):
     model = TicketType
@@ -36,18 +36,18 @@ class SelectedTicketAdmin(admin.ModelAdmin):
             return ('ticket', 'issued_to', 'status', 'quantity', 'amount')
         return ('ticket', 'issued_to', 'status', 'quantity')
     
-class SelectedTicketsAdmin(admin.ModelAdmin):
-    model = SelectedTickets
+class CartAdmin(admin.ModelAdmin):
+    model = Cart
     list_display = ['attendee', 'total_amount', 'created_at', 'updated_at']
     readonly_fields = ['total_amount', 'created_at', 'updated_at']
-    filter_horizontal = ['selected_tickets']
+    #filter_horizontal = ['selected_tickets']
 
     def get_readonly_fields(self, request, obj=None):
         if obj:  # Existing object - Allow removal
             return ['total_amount', 'created_at', 'updated_at']
         return []
 
-admin.site.register(SelectedTickets, SelectedTicketsAdmin)
+admin.site.register(Cart, CartAdmin)
 
 
 # class TicketPurchaseAdmin(admin.ModelAdmin):

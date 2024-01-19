@@ -38,12 +38,12 @@ class TicketSerializer(serializers.ModelSerializer):
 class SelectedTicketSerializer(serializers.ModelSerializer):
     class Meta:
         model= SelectedTicket
-        fields='__all__'
+        fields=['status','quantity','amount']
 
 class CartSerializer(serializers.ModelSerializer):
     attendee= AttendeeSerializer(source='ticket.attendee',read_only=True)
-    selected_tickets=SelectedTicketSerializer(many=True)
+    selected_tickets=SelectedTicketSerializer
 
     class Meta:
-        model= SelectedTickets
+        model= Cart
         fields=['attendee','selected_tickets','total_amount','updated_at']

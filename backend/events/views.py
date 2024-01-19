@@ -1,28 +1,31 @@
 from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
-from .serializers import EventSerializer, RatingSerializer, ReviewSerializer
-from events.models import Event, Rating, Review
-from .permissions import OrganiserCanUpdate, AttendeeCanRate, AttendeeCanReview
-from .permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from .serializers import EventSerializer
+from events.models import Event, Tag, category
+from .permissions import OrganiserCanUpdate
+from rest_framework.viewsets import ModelViewSet
 
 class GetRoutesView(APIView):
     def get(self, request):
         routes = [
             {'GET': '/events'},
             {'PATCH': '/events/id'},
-            {'POST': '/create-event/'},
-            {'PATCH':'/rate-event/id'},
-            {'PATCH':'/review-event/id'}
+            {'POST': '/create-event/'}
         ]
         return Response(routes)
 
-class GetEventsView(APIView):
-    def get(self, request):
-        events = Event.objects.all()
-        serializer = EventSerializer(events, many=True)
-        return Response(serializer.data)
+class GetEventsView(ListAPIView):
+    serializer_class= EventSerializer
+    queryset=Event.objects.all()
+
+# class GetEventsView(APIView):
+#     def get(self, request):
+#         events = Event.objects.all()
+#         serializer = EventSerializer(events, many=True)
+#         return Response(serializer.data)
 
 #class GetEventDetailView(APIView):
     #def get(self, request, pk):
@@ -30,19 +33,41 @@ class GetEventsView(APIView):
         #serializer = EventsSerializer(event, many=False)
         #return Response(serializer.data)
 
-class EventCreateView(APIView):
-    def post(self, request):
-        serializer = EventSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class PostEventCreateView(generics.CreateAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        return super().post(request, *args, **kwargs)
+    # def post(self, request):
+    #     serializer = EventSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # def post(self, request, *args, **kwargs):
+    #     validated_data = request.data
+    #     categories_data = validated_data.pop('categories', [])
+    #     tags_data = validated_data.pop('tags', [])
+    #     categories_instances = category.objects.get_or_create(categories_data)
+    #     #print(categories_instances.pk)
+    #     # Create or get Tag instances
+    #     tags_instances = [Tag.objects.get_or_create(**tag_data)[0] for tag_data in tags_data]
+
+    #     # Create the Event instance with the modified data
+    #     event_instance = Event.objects.create(**validated_data)
+    
+    #     # Add the categories and tags to the Event instance
+    #     event_instance.categories.set(categories_instances)
+    #     event_instance.tags.set(tags_instances)
+    #     return event_instance
 
 
-class PatchEventdetailView(generics.RetrieveUpdateDestroyAPIView):
+class PatchEventDetailView(generics.RetrieveUpdateDestroyAPIView):
     # http_method_names=['get','patch','delete']
-    queryset = Events.objects.all()
-    serializer_class = EventsSerializer
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
     permission_classes = [OrganiserCanUpdate]
 
     def delete(self, request, *args, **kwargs):
@@ -50,39 +75,9 @@ class PatchEventdetailView(generics.RetrieveUpdateDestroyAPIView):
         self.perform_destroy(instance)
         return Response("Item is successfully deleted!", status=status.HTTP_204_NO_CONTENT)
     
-    
-class RatingView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Rating.objects.all()
-    serializer_class = RatingSerializer
-    permission_classes = [AttendeeCanReview, IsAuthenticatedOrReadOnly]
-    
-    
-    def update(self, request, *args, **kwargs):
-        # Your custom update logic here
-        # Make sure to call the super method if you're extending the default behavior
-        return super().update(request, *args, **kwargs)
-    
-    #def partial_update(self, request, *args, **kwargs):
-        # Your partial update logic here
-        # ...
-
-        #return Response({"message": "Resource partially updated"}, status=200)
-
-    #def delete(self, request, *args, **kwargs):
-        #instance = self.get_object()
-        #self.perform_destroy(instance)
-        #return Response("Item is successfully deleted!", status=status.HTTP_204_NO_CONTENT)
- 
-
-class ReviewView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    permission_classes = [AttendeeCanRate, IsAuthenticatedOrReadOnly]
-    
 #class GoogleAPIProxy(APIView):
     #def get(self, request):
         # Handle Google API requests here
         # Make API requests using the 'requests' library
         # Return the response to the ReactJS frontend
         #return Response(data, status=status.HTTP_200_OK)
-
