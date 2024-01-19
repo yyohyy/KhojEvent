@@ -195,9 +195,15 @@ const navigate = useNavigate()
           <label>
             <input
               type="radio"
+<<<<<<< HEAD
+              name="ticketType"
+              value="free"
+              checked={formData.is_paid === 'free'}
+=======
               name="is_paid"
               value="False"
               checked={formData.is_paid === 'False'}
+>>>>>>> ce552da89d3e9c6c59ccb3e65cd8828d53ab5ba3
               onChange={handleInputChange}
             />
             Free
@@ -206,9 +212,15 @@ const navigate = useNavigate()
           <label>
             <input
               type="radio"
+<<<<<<< HEAD
+              name="ticketType"
+              value="paid"
+              checked={formData.is_paid === 'paid'}
+=======
               name="is_paid"
               value="True"
               checked={formData.is_paid === 'True'}
+>>>>>>> ce552da89d3e9c6c59ccb3e65cd8828d53ab5ba3
               onChange={handleInputChange}
             />
             Paid

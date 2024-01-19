@@ -1,66 +1,105 @@
-// App.js
+import React, { useState } from "react";
+import Carousel from "react-bootstrap/Carousel";
+import {
+  FaCalendarAlt,
+  FaClock,
+  FaTicketAlt,
+  FaMapMarkerAlt,
+  FaExternalLinkAlt,
+} from "react-icons/fa"; // Import icons from react-icons library
 
-import React from 'react';
-import './AppEventDetail.css';
-import concertImage from './concert.jpg'; // Replace with the actual path to your concert image
+const data = [
+  {
+    image: require("../assets/images/img0.jpg"),
+    caption: "The Tour",
+    description: "What real concert feels like",
+  },
+  {
+    image: require("../assets/images/img20.jpg"),
+    caption: "The tour",
+    description: "What real concert feels like",
+  },
+  {
+    image: require("../assets/images/img-hero1.jpg"),
+    caption: "The tour",
+    description:  "What real concert feels like",
+    
+  },
+];
 
 function AppEventDetail() {
-  const ticketOptions = [
-    { type: 'General Admission', price: 35 },
-    { type: 'VIP Experience', price: 75 },
-    { type: 'Front Row Package', price: 120 },
-  ];
-
+  const [index, setIndex] = useState(0);
+  const handleSelect = (selectedIndex, e) => {
+    setIndex(selectedIndex);
+  };
+  const eventWebsiteUrl = "https://www.google.com/";
   return (
-    <div className="App">
-      <div id="eventDetails">
-        <div className="header">
-          <img src={concertImage} alt="Concert" className="concertImage" />
-          <div className="eventInfo">
-            <h2>Summer Jam 2024</h2>
-            <p className="subInfo"><strong>Date:</strong> July 20, 2024</p>
-            <p className="subInfo"><strong>Time:</strong> 7:00 PM - 11:00 PM</p>
-            <p className="subInfo"><strong>Location:</strong> Sunset Park Amphitheater, Cityville, CA</p>
+    <div>
+      <Carousel activeIndex={index} onSelect={handleSelect}>
+        {data.map((slide, i) => {
+          return (
+            <Carousel.Item>
+              <img
+                className="d-block w-100"
+                src={slide.image}
+                alt="slider image"
+              />
+              <Carousel.Caption>
+                <h3>{slide.caption}</h3>
+                <p>{slide.description}</p>
+              </Carousel.Caption>
+            </Carousel.Item>
+          );
+        })}
+      </Carousel>
+      <div className="col-md-100">
+        <div className="card p-5">
+          <div className="card-body">
+            <h1 className="card-title">THE SWIFT TOUR ERA</h1>
+            <p className="card-text">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin
+              feugiat nunc vitae velit vestibulum, vel lacinia odio ultricies.
+              Sed eu nisi nec justo tempor accumsan. In hac habitasse platea
+              dictumst. Fusce euismod tincidunt massa, a fringilla dui aliquam
+              at.
+            </p>
+            <div className="d-flex align-items-center mt-3">
+              <span className="me-3">
+                <FaCalendarAlt /> January 31, 2024
+              </span>
+              <span className="me-3">
+                <FaClock /> 7:00 PM
+              </span>
+              <span>
+                <FaMapMarkerAlt /> Event Location: City Hall Auditorium
+              </span>
+            </div>
+            <div className="alert alert-info" role="alert">
+              Special Offer: Pre-book your tickets now and get a 10% discount!
+              Limited time only.
+            </div>
+            <span className="mt-20">
+              <FaTicketAlt /> Ticket Categories:
+            </span>
+            <ul className="list-group mt-2">
+              <li className="list-group-item">Front Row: $50</li>
+              <li className="list-group-item">Middle Row: $30</li>
+              <li className="list-group-item">Back Row: $20</li>
+            </ul>
+            <span className="mt-5">
+              <FaExternalLinkAlt />{" "}
+              <a
+                href={eventWebsiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                For more details, visit the event website
+              </a>
+            </span>
           </div>
-        </div>
-        <div className="description">
-          <h3>Description</h3>
-          <p>
-            Join us for an unforgettable night of music, fun, and memories at the Summer Jam 2024 concert! Immerse yourself in a musical journey featuring top artists from various genres, promising an eclectic mix of sounds that will keep you dancing all night long. This is an event you won't want to miss, so grab your friends and family, and get ready for a summer night filled with incredible performances.
-          </p>
-        </div>
-        <div className="ticketInfo">
-          <h3>Ticket Prices</h3>
-          <div className="ticketDropdown">
-            <label htmlFor="ticketType">Select Ticket Type:</label>
-            <select id="ticketType">
-              {ticketOptions.map((option, index) => (
-                <option key={index}>{option.type}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-        <div className="ticketDetails">
-          <h3>Ticket Details</h3>
-          <p>
-            Choose your ticket type from the dropdown above and proceed to purchase. Limited tickets are available, so secure yours early to guarantee your spot at the Summer Jam 2024!
-          </p>
-        </div>
-        <div className="purchaseInfo">
-          <h3>How to Purchase Tickets</h3>
-          <p>
-            Tickets can be purchased online at <a href="https://www.summerjam2024.com" target="_blank" rel="noopener noreferrer">www.summerjam2024.com</a> or at the Sunset Park Amphitheater box office.
-          </p>
-          <p className="note">
-            <strong>Note:</strong> Limited tickets available, so secure yours early to guarantee your spot at the Summer Jam 2024!
-          </p>
-        </div>
-        <div className="actionButton">
-          <button className="purchaseButton" style={{ backgroundColor: '#f64b4b' }}>Purchase Tickets</button>
         </div>
       </div>
     </div>
   );
 }
-
 export default AppEventDetail;

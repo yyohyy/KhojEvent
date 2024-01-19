@@ -46,7 +46,7 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Router, Route, Link, Routes, BrowserRouter, Switch } from 'react-router-dom'; // Import necessary components from react-router-dom
-
+import axios from 'axios';
 import AppHeader from './components/header';
 import AppHero from './components/hero';
 import AppWorks from './components/works';
@@ -54,12 +54,18 @@ import AppTestimonials from './components/testimonials';
 import AppEventDetails from './components/AppEventDetails';
 import AppContact from './components/contact';
 import AppFooter from './components/footer';
-import Appsignup from './components/signup';
+import AppSignup from './components/Signup';
 import CreateEvent from './components/CreateEvent'; // Import the new page
-import Applogin from './components/login';
+import AppLogin from './components/login';
+import ResetPassword from './components/ResetPassword';
+import ResetPasswordConfirm from './components/ResetPasswordConfirm'; 
+import Activate from './components/Activate'; 
+import Layout from './hocs/Layout'
+import { Provider } from 'react-redux';
+import store from './store';
 function App() {
   return (
-   
+   <Provider store={store}>
       <div className="App">
         <header id="header">
           <AppHeader />
@@ -73,8 +79,11 @@ function App() {
               <Route path="/testimonials" element={<AppTestimonials />} />
               <Route path="/services" element={<CreateEvent />} />
               <Route path="/contact" element={<AppContact />} />
-              <Route path="/signup" element={<Appsignup />} />
-              <Route path="/login" element={<Applogin />} />
+              <Route path="/signup" element={<AppSignup />} />
+              <Route path="/login" element={<AppLogin />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route exact path='/password/reset/confirm/:uid/:token' component={ResetPasswordConfirm} />
+              <Route exact path='/activate/:uid/:token' component={Activate} />
               <Route path="/works/:id" element={<AppEventDetails />} />
             </Routes>
           </BrowserRouter>
@@ -86,6 +95,7 @@ function App() {
     
   
      </div>
+     </Provider>
   );
 }
 
