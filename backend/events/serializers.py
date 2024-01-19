@@ -34,19 +34,19 @@ class EventSerializer(serializers.ModelSerializer):
    # organizer = OrganiserSerializer(many=False)
     class Meta:
         model = Event
-        fields = ['name', "category", "description", "venue", "start_date", "end_date", "start_time", "end_time","tags", "is_paid", "id"]
+        fields = ["name", "category", "description", "venue", "start_date", "end_date", "start_time", "end_time","tags", "is_paid", "id"]
 
     def create(self, validated_data):
-        categories_data = validated_data.pop('categories', [])
+        category_data = validated_data.pop('category', [])
         tags_data = validated_data.pop('tags', [])
 
         # Create or get Category instances
-        categories_instances= Category.objects.get(name=categories_data["name"])
+        category_instances= Category.objects.get(name=category_data["name"])
 
         # Create or get Tag instances
         tags_instances = [Tag.objects.get_or_create(**tag_data)[0] for tag_data in tags_data]
 
-        validated_data['categories'] = categories_instances
+        validated_data['category'] = category_instances
         # Create the Event instance with the modified data
         event_instance = Event.objects.create(**validated_data)
     

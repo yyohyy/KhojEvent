@@ -19,7 +19,7 @@ class Event(models.Model):
     venue = models.CharField(max_length=100, null=True)
     description = models.TextField(null=True)  #in a databases but may not contain info and blank is for we are allowed to submit the form with the value being empty
     tags = models.ManyToManyField('Tag')
-    image = models.ImageField(upload_to='iamges/events', null=True)
+    image = models.ImageField(upload_to='images/events', null=True)
     is_paid = models.BooleanField(default=False)       # Field indicating if the event is paid
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)

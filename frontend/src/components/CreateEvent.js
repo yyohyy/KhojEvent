@@ -11,7 +11,7 @@ const CreateEvent = () => {
 const navigate = useNavigate()
   const defaultValues ={
     name: '',
-    categories: 'Music', // Default category
+    category: 'Music', // Default category
     venue: '',
     description: '',
     start_date: '',
@@ -29,8 +29,8 @@ const navigate = useNavigate()
     // Transform formData to match the desired format
     const formattedData = {
       name: data.name,
-      categories: {
-        name: data.categories,
+      category: {
+        name: data.category,
       },
       description: data.description,
       venue: data.venue,
@@ -57,7 +57,7 @@ const navigate = useNavigate()
   //   console.log('Submitting data:', data);
   //   AxiosInstance.post( 'create-event/',{
   //     name:data.name,
-  //     categories: data.categories,
+  //     category: data.category,
   //     venue: data.venue,
   //     description:data.description,
   //     start_date: data.start_date,
@@ -78,7 +78,7 @@ const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     name: '',
-    categories: 'Music', // Default category
+    category: 'Music', // Default category
     venue: '',
     description: '',
     start_date: '',
@@ -89,7 +89,7 @@ const navigate = useNavigate()
     is_paid: 'False', // Default ticket type
   });
 
-  const categories = ['Art', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Others'];
+  const category = ['Art', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Others'];
   const [availableTags, setAvailableTags] = useState(['Fun', 'Dance', 'Music','Seminar','Night','Games','Food','Crafts','Zen','Comedy','Film','Photography','Tech','Thrift','Donation','Marathon','Cycling','Nature','Health','Pottery','Book','Meet & Greet']); // Replace with your actual tags
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -125,9 +125,9 @@ const navigate = useNavigate()
       </label>
 
       <label>
-        Categories:
-        <select name="categories" value={formData.categories} onChange={handleInputChange}>
-          {categories.map((cat) => (
+        Category:
+        <select name="category" value={formData.category} onChange={handleInputChange}>
+          {category.map((cat) => (
             <option key={cat} value={cat}>
               {cat}
             </option>
@@ -195,15 +195,9 @@ const navigate = useNavigate()
           <label>
             <input
               type="radio"
-<<<<<<< HEAD
-              name="ticketType"
-              value="free"
-              checked={formData.is_paid === 'free'}
-=======
               name="is_paid"
               value="False"
               checked={formData.is_paid === 'False'}
->>>>>>> ce552da89d3e9c6c59ccb3e65cd8828d53ab5ba3
               onChange={handleInputChange}
             />
             Free
@@ -212,15 +206,9 @@ const navigate = useNavigate()
           <label>
             <input
               type="radio"
-<<<<<<< HEAD
-              name="ticketType"
-              value="paid"
-              checked={formData.is_paid === 'paid'}
-=======
               name="is_paid"
               value="True"
               checked={formData.is_paid === 'True'}
->>>>>>> ce552da89d3e9c6c59ccb3e65cd8828d53ab5ba3
               onChange={handleInputChange}
             />
             Paid

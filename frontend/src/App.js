@@ -54,7 +54,7 @@ import AppTestimonials from './components/testimonials';
 import AppEventDetails from './components/AppEventDetails';
 import AppContact from './components/contact';
 import AppFooter from './components/footer';
-import AppSignup from './components/Signup';
+import AppSignup from './components/signup';
 import CreateEvent from './components/CreateEvent'; // Import the new page
 import AppLogin from './components/login';
 import ResetPassword from './components/ResetPassword';
