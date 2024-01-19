@@ -163,7 +163,7 @@ const navigate = useNavigate()
               type="radio"
               name="ticketType"
               value="free"
-              checked={formData.is_paid === 'false'}
+              checked={formData.is_paid === 'free'}
               onChange={handleInputChange}
             />
             Free
@@ -174,7 +174,7 @@ const navigate = useNavigate()
               type="radio"
               name="ticketType"
               value="paid"
-              checked={formData.is_paid === 'true'}
+              checked={formData.is_paid === 'paid'}
               onChange={handleInputChange}
             />
             Paid

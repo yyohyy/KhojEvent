@@ -1,135 +1,123 @@
 body {
-    margin: 0;
-    margin-top: 100px;
-    font-family: 'Arial', sans-serif;
+  margin: 0;
+  margin-top: 100px;
+  font-family: 'Arial', sans-serif;
+}
+
+.navbar {
+  background-color: #333;
+  padding: 10px;
+  color: white;
+  text-align: center;
+  border-radius: 30px;
+}
+
+.event-form {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  margin-top: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Added box shadow */
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+/* Ticket Type Styling */
+.ticket-type-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.ticket-type-label {
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.ticket-options {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.ticket-options label {
+  margin-right: 10px;
+}
+
+/* Date and Time Container Styling */
+.date-time-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+/* Date Container Styling */
+.date-container,
+.time-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  width: 48%;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 600px) {
+  .date-container,
+  .time-container {
+    width: 100%;
   }
-  
-  .navbar {
-    background-color: #333;
-    padding: 10px;
-    color: white;
-    text-align: center;
-    border-radius: 30px;
-  }
-  
-  .event-form {
-    max-width: 600px;
-    margin: auto;
-    padding: 20px;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 15px;
-    margin-top: 20px;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 10px;
-  }
-  
+}
+
+button {
+  background-color: #ff6f61; /* Adjusted button color */
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #e74c48; /* Adjusted button hover color */
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 600px) {
   input,
   select,
   textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    box-sizing: border-box;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    font-size: 14px;
   }
-  
-  /* Ticket Type Styling */
-  .ticket-type-container {
-    display: flex;
-    align-items: center; /* Center items vertically */
-    margin-bottom: 15px;
+}
+
+@media screen and (max-width: 400px) {
+  input,
+  select,
+  textarea {
+    font-size: 12px;
   }
-  
-  .ticket-type-label {
-    font-size: 16px;
-    margin-right: 10px; /* Margin between label and options */
-  }
-  
-  .ticket-options {
-    display: flex;
-    align-items: center;
-    margin-left: auto; /* Align options to the right */
-  }
-  
-  .ticket-options label {
-    margin-right: 10px;
-  }
-  
-  /* Date and Time Container Styling */
-  .date-time-container {
-    display: flex;
-    justify-content: space-between; /* Align items horizontally with space between */
-    margin-bottom: 15px;
-  }
-  
-  /* Date Container Styling */
-  /* EventForm.css */
-  
-  /* ... (previous styles) */
-  
-  /* Date and Time Container Styling */
-  .date-time-container {
-    display: flex;
-    flex-wrap: wrap; /* Allow items to wrap to the next line if the container is too narrow */
-    justify-content: space-between; /* Align items horizontally with space between */
-    margin-bottom: 15px;
-  }
-  
-  /* Date Container Styling */
-  .date-container,
-  .time-container {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 15px;
-    width: 48%; /* Adjust the width as needed */
-  }
-  
-  /* Responsive Styles */
-  @media screen and (max-width: 600px) {
-    .date-container,
-    .time-container {
-      width: 100%; /* Full width on smaller screens */
-    }
-  }
-  
-  
-  button {
-    background-color: #82173b;
-    color: white;
-    padding: 14px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #d09b9d;
-  }
-  
-  /* Responsive Styles */
-  @media screen and (max-width: 600px) {
-    input,
-    select,
-    textarea {
-      font-size: 14px;
-    }
-  }
-  
-  @media screen and (max-width: 400px) {
-    input,
-    select,
-    textarea {
-      font-size: 12px;
-    }
-  }
-  
-  /* Add this to your CSS file */
+}
+
+/* Tags Container Styling */
 .tags-container {
   display: flex;
   flex-wrap: wrap;
@@ -143,6 +131,7 @@ body {
   border-radius: 20px;
   cursor: pointer;
   transition: background-color 0.3s;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1); /* Added box shadow */
 }
 
 .tag:hover {
