@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import './CreateEvent.css'; // Import the CSS file for styling
 import AxiosInstance from './axios'
 import { useNavigate } from 'react-router-dom';
+import { Axios } from 'axios';
 // TODO: Need to have a database that can store the input data which is stored in formData
 // TODO: 
 

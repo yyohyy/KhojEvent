@@ -1,10 +1,11 @@
 from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
+class OrganiserCanCreate(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user and request.user.is_authenticated and request.user.is_organiser
+
 class OrganiserCanUpdate(permissions.BasePermission):
-    """
-    Custom permission to only allow organizers to edit their respective events.
-    """
 
     def has_permission(self, request, view):
         # Allow anyone to have read-only access (GET, HEAD, OPTIONS)

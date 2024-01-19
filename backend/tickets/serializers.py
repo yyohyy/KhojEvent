@@ -1,6 +1,5 @@
-from rest_framework import serializers,status
-from rest_framework.response import Response
-from users.serializers import AttendeeSerializer,OrganiserSerializer
+from rest_framework import serializers
+from users.serializers import OrganiserSerializer
 from .models import *
 
 class TicketTypeSerializer(serializers.ModelSerializer):
@@ -40,10 +39,10 @@ class SelectedTicketSerializer(serializers.ModelSerializer):
         model= SelectedTicket
         fields=['status','quantity','amount']
 
-class CartSerializer(serializers.ModelSerializer):
-    attendee= AttendeeSerializer(source='ticket.attendee',read_only=True)
-    selected_tickets=SelectedTicketSerializer
+# class CartSerializer(serializers.ModelSerializer):
+#     attendee= AttendeeSerializer(source='ticket.attendee',read_only=True)
+#     selected_tickets=SelectedTicketSerializer
 
-    class Meta:
-        model= Cart
-        fields=['attendee','selected_tickets','total_amount','updated_at']
+#     class Meta:
+#         model= Cart
+#         fields=['attendee','selected_tickets','total_amount','updated_at']

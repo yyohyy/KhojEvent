@@ -10,8 +10,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return True  
         return obj.event.organizer.pk== request.user.pk
     
-class IsCartOwnerOrReadOnly(permissions.BasePermission):
-    def has_object_permission(self, request, view,obj):
-        # if request.method in permissions.SAFE_METHODS:
-        #     return True  
-        return obj.attendee.pk== request.user.pk    
+# class IsCartOwnerOrReadOnly(permissions.BasePermission):
+#     def has_object_permission(self, request, view,obj):
+
+#         return obj.attendee.pk== request.user.pk    

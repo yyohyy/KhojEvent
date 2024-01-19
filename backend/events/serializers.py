@@ -1,9 +1,9 @@
 from rest_framework import serializers
-from events.models import Event, category, Tag, Organiser, Rating, Review
+from events.models import Event, Category, Tag, Organiser, Rating, Review
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = category
+        model = Category
         fields = '__all__'
         
         
@@ -20,7 +20,7 @@ class OrganiserSerializer(serializers.ModelSerializer):
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating 
-        fields = ["events", "stars"]
+        fields = ["event", "stars"]
         
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,18 +30,18 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
-    categories = CategorySerializer(many=False)
+    category = CategorySerializer(many=False)
    # organizer = OrganiserSerializer(many=False)
     class Meta:
         model = Event
-        fields = ['name', "categories", "description", "venue", "start_date", "end_date", "start_time", "end_time","tags", "is_paid"]
+        fields = ['name', "category", "description", "venue", "start_date", "end_date", "start_time", "end_time","tags", "is_paid", "id"]
 
     def create(self, validated_data):
         categories_data = validated_data.pop('categories', [])
         tags_data = validated_data.pop('tags', [])
 
         # Create or get Category instances
-        categories_instances= category.objects.get(name=categories_data["name"])
+        categories_instances= Category.objects.get(name=categories_data["name"])
 
         # Create or get Tag instances
         tags_instances = [Tag.objects.get_or_create(**tag_data)[0] for tag_data in tags_data]

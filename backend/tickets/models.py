@@ -5,6 +5,7 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from users.models import Attendee
 from events.models import Event
+import uuid
 
 class TicketType(models.Model):
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name='ticket_types')
@@ -117,35 +118,36 @@ def update_quantity_available(sender, instance, **kwargs):
         quantity_available=F('total_quantity') - total_selected_quantity
     )
 
-#rename this cart for convenience
-class Cart(models.Model):
-    attendee = models.OneToOneField(Attendee, on_delete=models.CASCADE)
-    selected_tickets = models.ForeignKey(SelectedTicket,on_delete=models.SET_NULL, null=True)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+# #rename this cart for convenience
+# class Cart(models.Model):
+#     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+#     attendee = models.OneToOneField(Attendee, on_delete=models.CASCADE)
+#     selected_tickets = models.ForeignKey(SelectedTicket,on_delete=models.SET_NULL, null=True)
+#     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
     
-    def update_total_amount(self):
-        # Calculate the total amount based on the amount of associated SelectedTicket instances
-        total_amount = SelectedTicket.objects.filter(cart=self).aggregate(total=Sum('amount'))['total'] or 0.0
+#     def update_total_amount(self):
+#         # Calculate the total amount based on the amount of associated SelectedTicket instances
+#         total_amount = SelectedTicket.objects.filter(cart=self).aggregate(total=Sum('amount'))['total'] or 0.0
 
-        # Update the total_amount field
-        self.total_amount = total_amount
-        self.save(update_fields=['total_amount'])
-    # def total_amount(self):
-    #     return sum(ticket.price for ticket in Ticket.objects.filter(selected_tickets=self.selected_tickets))
+#         # Update the total_amount field
+#         self.total_amount = total_amount
+#         self.save(update_fields=['total_amount'])
+#     # def total_amount(self):
+#     #     return sum(ticket.price for ticket in Ticket.objects.filter(selected_tickets=self.selected_tickets))
 
-    # def add_selected_ticket(self, selected_tickets):
-    #     self.selected_tickets.add(selected_tickets)
+#     # def add_selected_ticket(self, selected_tickets):
+#     #     self.selected_tickets.add(selected_tickets)
 
-    # def remove_selected_ticket(self, selected_tickets):
-    #     self.selected_tickets.remove(selected_tickets)
+#     # def remove_selected_ticket(self, selected_tickets):
+#     #     self.selected_tickets.remove(selected_tickets)
 
-    # def clear_cart(self):
-    #     self.selected_tickets.clear()
+#     # def clear_cart(self):
+#     #     self.selected_tickets.clear()
 
-    def __str__(self):
-        return f"Cart for {self.attendee.first_name} {self.attendee.last_name}"
+#     def __str__(self):
+#         return f"Cart for {self.attendee.first_name} {self.attendee.last_name}"
     
 # class Order(models.Model):
 #     placed_at=models.DateField(auto_now_add=true)    

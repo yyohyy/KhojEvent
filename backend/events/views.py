@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
 from .serializers import EventSerializer
-from events.models import Event, Tag, category
-from .permissions import OrganiserCanUpdate
-from rest_framework.viewsets import ModelViewSet
+from events.models import Event # Tag, Category
+from .permissions import OrganiserCanUpdate, OrganiserCanCreate
+
 
 class GetRoutesView(APIView):
     def get(self, request):
@@ -17,7 +17,7 @@ class GetRoutesView(APIView):
         ]
         return Response(routes)
 
-class GetEventsView(ListAPIView):
+class AllEventsView(ListAPIView):
     serializer_class= EventSerializer
     queryset=Event.objects.all()
 
@@ -33,9 +33,10 @@ class GetEventsView(ListAPIView):
         #serializer = EventsSerializer(event, many=False)
         #return Response(serializer.data)
 
-class PostEventCreateView(generics.CreateAPIView):
+class EventCreateView(generics.CreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+    permission_classes= [OrganiserCanCreate]
 
     def post(self, request, *args, **kwargs):
         print(request.data)
@@ -64,7 +65,7 @@ class PostEventCreateView(generics.CreateAPIView):
     #     return event_instance
 
 
-class PatchEventDetailView(generics.RetrieveUpdateDestroyAPIView):
+class EventDetailsView(generics.RetrieveUpdateDestroyAPIView):
     # http_method_names=['get','patch','delete']
     queryset = Event.objects.all()
     serializer_class = EventSerializer
