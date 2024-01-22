@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticate
 
 class OrganiserCanCreate(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.user and request.user.is_authenticated and request.user.is_organiser
+        return request.user and request.user.is_authenticated and request.user.is_organiser 
 
 class OrganiserCanUpdate(permissions.BasePermission):
 
@@ -17,7 +17,7 @@ class OrganiserCanUpdate(permissions.BasePermission):
     
     def has_object_permission(self, request, view, obj):
         # Check if the requesting user is the organizer of the event
-        return obj.organizer.user == request.user
+        return obj.organiser == request.user
 
 class AttendeeCanRate(permissions.BasePermission):
     

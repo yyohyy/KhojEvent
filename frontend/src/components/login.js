@@ -3,21 +3,21 @@ import {useState} from "react";
 import { useNavigate } from 'react-router-dom';
 // Define the Login function.
  const AppLogin = () => {
-     const [username, setUsername] = useState('');
+     const [email, setEmail] = useState('');
      const [password, setPassword] = useState('');
      const navigate = useNavigate();
      // Create the submit method.
      const submit = async e => {
           e.preventDefault();
           const user = {
-                username: username,
+                email: email,
                 password: password
                };
              
                try {
                 // Make an API call to authenticate the user
-                const response = await axios.post('http://your-backend-url/api/token/', {
-                  username,
+                const response = await axios.post('http://127.0.0.1:8000/auth/jwt/create', {
+                  email,
                   password,
                 });
           
@@ -27,6 +27,7 @@ import { useNavigate } from 'react-router-dom';
                 // Store the token in localStorage (you might want to use more secure storage)
                 localStorage.setItem('token', access);
                 //navigation
+                console.log("You are logged in.");
                 navigate('/');
                 } catch (error) {
                 // Handle authentication failure
@@ -39,20 +40,20 @@ import { useNavigate } from 'react-router-dom';
                 <div className="auth-form-container d-flex justify-content-center align-items-center vh-100">
                   <div className="auth-form-box p-4 rounded shadow">
                     <form className="auth-form" onSubmit={submit}>
-                      <h3 className="auth-form-title mb-4 text-center">Sign In</h3>
+                      <h3 className="auth-form-title mb-4 text-center">Log In</h3>
                       <div className="form-group mb-3">
-                        <label htmlFor="username" className="form-label">
-                          Username
+                        <label htmlFor="email" className="form-label">
+                          Email
                         </label>
                         <input
-                          id="username"
+                          id="email"
                           className="form-control"
-                          placeholder="Enter Username"
-                          name="username"
+                          placeholder="Enter email"
+                          name="email"
                           type="text"
-                          value={username}
+                          value={email}
                           required
-                          onChange={(e) => setUsername(e.target.value)}
+                          onChange={(e) => setEmail(e.target.value)}
                         />
                       </div>
                       <div className="form-group mb-3">

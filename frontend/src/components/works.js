@@ -87,7 +87,7 @@ function AppWorks() {
       <Container fluid>
         <div className="title-holder">
           <h2>EVENTS</h2>
-          <div className="subtitle">our awesome events</div>
+          <div className="subtitle">Our awesome events</div>
         </div>
         <Row className='portfoliolist'>
           {
