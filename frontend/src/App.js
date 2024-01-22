@@ -49,7 +49,7 @@ import { Router, Route, Link, Routes, BrowserRouter, Switch } from 'react-router
 import axios from 'axios';
 import AppHeader from './components/header';
 import AppHero from './components/hero';
-import AppWorks from './components/works';
+import AppEvents from './components/events';
 import AppTestimonials from './components/testimonials';
 import AppEventDetails from './components/AppEventDetails';
 import AppContact from './components/contact';
@@ -75,7 +75,7 @@ function App() {
             <Routes>
               <Route path="/" element={<AppHero />} />
               <Route path="/home" element={<AppHero />} />
-              <Route path="/works" element={<AppWorks />} />
+              <Route path="/events" element={<AppEvents />} />
               <Route path="/testimonials" element={<AppTestimonials />} />
               <Route path="/services" element={<CreateEvent />} />
               <Route path="/contact" element={<AppContact />} />
@@ -84,7 +84,7 @@ function App() {
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route exact path='/password/reset/confirm/:uid/:token' component={ResetPasswordConfirm} />
               <Route exact path='/activate/:uid/:token' component={Activate} />
-              <Route path="/works/:id" element={<AppEventDetails />} />
+              <Route path="/events/:event_id" element={<AppEventDetails />} />
             </Routes>
           </BrowserRouter>
         </div>

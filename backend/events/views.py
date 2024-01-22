@@ -3,8 +3,8 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
-from .serializers import EventSerializer
-from events.models import Event # Tag, Category
+from .serializers import EventSerializer, CategorySerializer, TagSerializer
+from events.models import Event, Tag, Category
 from .permissions import OrganiserCanUpdate, OrganiserCanCreate
 
 
@@ -37,6 +37,7 @@ class EventCreateView(generics.CreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes= [OrganiserCanCreate]
+    # lookup_field= 'pk'
 
     def post(self, request, *args, **kwargs):
         print(request.data)
@@ -70,6 +71,7 @@ class EventDetailsView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = [OrganiserCanUpdate]
+    # lookup_field='pk'
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -82,3 +84,24 @@ class EventDetailsView(generics.RetrieveUpdateDestroyAPIView):
         # Make API requests using the 'requests' library
         # Return the response to the ReactJS frontend
         #return Response(data, status=status.HTTP_200_OK)
+class SearchView(APIView):
+    def get(self, request, *args, **kwargs):
+        query = self.request.query_params.get('query', '')
+
+        # Search in YourModel names
+        event_results = Event.objects.filter(nameicontains=query)
+        event_serializer = EventSerializer(event_results, many=True)
+
+        # Search in Category names
+        category_results = Category.objects.filter(nameicontains=query)
+        category_serializer = CategorySerializer(category_results, many=True)
+
+        # Search in Tag names
+        tag_results = Tag.objects.filter(name__icontains=query)
+        tag_serializer = TagSerializer(tag_results, many=True)
+
+        return Response({
+            'event_results': event_serializer.data,
+            'category_results': category_serializer.data,
+            'tag_results': tag_serializer.data,
+        }, status=status.HTTP_200_OK)    

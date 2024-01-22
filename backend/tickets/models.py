@@ -37,6 +37,12 @@ class Ticket(models.Model):
     
     def __str__(self):
         return f"{self.event} - {self.status}"
+    
+@receiver(post_save, sender=TicketType)
+def update_quantity_available(sender, instance, created, **kwargs):
+    if created:
+        instance.quantity_available = instance.quantity
+        instance.save(update_fields=['quantity_available'])
 
 @receiver(post_save, sender=TicketType)
 def update_amount(sender,instance,created, *args,**kwargs):

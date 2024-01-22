@@ -41,7 +41,7 @@ class EventSerializer(serializers.ModelSerializer):
         tags_data = validated_data.pop('tags', [])
 
         # Create or get Category instances
-        category_instances= Category.objects.get(name=category_data["name"])
+        category_instances= Category.objects.get_or_create(name=category_data["name"])
 
         # Create or get Tag instances
         tags_instances = [Tag.objects.get_or_create(**tag_data)[0] for tag_data in tags_data]

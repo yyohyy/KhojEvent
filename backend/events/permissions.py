@@ -17,7 +17,10 @@ class OrganiserCanUpdate(permissions.BasePermission):
     
     def has_object_permission(self, request, view, obj):
         # Check if the requesting user is the organizer of the event
-        return obj.organiser == request.user
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        
+        return obj.organiser.user == request.user
 
 class AttendeeCanRate(permissions.BasePermission):
     
