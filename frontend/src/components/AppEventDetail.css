@@ -90,4 +90,6 @@
   .purchaseButton:hover {
     background-color: #d64747;
   }
-  
+  .btn-success{
+  color:pink !important ;
+  }

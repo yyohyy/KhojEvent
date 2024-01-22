@@ -1,13 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const AppSignup = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    phone: '',
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      // Make an API call to register the user
+      const response = await axios.post('http://your-backend-url/api/register/', formData);
+
+      // Handle the response, you might want to show a success message or navigate to the login page
+      console.log('Registration successful:', response.data);
+
+      // Navigate to the login page
+      navigate('/');
+    } catch (error) {
+      // Handle registration failure
+      console.error('Registration error:', error.response.data);
+    }
+  };
+
   return (
     <div className='container pt-5'>
       <div className='row justify-content-center'>
         <div className='col-sm-8 col-md-6'>
           <div className='card p-4 shadow rounded'>
             <h3 className='mb-4 text-center'>Sign Up</h3>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className='form-group'>
                 <label htmlFor='email' className='form-label'>
                   Email
@@ -17,6 +49,10 @@ const AppSignup = () => {
                   className='form-control'
                   id='email'
                   placeholder='name@example.com'
+                  name='email'
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
                 />
               </div>
               <div className='form-group'>
@@ -27,13 +63,25 @@ const AppSignup = () => {
                   type='password'
                   className='form-control'
                   id='password'
+                  name='password'
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
                 />
               </div>
               <div className='form-group'>
                 <label htmlFor='phone' className='form-label'>
                   Phone No.
                 </label>
-                <input type='phone' className='form-control' id='phone' />
+                <input
+                  type='phone'
+                  className='form-control'
+                  id='phone'
+                  name='phone'
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  required
+                />
               </div>
               <div className='form-check mb-3'>
                 <input

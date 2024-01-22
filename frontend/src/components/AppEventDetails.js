@@ -31,8 +31,13 @@ function AppEventDetail() {
   const [index, setIndex] = useState(0);
   const handleSelect = (selectedIndex, e) => {
     setIndex(selectedIndex);
+    
   };
   const eventWebsiteUrl = "https://www.google.com/";
+  const handleBooking = () => {
+    // Perform booking logic here, such as making an API call or redirecting to a booking page
+    console.log("Booking the event!");
+  }
   return (
     <div>
       <Carousel activeIndex={index} onSelect={handleSelect}>
@@ -86,6 +91,14 @@ function AppEventDetail() {
               <li className="list-group-item">Middle Row: $30</li>
               <li className="list-group-item">Back Row: $20</li>
             </ul>
+            <div className="booking-button">
+              <button
+                type="button"
+                className=" btn-success"
+                onClick={handleBooking}
+              >                Book Now
+              </button>
+            </div>
             <span className="mt-5">
               <FaExternalLinkAlt />{" "}
               <a
