@@ -13,7 +13,7 @@ function AppHeader() {
   const handleSearch = async () => {
     try {
       // Make an HTTP request to your Django backend endpoint with the search query
-      const response = await axios.get(`/api/search?query=${searchQuery}`);
+      const response = await axios.get(`http://127.0.0.1:8000/events/search?query=${searchQuery}`);
 
       // Handle the response as needed (e.g., update state with search results)
       console.log(response.data);
@@ -42,10 +42,10 @@ function AppHeader() {
           <Nav className="me-auto"> 
             <Nav.Link href="/home">Home</Nav.Link>
             <Nav.Link href="/services">Create Events</Nav.Link> 
-            <Nav.Link href="/works">Events</Nav.Link> 
+            <Nav.Link href="/events">Events</Nav.Link> 
             <Nav.Link href="/testimonials">Testimonials</Nav.Link>
             <Nav.Link href="/contact">Contact</Nav.Link>
-            <Nav.Link href="/signup">SignUp</Nav.Link>
+            <Nav.Link href="/signup">Sign Up</Nav.Link>
             <Nav.Link href="/login">Login</Nav.Link>
           </Nav>
           

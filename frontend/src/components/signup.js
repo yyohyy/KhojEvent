@@ -7,7 +7,8 @@ const AppSignup = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    phone: '',
+    re_password: '',
+    //phone: '',
   });
 
   const handleInputChange = (e) => {
@@ -18,9 +19,16 @@ const AppSignup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+
+
     try {
+      if (formData.password !== formData.re_password) {
+        console.error('Passwords do not match');
+        return;
+      }
+
       // Make an API call to register the user
-      const response = await axios.post('http://your-backend-url/api/register/', formData);
+      const response = await axios.post('http://127.0.0.1:8000/auth/users/', formData);
 
       // Handle the response, you might want to show a success message or navigate to the login page
       console.log('Registration successful:', response.data);
@@ -69,7 +77,7 @@ const AppSignup = () => {
                   required
                 />
               </div>
-              <div className='form-group'>
+              {/* <div className='form-group'>
                 <label htmlFor='phone' className='form-label'>
                   Phone No.
                 </label>
@@ -79,6 +87,20 @@ const AppSignup = () => {
                   id='phone'
                   name='phone'
                   value={formData.phone}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div> */}
+              <div className='form-group'>
+                <label htmlFor='re_password' className='form-label'>
+                  Re password
+                </label>
+                <input
+                  type='password'
+                  className='form-control'
+                  id='re_password'
+                  name='re_password'
+                  value={formData.re_password}
                   onChange={handleInputChange}
                   required
                 />
@@ -105,7 +127,7 @@ const AppSignup = () => {
       {/* Consideration for the Footer */}
       <div className='row mt-5'>
         <div className='col text-center'>
-          <p>&copy; 2022 Your Company. All rights reserved.</p>
+          <p>&copy; 2024 Your Company. All rights reserved.</p>
         </div>
       </div>
     </div>
