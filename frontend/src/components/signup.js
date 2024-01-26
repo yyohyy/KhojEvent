@@ -8,22 +8,66 @@ const AppSignup = () => {
     email: '',
     password: '',
     re_password: '',
-    //phone: '',
   });
+
+  const [passwordStrengthMessage, setPasswordStrengthMessage] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    // Check password strength and update the message
+    checkPasswordStrength(value);
+  };
+
+  const checkPasswordStrength = (password) => {
+    const minLength = 8;
+    const minUppercase = 1;
+    const minLowercase = 1;
+    const minNumbers = 1;
+    const minSpecialChars = 1;
+
+    const uppercaseRegex = /[A-Z]/g;
+    const lowercaseRegex = /[a-z]/g;
+    const numbersRegex = /[0-9]/g;
+    const specialCharsRegex = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/g;
+
+    const isLengthSufficient = password.length >= minLength;
+    const hasUppercase = (password.match(uppercaseRegex) || []).length >= minUppercase;
+    const hasLowercase = (password.match(lowercaseRegex) || []).length >= minLowercase;
+    const hasNumbers = (password.match(numbersRegex) || []).length >= minNumbers;
+    const hasSpecialChars = (password.match(specialCharsRegex) || []).length >= minSpecialChars;
+
+    // Check if the password meets all criteria
+    const isStrong =
+      isLengthSufficient && hasUppercase && hasLowercase && hasNumbers && hasSpecialChars;
+
+    // Update the passwordStrengthMessage based on the criteria
+    setPasswordStrengthMessage(
+      isStrong
+        ? ''
+        : 'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.'
+    );
+
+    // Return a boolean indicating whether the password is strong
+    return isStrong;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-
-
     try {
       if (formData.password !== formData.re_password) {
         console.error('Passwords do not match');
+        return;
+      }
+
+      // Check password strength before making the API call
+      const isStrongPassword = checkPasswordStrength(formData.password);
+
+      if (!isStrongPassword) {
+        // Display a pop-up message indicating a weak password
+        alert('Create a strong password');
         return;
       }
 
@@ -33,8 +77,8 @@ const AppSignup = () => {
       // Handle the response, you might want to show a success message or navigate to the login page
       console.log('Registration successful:', response.data);
 
-      // Navigate to the login page
-      navigate('/');
+      // Navigate to the user type selection page
+      navigate('/user-type-selection');
     } catch (error) {
       // Handle registration failure
       console.error('Registration error:', error.response.data);
@@ -76,24 +120,14 @@ const AppSignup = () => {
                   onChange={handleInputChange}
                   required
                 />
+                {passwordStrengthMessage && (
+                  <p className='text-danger'>{passwordStrengthMessage}</p>
+                )}
               </div>
-              {/* <div className='form-group'>
-                <label htmlFor='phone' className='form-label'>
-                  Phone No.
-                </label>
-                <input
-                  type='phone'
-                  className='form-control'
-                  id='phone'
-                  name='phone'
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div> */}
+
               <div className='form-group'>
                 <label htmlFor='re_password' className='form-label'>
-                  Re password
+                  Re-enter Password
                 </label>
                 <input
                   type='password'
@@ -105,6 +139,7 @@ const AppSignup = () => {
                   required
                 />
               </div>
+
               <div className='form-check mb-3'>
                 <input
                   className='form-check-input'
