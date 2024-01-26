@@ -60,6 +60,9 @@ import AppLogin from './components/login';
 import Activate from './components/Activate'; 
 import { Provider } from 'react-redux';
 import store from './store';
+import UserTypeSelection from './components/UserTypeSelection';
+import AttendeeSignup from './components/AttendeeSignUp';
+import OrganizerSignup from './components/OrganizerSignUp';
 function App() {
   return (
    <Provider store={store}>
@@ -78,8 +81,9 @@ function App() {
               <Route path="/contact" element={<AppContact />} />
               <Route path="/signup" element={<AppSignup />} />
               <Route path="/login" element={<AppLogin />} />
-              
-              
+              <Route path="/user-type-selection" element={<UserTypeSelection />} />
+              <Route path="/attendee-signup" element={<AttendeeSignup/>} />
+              <Route path="//organizer-signup" element={<OrganizerSignup/>} />
               <Route exact path='/activate/:uid/:token' component={Activate} />
               <Route path="/events/:event_id" element={<AppEventDetails />} />
             </Routes>
