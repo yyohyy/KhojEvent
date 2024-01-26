@@ -18,11 +18,11 @@ class TicketType(models.Model):
     def __str__(self):
         return f" {self.ticket.event.name}:  {self.name} - {self.price}"
 
-@receiver(post_save, sender=TicketType)
-def update_quantity_available(sender, instance, created, **kwargs):
-    if created:
-        instance.quantity_available = instance.quantity
-        instance.save(update_fields=['quantity_available'])
+# @receiver(post_save, sender=TicketType)
+# def update_quantity_available(sender, instance, created, **kwargs):
+#     if created:
+#         instance.quantity_available = instance.quantity
+#         instance.save(update_fields=['quantity_available'])
    
 class Ticket(models.Model):
     STATUS_CHOICES = [
@@ -38,20 +38,30 @@ class Ticket(models.Model):
     def __str__(self):
         return f"{self.event} - {self.status}"
     
-@receiver(post_save, sender=TicketType)
-def update_quantity_available(sender, instance, created, **kwargs):
-    if created:
-        instance.quantity_available = instance.quantity
-        instance.save(update_fields=['quantity_available'])
+# @receiver(post_save, sender=TicketType)
+# def update_quantity_available(sender, instance, created, **kwargs):
+#     if created:
+#         instance.quantity_available = instance.quantity
+#         instance.save(update_fields=['quantity_available'])
 
-@receiver(post_save, sender=TicketType)
-def update_amount(sender,instance,created, *args,**kwargs):
-    if created:
-        ticket = instance.ticket  
-        total_quantity = ticket.ticket_types.aggregate(total=Sum('quantity'))['total'] or 0
-        ticket.total_quantity = total_quantity
-        ticket.save(update_fields=['total_quantity'])
+# @receiver(post_save, sender=TicketType)
+# def update_amount(sender,instance,created, *args,**kwargs):
+#     if created:
+#         ticket = instance.ticket  
+#         total_quantity = ticket.ticket_types.aggregate(total=Sum('quantity'))['total'] or 0
+#         ticket.total_quantity = total_quantity
+#         ticket.save(update_fields=['total_quantity'])
+class Cart(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+    attendee = models.OneToOneField(Attendee, on_delete=models.CASCADE)
+    #selected_tickets = models.ForeignKey(SelectedTicket, on_delete=models.CASCADE, null=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+            return f"Cart for {self.attendee.first_name} {self.attendee.last_name} {self.id}"
+        
 class SelectedTicket(models.Model):
     TICKET_STATUS = [
         ('BOOKED', 'Booked'),
@@ -65,97 +75,123 @@ class SelectedTicket(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name="tickets")
+   
+   
+    # def save(self, *args, **kwargs):
+    #     is_new_ticket = self._state.adding  
+    #     if is_new_ticket:
+    #         if self.status == 'BOOKED':
+    #             self.ticket.quantity_available -= self.quantity
+    #         elif self.status == 'CANCELLED':
+    #             self.ticket.quantity_available += self.quantity            
+    #         self.ticket.save(update_fields=['quantity_available'])
 
-    def save(self, *args, **kwargs):
-        is_new_ticket = self._state.adding  
-        if is_new_ticket:
-            if self.status == 'BOOKED':
-                self.ticket.quantity_available -= self.quantity
-            elif self.status == 'CANCELLED':
-                self.ticket.quantity_available += self.quantity            
-            self.ticket.save(update_fields=['quantity_available'])
+    #     self.amount = self.quantity * self.ticket.price
+    #     super().save(*args, **kwargs)
 
-        self.amount = self.quantity * self.ticket.price
-        super().save(*args, **kwargs)
+    #     if self.status == 'BOOKED' or self.status == 'CONFIRMED':
+    #         total_selected_tickets = SelectedTicket.objects.filter(
+    #             issued_to=self.issued_to,
+    #             ticket__ticket__event=self.ticket.ticket.event,
+    #             status__in=['BOOKED', 'CONFIRMED']
+    #         ).exclude(id=self.id).aggregate(total=Sum('quantity'))['total'] or 0
 
-        if self.status == 'BOOKED' or self.status == 'CONFIRMED':
-            total_selected_tickets = SelectedTicket.objects.filter(
-                issued_to=self.issued_to,
-                ticket__ticket__event=self.ticket.ticket.event,
-                status__in=['BOOKED', 'CONFIRMED']
-            ).exclude(id=self.id).aggregate(total=Sum('quantity'))['total'] or 0
-
-            if total_selected_tickets + self.quantity > self.ticket.ticket.max_limit:
-                raise ValidationError(f"Cannot select more than {self.ticket.ticket.max_limit} tickets for {self.ticket.ticket.event.name}.Limit exceeded.")
+    #         if total_selected_tickets + self.quantity > self.ticket.ticket.max_limit:
+    #             raise ValidationError(f"Cannot select more than {self.ticket.ticket.max_limit} tickets for {self.ticket.ticket.event.name}.Limit exceeded.")
     
     def __str__(self):
         return f"{self.issued_to.first_name} {self.issued_to.last_name} - Status: {self.status} - Amount: {self.amount}"
+    
 
-@receiver([post_save, post_delete], sender=SelectedTicket)
-def update_quantity_available(sender, instance, **kwargs):
-    ticket_types = TicketType.objects.filter(ticket=instance.ticket.ticket)
-    for ticket_type in ticket_types:
-        booked_or_confirmed_count = SelectedTicket.objects.filter(ticket=ticket_type, status__in=['BOOKED', 'CONFIRMED']).count()
-        related_ticket = Ticket.objects.get(event=ticket_type.ticket.event)  # Fetch the related Ticket object
-        related_ticket.quantity_available = related_ticket.total_quantity - booked_or_confirmed_count
-        related_ticket.save()
-
-@receiver(post_delete, sender=SelectedTicket)
-def increase_tickettype_quantity_on_delete(sender, instance, **kwargs):
-    ticket_type = instance.ticket
-    ticket_type.quantity_available += instance.quantity
-    ticket_type.save(update_fields=['quantity_available'])
-
-
-@receiver([post_save, post_delete], sender=SelectedTicket)
-def update_quantity_available(sender, instance, **kwargs):
-    ticket_type = instance.ticket
-    total_selected_quantity = SelectedTicket.objects.filter(
-        ticket=ticket_type,
-        issued_to=instance.issued_to,
-        status__in=['BOOKED', 'CONFIRMED']
-    ).exclude(id=instance.id).aggregate(total=Sum('quantity'))['total'] or 0
-
-    remaining_quantity = ticket_type.quantity - total_selected_quantity
-    if instance.quantity > remaining_quantity:
-        raise ValidationError(f"Cannot select more than {remaining_quantity} tickets for {ticket_type.name}.")
-
-    Ticket.objects.filter(event=ticket_type.ticket.event).update(
-        quantity_available=F('total_quantity') - total_selected_quantity
-    )
-
-# #rename this cart for convenience
-# class Cart(models.Model):
-#     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
-#     attendee = models.OneToOneField(Attendee, on_delete=models.CASCADE)
-#     selected_tickets = models.ForeignKey(SelectedTicket,on_delete=models.SET_NULL, null=True)
-#     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
     
 #     def update_total_amount(self):
-#         # Calculate the total amount based on the amount of associated SelectedTicket instances
-#         total_amount = SelectedTicket.objects.filter(cart=self).aggregate(total=Sum('amount'))['total'] or 0.0
+#         # Calculate the total amount based on the selected tickets in the cart
+#         self.total_amount = sum(ticket.amount for ticket in self.selected_tickets.all())
+#         self.save() 
+# @receiver([post_save, post_delete], sender=SelectedTicket)
+# def update_quantity_available(sender, instance, **kwargs):
+#     ticket_types = TicketType.objects.filter(ticket=instance.ticket.ticket)
+#     for ticket_type in ticket_types:
+#         booked_or_confirmed_count = SelectedTicket.objects.filter(ticket=ticket_type, status__in=['BOOKED', 'CONFIRMED']).count()
+#         related_ticket = Ticket.objects.get(event=ticket_type.ticket.event)  # Fetch the related Ticket object
+#         related_ticket.quantity_available = related_ticket.total_quantity - booked_or_confirmed_count
+#         related_ticket.save()
 
-#         # Update the total_amount field
-#         self.total_amount = total_amount
-#         self.save(update_fields=['total_amount'])
-#     # def total_amount(self):
-#     #     return sum(ticket.price for ticket in Ticket.objects.filter(selected_tickets=self.selected_tickets))
+# @receiver(post_delete, sender=SelectedTicket)
+# def increase_tickettype_quantity_on_delete(sender, instance, **kwargs):
+#     ticket_type = instance.ticket
+#     ticket_type.quantity_available += instance.quantity
+#     ticket_type.save(update_fields=['quantity_available'])
 
-#     # def add_selected_ticket(self, selected_tickets):
-#     #     self.selected_tickets.add(selected_tickets)
 
-#     # def remove_selected_ticket(self, selected_tickets):
-#     #     self.selected_tickets.remove(selected_tickets)
+# @receiver([post_save, post_delete], sender=SelectedTicket)
+# def update_quantity_available(sender, instance, **kwargs):
+#     ticket_type = instance.ticket
+#     total_selected_quantity = SelectedTicket.objects.filter(
+#         ticket=ticket_type,
+#         issued_to=instance.issued_to,
+#         status__in=['BOOKED', 'CONFIRMED']
+#     ).exclude(id=instance.id).aggregate(total=Sum('quantity'))['total'] or 0
 
-#     # def clear_cart(self):
-#     #     self.selected_tickets.clear()
+#     remaining_quantity = ticket_type.quantity - total_selected_quantity
+#     if instance.quantity > remaining_quantity:
+#         raise ValidationError(f"Cannot select more than {remaining_quantity} tickets for {ticket_type.name}.")
 
-#     def __str__(self):
-#         return f"Cart for {self.attendee.first_name} {self.attendee.last_name}"
+#     Ticket.objects.filter(event=ticket_type.ticket.event).update(
+#         quantity_available=F('total_quantity') - total_selected_quantity
+#     )
+
+#rename this cart for convenience
+   
+    # def update_total_amount(self):
+    #     # Calculate the total amount based on the amount of associated SelectedTicket instances
+    #     total_amount = SelectedTicket.objects.filter(cart=self).aggregate(total=Sum('amount'))['total'] or 0.0
+
+    #     # Update the total_amount field
+    #     self.total_amount = total_amount
+        # self.save(update_fields=['total_amount'])
+    # def total_amount(self):
+    #     return sum(ticket.price for ticket in Ticket.objects.filter(selected_tickets=self.selected_tickets))
+
+    # def add_selected_ticket(self, selected_tickets):
+    #     self.selected_tickets.add(selected_tickets)
+
+    # def remove_selected_ticket(self, selected_tickets):
+    #     self.selected_tickets.remove(selected_tickets)
+
+    # def clear_cart(self):
+    #     self.selected_tickets.clear()
+
     
 # class Order(models.Model):
 #     placed_at=models.DateField(auto_now_add=true)    
-#     payment_status=
-    
+# #     payment_status=
+#     class Order(models.Model):
+#     PAYMENT_STATUS_PENDING = 'P'
+#     PAYMENT_STATUS_COMPLETE = 'C'
+#     PAYMENT_STATUS_FAILED = 'F'
+#     PAYMENT_STATUS_CHOICES = [
+#         (PAYMENT_STATUS_PENDING, 'Pending'),
+#         (PAYMENT_STATUS_COMPLETE, 'Complete'),
+#         (PAYMENT_STATUS_FAILED, 'Failed')
+#     ]
+
+#     placed_at = models.DateTimeField(auto_now_add=True)
+#     payment_status = models.CharField(
+#         max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
+#     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
+
+#     class Meta:
+#         permissions = [
+#             ('cancel_order', 'Can cancel order')
+#         ]
+
+
+# class OrderItem(models.Model):
+#     order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name='items')
+#     product = models.ForeignKey(
+#         Product, on_delete=models.PROTECT, related_name='orderitems')
+#     quantity = models.PositiveSmallIntegerField()
+#     unit_price = models.DecimalField(max_digits=6, decimal_places=2)
+
