@@ -3,10 +3,10 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
-from .serializers import EventSerializer, CategorySerializer, TagSerializer
-from events.models import Event, Tag, Category
-from .permissions import OrganiserCanUpdate, OrganiserCanCreate
-
+from django.db.models import Q
+from .serializers import EventSerializer, CategorySerializer, TagSerializer#, ReviewSerializer, RatingSerializer
+from events.models import Event, Tag, Category, Review, Rating
+from .permissions import OrganiserCanUpdate, OrganiserCanCreate#, AttendeeCanRate, AttendeeCanReview
 
 class GetRoutesView(APIView):
     def get(self, request):
@@ -36,7 +36,7 @@ class AllEventsView(ListAPIView):
 class EventCreateView(generics.CreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    permission_classes= [OrganiserCanCreate]
+    ##permission_classes= [OrganiserCanCreate]
     # lookup_field= 'pk'
 
     def post(self, request, *args, **kwargs):
@@ -84,16 +84,18 @@ class EventDetailsView(generics.RetrieveUpdateDestroyAPIView):
         # Make API requests using the 'requests' library
         # Return the response to the ReactJS frontend
         #return Response(data, status=status.HTTP_200_OK)
+        
+        '''''
 class SearchView(APIView):
     def get(self, request, *args, **kwargs):
         query = self.request.query_params.get('query', '')
 
         # Search in YourModel names
-        event_results = Event.objects.filter(nameicontains=query)
+        event_results = Event.objects.filter(name__icontains=query)
         event_serializer = EventSerializer(event_results, many=True)
 
         # Search in Category names
-        category_results = Category.objects.filter(nameicontains=query)
+        category_results = Category.objects.filter(name__icontains=query)
         category_serializer = CategorySerializer(category_results, many=True)
 
         # Search in Tag names
@@ -105,3 +107,41 @@ class SearchView(APIView):
             'category_results': category_serializer.data,
             'tag_results': tag_serializer.data,
         }, status=status.HTTP_200_OK)    
+        '''''
+        
+class SearchView(APIView):
+    def get(self, request, *args, **kwargs):
+        query = self.request.query_params.get('query', '')
+
+        # Search in Event names, Category names, and Tag names
+        event_results = Event.objects.filter(
+            Q(name__icontains=query) |
+            Q(category__name__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+
+        event_serializer = EventSerializer(event_results, many=True)
+
+        return Response({
+            'event_results': event_serializer.data,
+        }, status=status.HTTP_200_OK)
+
+''''
+class RatingView(generics.CreateAPIView):
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+    permission_classes = [AttendeeCanRate]
+
+    def perform_create(self, serializer):
+        # Automatically set the attendee based on the logged-in user
+        serializer.save(attendee=self.request.user.attendee)
+        
+class ReviewView(generics.CreateAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = [AttendeeCanReview]
+
+    def perform_create(self, serializer):
+        # Automatically set the attendee based on the logged-in user
+        serializer.save(attendee=self.request.user.attendee)
+    '''

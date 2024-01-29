@@ -37,7 +37,7 @@ class Event(models.Model):
     
     
 class Review(models.Model):
-    attendee = models.OneToOneField(Attendee, on_delete=models.CASCADE)
+    attendee = models.ForeignKey(Attendee, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE) #deletes all the review if the event is deleted
     body = models.TextField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True) #to know about the time and date of adding data to the db and and automatically create a time for each added model 
@@ -48,13 +48,14 @@ class Review(models.Model):
 
 class Rating(models.Model):
     STARS_CHOICES = (
+        
         (1, '1 Star'),
         (2, '2 Stars'),
         (3, '3 Stars'),
         (4, '4 Stars'),
         (5, '5 Stars'),
     )
-    attendee = models.OneToOneField(Attendee, on_delete=models.CASCADE)
+    attendee = models.ForeignKey(Attendee, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     stars = models.IntegerField(choices=STARS_CHOICES, default=0)
 
