@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaSearch } from 'react-icons/fa';
 import { Navbar, Container, Nav, Form, FormControl, Button, NavDropdown } from 'react-bootstrap';
@@ -19,31 +19,41 @@ function AppHeader() {
     return sessionStorage.getItem('authToken');
   };
 
+  // Function to handle search
   const handleSearch = async () => {
     try {
-      if (isLoggedIn) {
-        // Make an HTTP request to your Django backend endpoint with the search query
-        const response = await axios.get(`http://127.0.0.1:8000/events/search?query=${searchQuery}`);
-        // Handle the response as needed (e.g., update state with search results)
-        console.log(response.data);
+      console.log('Before axios.get');
+
+      // Always make an HTTP request to your Django backend endpoint with the search query
+      const searchResponse = await axios.get(`http://127.0.0.1:8000/search/?query=${searchQuery}`);
+
+      // Handle the search response as needed (e.g., update state with search results)
+      console.log('Search Results:', searchResponse.data);
+
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  // Function to handle user login
+  const handleLogin = async () => {
+    try {
+      // Make an HTTP request for user login
+      const loginResponse = await axios.post('http://127.0.0.1:8000/login', {
+        username,
+        password,
+      });
+
+      // Check the login response and update the isLoggedIn state accordingly
+      if (loginResponse.data.success) {
+        const authToken = loginResponse.data.token;
+
+        // Save the token to session storage
+        saveTokenToSessionStorage(authToken);
+
+        setIsLoggedIn(true);
       } else {
-        // Make an HTTP request for user login
-        const loginResponse = await axios.post('http://127.0.0.1:8000/login', {
-          username,
-          password,
-        });
-
-        // Check the login response and update the isLoggedIn state accordingly
-        if (loginResponse.data.success) {
-          const authToken = loginResponse.data.token;
-
-          // Save the token to session storage
-          saveTokenToSessionStorage(authToken);
-
-          setIsLoggedIn(true);
-        } else {
-          console.error('Login failed:', loginResponse.data.error);
-        }
+        console.error('Login failed:', loginResponse.data.error);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -51,7 +61,7 @@ function AppHeader() {
   };
 
   // Check if the user is already logged in by retrieving the token from session storage
-  React.useEffect(() => {
+  useEffect(() => {
     const authToken = getTokenFromSessionStorage();
     if (authToken) {
       setIsLoggedIn(true);
@@ -64,7 +74,7 @@ function AppHeader() {
         <Navbar.Brand href="/home">KhojEvent</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Form className="d-flex">
+          <Form className="d-flex" onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
             <FormControl
               type="search"
               placeholder="Search"
@@ -72,12 +82,12 @@ function AppHeader() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Button variant="outline-transparent" onClick={handleSearch}>
+            <Button variant="outline-transparent" type="submit">
               <FaSearch style={{ color: 'black' }} />
             </Button>
           </Form>
           <Nav className="me-auto">
-            <Nav.Link href="/home">Home</Nav.Link>
+          <Nav.Link href="/home">Home</Nav.Link>
             <Nav.Link href="/services">Create Events</Nav.Link>
             <Nav.Link href="/events">Events</Nav.Link>
             <Nav.Link href="/testimonials">Testimonials</Nav.Link>

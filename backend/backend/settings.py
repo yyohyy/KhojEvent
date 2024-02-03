@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',      
     'djoser',
     'events',
     'tickets',
@@ -104,6 +105,7 @@ EMAIL_USE_TLS = True
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -144,9 +146,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SIMPLE_JWT = {
 
-   'ACCESS_TOKEN_LIFETIME' :timedelta(days=1),
-   'ACCESS_TOKEN_LIFETIME' :timedelta(days=1), 
-   'AUTH_HEADER_TYPES': ('JWT',),
+   'ACCESS_TOKEN_LIFETIME' :timedelta(days=30),
+   'ACCESS_TOKEN_LIFETIME' :timedelta(days=30), 
+   'AUTH_HEADER_TYPES': ('Bearer',),
    'ROTATE_REFRESH_TOKENS': True,
    'BLACKLIST_AFTER_ROTATION': True,
 }
@@ -157,6 +159,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ),
     
     
@@ -177,6 +180,8 @@ DJOSER= {
     'SERIALIZERS' : {
         'user_create' :'users.serializers.UserCreateSerializer',
         'user' :'users.serializers.UserCreateSerializer',
+        'token_create': 'djoser.serializers.TokenCreateSerializer',
+        'token': 'djoser.serializers.TokenSerializer',
       },
 }
 

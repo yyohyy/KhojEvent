@@ -14,16 +14,16 @@ class TicketAdmin(admin.ModelAdmin):
     inlines = [TicketTypeInline]
     def get_fields(self, request, obj=None):
         if obj:  # Change form
-            return ('event', 'max_limit','status')
-        return ('event','max_limit', 'status')
+            return ('event', 'max_limit','status','quantity_available')
+        return ('event','max_limit', 'status','quantity_available')
 
 @admin.register(TicketType)
 class TicketTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'price','quantity','quantity_available',]
     def get_fields(self, request, obj=None):
         if obj:  # Change form
-            return ('ticket', 'name', 'description', 'price', 'quantity')
-        return ('ticket', 'name', 'description', 'price', 'quantity')
+            return ('ticket', 'name', 'description', 'price', 'quantity','quantity_available')
+        return ('ticket', 'name', 'description', 'price', 'quantity','quantity_available')
 
 @admin.register(SelectedTicket)
 class SelectedTicketAdmin(admin.ModelAdmin):
