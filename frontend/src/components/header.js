@@ -8,6 +8,9 @@ function AppHeader() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [searchResults, setSearchResults] = useState({
+    event_results: [],
+  });
 
   // Function to save the token to session storage
   const saveTokenToSessionStorage = (token) => {
@@ -47,6 +50,17 @@ function AppHeader() {
       }
     } catch (error) {
       console.error('Error:', error);
+    }
+  };
+  // Function to perform the search
+  const performSearch = async () => {
+    try {
+      // Make an HTTP request to your Django backend endpoint with the search query
+      const response = await axios.get(`http://127.0.0.1:8000/events/search?query=${searchQuery}`);
+      // Handle the response as needed (e.g., update state with search results)
+      setSearchResults(response.data);
+    } catch (error) {
+      console.error('Error during search:', error);
     }
   };
 
