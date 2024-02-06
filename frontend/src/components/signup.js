@@ -76,7 +76,15 @@ const AppSignup = () => {
 
       // Handle the response, you might want to show a success message or navigate to the login page
       console.log('Registration successful:', response.data);
+    // Log in the user immediately after successful registration
+    // const loginResponse = await axios.post('http://127.0.0.1:8000/auth/jwt/create', {
+    //   email: formData.email,
+    //   password: formData.password,
+    // });
 
+    // // Store the JWT token in localStorage
+    // const { access } = loginResponse.data;
+    // localStorage.setItem('token', access);
       // Navigate to the user type selection page
       navigate('/user-type-selection');
     } catch (error) {
