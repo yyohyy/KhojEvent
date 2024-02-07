@@ -1,121 +1,74 @@
-// CreateEvent.js
 import React, { useState } from 'react';
-import './CreateEvent.css'; // Import the CSS file for styling
-import AxiosInstance from './axios'
+import './CreateEvent.css';
+import AxiosInstance from './axios';
 import { useNavigate } from 'react-router-dom';
-import { Axios } from 'axios';
-// TODO: Need to have a database that can store the input data which is stored in formData
-// TODO: 
 
 const CreateEvent = () => {
-const navigate = useNavigate()
-  const defaultValues ={
+  const navigate = useNavigate();
+
+  const defaultValues = {
     name: '',
-    category: 'Music', // Default category
+    category: 'Music',
     venue: '',
     description: '',
     start_date: '',
     end_date: '',
     start_time: '',
     end_time: '',
-    tags: [], // Store tags as an array
+    tags: [],
     is_paid: 'False',
-
-
-  }
-  const submission = (data) => {
-    console.log('Submitting data:', data);
-  
-    // Transform formData to match the desired format
-    const formattedData = {
-      name: data.name,
-      category: {
-        name: data.category,
-      },
-      description: data.description,
-      venue: data.venue,
-      start_date: data.start_date,
-      end_date: data.end_date,
-      start_time: data.start_time,
-      end_time: data.end_time,
-      tags: data.tags.map(tag => ({ name: tag })),
-      is_paid: data.is_paid,
-    };
-  
-    console.log(formattedData)
-    AxiosInstance.post('create-event/', formattedData)
-      .then((res) => {
-        console.log('Response from backend:', res);
-        navigate('/');
-      })
-      .catch((error) => {
-        console.error('Error submitting data:', error);
-      });
+    image: null,
   };
-  
-  // const submission =(data) => {
-  //   console.log('Submitting data:', data);
-  //   AxiosInstance.post( 'create-event/',{
-  //     name:data.name,
-  //     category: data.category,
-  //     venue: data.venue,
-  //     description:data.description,
-  //     start_date: data.start_date,
-  //     end_date:data.end_date,
-  //     start_time:data.start_time,
-  //     end_time:data.end_time,
-  //     tags:data.tags,
-  //     is_paid:data.is_paid,
-  //   })
-  //   .then((res) => {
-  //     console.log('Response from backend:', res);
-  //     navigate('/');
-  //   })
-  //   .catch((error) => {
-  //     console.error('Error submitting data:', error);
-  //   });
-  // }
 
-  const [formData, setFormData] = useState({
-    name: '',
-    category: 'Music', // Default category
-    venue: '',
-    description: '',
-    start_date: '',
-    end_date: '',
-    start_time: '',
-    end_time: '',
-    tags: [], // Store tags as an array
-    is_paid: 'False', // Default ticket type
-  });
+  const [formData, setFormData] = useState(defaultValues);
+
+  const submission = async (data) => {
+    try {
+      const formattedData = {
+        name: data.name,
+        category: { name: data.category },
+        description: data.description,
+        venue: data.venue,
+        start_date: data.start_date,
+        end_date: data.end_date,
+        start_time: data.start_time,
+        end_time: data.end_time,
+        tags: data.tags.map((tag) => ({ name: tag })),
+        is_paid: data.is_paid,
+        image: data.image,
+      };
+
+      const response = await AxiosInstance.post('create-event/', formattedData);
+
+      console.log('Response from backend:', response);
+      navigate('/');
+    } catch (error) {
+      console.error('Error submitting data:', error);
+    }
+  };
 
   const category = ['Art', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Others'];
-  const [availableTags, setAvailableTags] = useState(['Fun', 'Dance', 'Music','Seminar','Night','Games','Food','Crafts','Zen','Comedy','Film','Photography','Tech','Thrift','Donation','Marathon','Cycling','Nature','Health','Pottery','Book','Meet & Greet']); // Replace with your actual tags
+  const availableTags = ['Fun', 'Dance', 'Music', 'Seminar', 'Night', 'Games', 'Food', 'Crafts', 'Zen', 'Comedy', 'Film', 'Photography', 'Tech', 'Thrift', 'Donation', 'Marathon', 'Cycling', 'Nature', 'Health', 'Pottery', 'Book', 'Meet & Greet'];
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // const handleTagInputChange = (e) => {
-  //   const { value } = e.target;
-  //   setFormData({ ...formData, tags: value.split(',').map((tag) => tag.trim()) });
-  // };
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setFormData({ ...formData, image: file });
+  };
+
   const toggleTag = (tag) => {
-    const updatedTags = formData.tags.includes(tag)
-      ? formData.tags.filter((t) => t !== tag)
-      : [...formData.tags, tag];
-  
+    const updatedTags = formData.tags.includes(tag) ? formData.tags.filter((t) => t !== tag) : [...formData.tags, tag];
     setFormData({ ...formData, tags: updatedTags });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
-    // Add logic to handle form submission, e.g., send data to server
     submission(formData);
-    }
-  
-
+  };
 
   return (
     <form onSubmit={handleSubmit} className="event-form">
@@ -171,22 +124,21 @@ const navigate = useNavigate()
         </div>
       </div>
 
-      {/* <label>
+      <label>
+        Event Image:
+        <input type="file" name="image" accept="image/*" onChange={handleImageChange} />
+      </label>
+
+      <label>
         Tags:
-        <input type="text" name="tags" value={formData.tags.join(',')} onChange={handleTagInputChange} />
-      </label> */}
-
-          <label>
-             Tags:
-              <div className="tags-container">
-                {availableTags.map((tag) => (
-                 <div key={tag} className={`tag ${formData.tags.includes(tag) ? 'selected' : ''}`} onClick={() => toggleTag(tag)}>
-                   {tag}
-              </div>
-              ))}
-              </div>
-          </label>
-
+        <div className="tags-container">
+          {availableTags.map((tag) => (
+            <div key={tag} className={`tag ${formData.tags.includes(tag) ? 'selected' : ''}`} onClick={() => toggleTag(tag)}>
+              {tag}
+            </div>
+          ))}
+        </div>
+      </label>
 
       <div className="ticket-type-container">
         <label className="ticket-type-label"></label>
