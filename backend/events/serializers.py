@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from events.models import Event, Category, Tag, Organiser, Rating, Review
+from events.models import Event, Category, Tag, Organiser, Rating, Review, Interested
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,7 +26,6 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review 
         fields = '__all__'
-        
 
 class EventSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
@@ -80,3 +79,23 @@ class EventSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+class InterestedSerializer(serializers.ModelSerializer):
+    event = EventSerializer(many=True)
+
+    class Meta:
+        model = Interested
+        fields = ['attendee', 'event', 'is_interested', 'created']
+        
+    def update(self, instance, validated_data):
+        # Update the main fields
+        instance.is_interested = validated_data.get('is_interested', instance.is_interested)
+        
+        # Update the nested 'event' field
+        event_data = validated_data.get('event', [])
+        instance.event.set(Event.objects.filter(id__in=[event['id'] for event in event_data]))
+
+        # Save the changes
+        instance.save()
+        return instance
+    

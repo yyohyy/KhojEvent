@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
 from django.db.models import Q
-from .serializers import EventSerializer, CategorySerializer, TagSerializer#, ReviewSerializer, RatingSerializer
-from events.models import Event, Tag, Category, Review, Rating
+from .serializers import EventSerializer, CategorySerializer, TagSerializer, InterestedSerializer#, ReviewSerializer, RatingSerializer
+from events.models import Event, Tag, Category, Review, Rating, Interested, Attendee
 from .permissions import OrganiserCanUpdate, OrganiserCanCreate#, AttendeeCanRate, AttendeeCanReview
 
 class GetRoutesView(APIView):
@@ -13,7 +13,8 @@ class GetRoutesView(APIView):
         routes = [
             {'GET': '/events'},
             {'PATCH': '/events/id'},
-            {'POST': '/create-event/'}
+            {'POST': '/create-event/'},
+            {'GET':'/interested/id/'}
         ]
         return Response(routes)
 
@@ -70,7 +71,7 @@ class EventDetailsView(generics.RetrieveUpdateDestroyAPIView):
     # http_method_names=['get','patch','delete']
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    permission_classes = [OrganiserCanUpdate]
+    #permission_classes = [OrganiserCanUpdate]
     # lookup_field='pk'
 
     def delete(self, request, *args, **kwargs):
@@ -85,29 +86,7 @@ class EventDetailsView(generics.RetrieveUpdateDestroyAPIView):
         # Return the response to the ReactJS frontend
         #return Response(data, status=status.HTTP_200_OK)
         
-        '''''
-class SearchView(APIView):
-    def get(self, request, *args, **kwargs):
-        query = self.request.query_params.get('query', '')
-
-        # Search in YourModel names
-        event_results = Event.objects.filter(name__icontains=query)
-        event_serializer = EventSerializer(event_results, many=True)
-
-        # Search in Category names
-        category_results = Category.objects.filter(name__icontains=query)
-        category_serializer = CategorySerializer(category_results, many=True)
-
-        # Search in Tag names
-        tag_results = Tag.objects.filter(name__icontains=query)
-        tag_serializer = TagSerializer(tag_results, many=True)
-
-        return Response({
-            'event_results': event_serializer.data,
-            'category_results': category_serializer.data,
-            'tag_results': tag_serializer.data,
-        }, status=status.HTTP_200_OK)    
-        '''''
+    
         
 class SearchView(APIView):
     def get(self, request, *args, **kwargs):
@@ -125,6 +104,38 @@ class SearchView(APIView):
         return Response({
             'event_results': event_serializer.data,
         }, status=status.HTTP_200_OK)
+
+class InterestedView(generics.CreateAPIView):
+    queryset = Attendee.objects.all()
+    serializer_class = InterestedSerializer
+    # permission_classes = [IsAuthenticated] # You may want to add permissions
+
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        return super().post(request, *args, **kwargs)
+        
+        
+class InterestedDetailView(generics.RetrieveDestroyAPIView):
+    def get_queryset(self):
+        """
+        This method filters the queryset to only include entries related to the authenticated user's attendee.
+        """
+        user_attendee = self.request.user.attendee
+        return Interested.objects.filter(attendee=user_attendee)
+    
+    serializer_class = InterestedSerializer
+    
+    
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response("Item is successfully deleted!", status=status.HTTP_204_NO_CONTENT)
+
+# Additional views for marking interest
+#class MarkInterestView(generics.UpdateAPIView):
+    #queryset = Interested.objects.all()
+    #serializer_class = InterestedSerializer
+    #permission_classes = [IsAuthenticated]
 
 ''''
 class RatingView(generics.CreateAPIView):
@@ -145,3 +156,25 @@ class ReviewView(generics.CreateAPIView):
         # Automatically set the attendee based on the logged-in user
         serializer.save(attendee=self.request.user.attendee)
     '''
+    
+    
+'''
+class InterestedView(APIView):
+    queryset = Interested.objects.all()
+    serializer_class = InterestedSerializer
+    
+    def perform_create(self, serializer):
+        serializer.save(attendee=self.request.user.attendee)  
+    
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.serializer_class(instance)
+        return Response(serializer.data)
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response("Item is successfully deleted!", status=status.HTTP_204_NO_CONTENT)
+        
+'''
+
