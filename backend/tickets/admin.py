@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
 from .forms import SelectedTicketForm
-from .models import Cart,Ticket, TicketType, SelectedTicket
+from .models import Cart,Order,Ticket, TicketType, SelectedTicket
 
 class TicketTypeInline(admin.TabularInline):
     model = TicketType
@@ -68,7 +68,7 @@ class CartAdmin(admin.ModelAdmin):
         return []
 
 admin.site.register(Cart, CartAdmin)
-
+# admin.site.register(Order,OrderAdmin)
 
 # class TicketPurchaseAdmin(admin.ModelAdmin):
 #     list_display = ['user', 'event', 'quantity', 'price', 'payment_status']

@@ -1,9 +1,8 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.forms import ValidationError
+from django.db import transaction
 from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
-from rest_framework import serializers,status
-from rest_framework.response import Response
+from rest_framework import serializers
 from .models import User,Attendee,Organiser
 
 User=get_user_model()
@@ -139,20 +138,16 @@ class OrganiserDetailsSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         organiser_data = validated_data.pop('organiser', {})
         organiser_instance = instance.organiser
-        organiser_serializer = OrganiserSerializer(organiser_instance, data=organiser_data, partial=True)
+    
+        with transaction.atomic():
+            organiser_serializer = OrganiserSerializer(organiser_instance, data=organiser_data, partial=True)
 
-        if organiser_serializer.is_valid():
-            organiser_serializer.save()
+            if organiser_serializer.is_valid():
+                organiser_serializer.save()
 
-        instance.email = validated_data.get('email', instance.email)
-        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
-        instance.profile_picture = validated_data.get('profile_picture', instance.profile_picture)
-        instance.save()
+            instance.email = validated_data.get('email', instance.email)
+            instance.phone_number = validated_data.get('phone_number', instance.phone_number)
+            instance.profile_picture = validated_data.get('profile_picture', instance.profile_picture)
+            instance.save()
 
-        return instance
-
-        # response_data = {
-        #     'message': 'ORGANISER DETAILS UPDATED.',
-        #     'instance': instance
-        # }
-        # return Response(response_data, status=status.HTTP_200_OK)
+            return instance

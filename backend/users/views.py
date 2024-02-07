@@ -1,4 +1,3 @@
-
 from rest_framework import generics, status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
@@ -6,7 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import *
 from .permissions import IsOwnerOrReadOnly
-from .serializers import AttendeeSignUpSerializer, OrganiserSignUpSerializer,AllUserDetails, UserDetailsSerializer, AttendeeSerializer, OrganiserSerializer,AttendeeDetailsSerializer,OrganiserDetailsSerializer
+from .serializers import AttendeeSignUpSerializer, OrganiserSignUpSerializer,AllUserDetails, UserDetailsSerializer, AttendeeDetailsSerializer,OrganiserDetailsSerializer
+from events.models import Event
+from events.serializers import EventSerializer
 
 class AttendeeSignUpView(generics.CreateAPIView):
     serializer_class = AttendeeSignUpSerializer
@@ -42,18 +43,6 @@ def post(self, request, *args, **kwargs):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED) 
    
-# class OrganiserSignUpView(generics.CreateAPIView):
-#     serializer_class = OrganiserSignUpSerializer
-#     permission_classes= [IsAuthenticated]
-#     queryset= Organiser.objects.all()
-
-#     def perform_create(self, serializer):
-#         user = self.request.user
-#         user.is_organiser = True 
-#         user.save(update_fields=['is_organiser'])
-        
-#         serializer.save(user=user)
-
 class AllUserDetails(ListAPIView):
     serializer_class= AllUserDetails
     queryset=User.objects.all()
@@ -92,3 +81,11 @@ class UserDetails(generics.RetrieveUpdateAPIView):
             'instance': serializer.data
         }
         return Response(response_data, status=status.HTTP_200_OK)
+    
+class OrganiserEventsView(generics.ListAPIView):
+
+    serializer_class=EventSerializer
+
+    def get_queryset(self):
+        organiser_id=self.kwargs.get('organiser_id')
+        return Event.objects.filter(organiser_id=organiser_id)
