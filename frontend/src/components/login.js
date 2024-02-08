@@ -6,6 +6,7 @@ const AppLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
   const navigate = useNavigate();
 
   // Create the submit method.
@@ -39,6 +40,7 @@ const AppLogin = () => {
       console.log(user.is_organiser)
       // Redirect based on user type
       if (user.is_organiser || user.is_attendee) {
+                setIsLoggedIn(true);
         navigate('/');
       } else {
         navigate('/user-type-selection');

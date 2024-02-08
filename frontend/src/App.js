@@ -63,6 +63,7 @@ import store from './store';
 import UserTypeSelection from './components/UserTypeSelection';
 import AttendeeSignup from './components/AttendeeSignUp';
 import OrganizerSignup from './components/OrganizerSignUp';
+import Profile from './components/Profile';
 function App() {
   return (
    <Provider store={store}>
@@ -85,6 +86,7 @@ function App() {
               <Route path="/attendee-signup" element={<AttendeeSignup/>} />
               <Route path="/organizer-signup" element={<OrganizerSignup/>} />
               <Route path='/activate/:uid/:token' element={<Activate/>} />
+              <Route path="/profile" element={<Profile/>} />
               <Route path="/events/:event_id" element={<AppEventDetails />} />
             </Routes>
           </BrowserRouter>
