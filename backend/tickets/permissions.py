@@ -23,17 +23,23 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         return obj.event.organiser.pk== request.user.pk
 
 class DeletionPermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        ticket_type_id = view.kwargs.get('pk')
-        if ticket_type_id:
-            # Check if there are any SelectedTickets associated with the TicketType
-            selected_tickets_exist = SelectedTicket.objects.filter(ticket_id=ticket_type_id).exists()
-            # If there are SelectedTickets, check if any of them are associated with orders
-            if selected_tickets_exist:
-                orders_exist = Order.objects.filter(cart__selected_tickets__ticket_id=ticket_type_id).exists()
+    def has_object_permission(self, request, view, obj):
+        # Allow GET, HEAD or OPTIONS requests (read-only)
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        
+        # Check if the user is the organizer of the event
+        if obj.ticket.event.organiser.pk == request.user.pk:
+            ticket_type_id = view.kwargs.get('pk')
+            print(ticket_type_id)
+            
+            if ticket_type_id:
+                # Check if there are any order items associated with the ticket type
+                orders_exist = OrderItem.objects.filter(ticket__ticket_id=ticket_type_id).exists()
+                print(orders_exist)
                 return not orders_exist  # Return False if orders exist, True otherwise
-        return True  # If no TicketType ID or no SelectedTickets, allow deletion
-
+            
+            return False 
 class IsCartOwnerOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view,obj):
 

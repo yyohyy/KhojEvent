@@ -64,6 +64,23 @@ class TicketDeleteView(generics.RetrieveAPIView, generics.DestroyAPIView):
     queryset = TicketType.objects.all()
     serializer_class = TicketTypeSerializer
     permission_classes = [DeletionPermission]
+
+    def destroy(self, request, *args, **kwargs):
+        with transaction.atomic():
+            instance = self.get_object()
+
+            # Get the associated ticket
+            ticket = instance.ticket
+
+            # Subtract the quantity and quantity_available of the deleted ticket type from the associated ticket
+            ticket.total_quantity -= instance.quantity
+            ticket.quantity_available -= instance.quantity_available
+            ticket.save(update_fields=['total_quantity','quantity_available'])
+
+            # Call the parent class method to delete the ticket type
+            self.perform_destroy(instance)
+            
+            return Response(status=status.HTTP_204_NO_CONTENT)
     
 class SelectTicketView(generics.ListCreateAPIView):
     serializer_class = SelectTicketSerializer

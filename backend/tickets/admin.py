@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
 from .forms import SelectedTicketForm
-from .models import Cart,Order,Ticket, TicketType, SelectedTicket
+from .models import *
 
 class TicketTypeInline(admin.TabularInline):
     model = TicketType
@@ -67,8 +67,32 @@ class CartAdmin(admin.ModelAdmin):
             return ['total_amount', 'created_at', 'updated_at']
         return []
 
+class OrderItemInline(admin.TabularInline):
+
+    model = OrderItem
+    list_display = ('ticket', 'quantity')
+    readonly_fields=('ticket','quantity')
+
+class OrderAdmin(admin.ModelAdmin):
+    model = Order
+    list_display = ['Issued_to','total_amount', 'status','created_at']
+    readonly_fields = ['cart','total_amount','status', 'created_at']
+    inlines=[OrderItemInline]
+    #filter_horizontal = ['selected_tickets']
+    def Issued_to(self, obj):
+        first_name = obj.cart.attendee.first_name if obj.cart.attendee else ''
+        last_name = obj.cart.attendee.last_name if obj.cart.attendee else ''
+        # Concatenate the first name and last name to form the full name
+        full_name = f"{first_name} {last_name}" if first_name or last_name else None
+        return full_name 
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:  # Existing object - Allow removal
+            return ['cart','total_amount','status', 'created_at']
+        return []
+
 admin.site.register(Cart, CartAdmin)
-# admin.site.register(Order,OrderAdmin)
+admin.site.register(Order,OrderAdmin)
 
 # class TicketPurchaseAdmin(admin.ModelAdmin):
 #     list_display = ['user', 'event', 'quantity', 'price', 'payment_status']

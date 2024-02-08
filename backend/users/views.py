@@ -1,3 +1,5 @@
+from django.shortcuts import get_object_or_404
+from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import generics, status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView, RetrieveUpdateAPIView
@@ -5,9 +7,34 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import *
 from .permissions import IsOwnerOrReadOnly
-from .serializers import AttendeeSignUpSerializer, OrganiserSignUpSerializer,AllUserDetails, UserDetailsSerializer, AttendeeDetailsSerializer,OrganiserDetailsSerializer
-from events.models import Event
-from events.serializers import EventSerializer
+from .serializers import *
+from events.serializers import *
+from tickets.models import OrderItem
+
+
+class CurrentUser(RetrieveUpdateAPIView):
+    serializer_class = CurrentUserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        # Return the current user
+        return self.request.user
+
+    def get(self, request, *args, **kwargs):
+        # Serialize the current user instance
+        serializer = self.get_serializer(instance=self.get_object())
+        # Return the serialized current user data
+        return Response(serializer.data)
+
+    def put(self, request, *args, **kwargs):
+        # Serialize the current user instance with data from request
+        serializer = self.get_serializer(instance=self.get_object(), data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # Save the updated user instance
+        serializer.save()
+        # Return the serialized updated user data
+        return Response(serializer.data)
+
 
 class AttendeeSignUpView(generics.CreateAPIView):
     serializer_class = AttendeeSignUpSerializer
@@ -89,3 +116,20 @@ class OrganiserEventsView(generics.ListAPIView):
     def get_queryset(self):
         organiser_id=self.kwargs.get('organiser_id')
         return Event.objects.filter(organiser_id=organiser_id)
+    
+class AttendeeEventsView(ListAPIView):
+    serializer_class = EventSerializer
+
+    def get_queryset(self):
+        # Retrieve the attendee object
+        attendee_id = self.kwargs['attendee_id']
+        attendee = get_object_or_404(Attendee, pk=attendee_id)
+
+        # Retrieve events for which the attendee has placed an order
+        order_items = OrderItem.objects.filter(ticket__issued_to=attendee)
+        print(order_items)
+        event_ids = order_items.values_list('ticket__ticket__ticket__event__id', flat=True).distinct()
+        print(event_ids)
+        # Retrieve the events based on the event IDs
+        events = Event.objects.filter(id__in=event_ids)
+        return events

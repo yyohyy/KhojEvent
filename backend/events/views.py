@@ -37,7 +37,7 @@ class AllEventsView(ListAPIView):
 class EventCreateView(generics.CreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    permission_classes= [OrganiserCanCreate]
+    #permission_classes= [OrganiserCanCreate]
     # lookup_field= 'pk'
 
     def post(self, request, *args, **kwargs):

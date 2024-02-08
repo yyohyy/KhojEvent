@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
-from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
+from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer, UserSerializer
 from rest_framework import serializers
 from .models import User,Attendee,Organiser
 
@@ -92,6 +92,11 @@ class AllUserDetails(serializers.ModelSerializer):
                 pass    
 
         return data
+    
+class CurrentUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id','email','phone_number','is_attendee','is_organiser']
 
 class UserDetailsSerializer(serializers.ModelSerializer):
     attendee_details = AttendeeSerializer(source='attendee')#, read_only=True)

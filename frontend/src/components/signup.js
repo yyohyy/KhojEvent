@@ -86,7 +86,7 @@ const AppSignup = () => {
     // const { access } = loginResponse.data;
     // localStorage.setItem('token', access);
       // Navigate to the user type selection page
-      navigate('/user-type-selection');
+      navigate('/login');
     } catch (error) {
       // Handle registration failure
       console.error('Registration error:', error.response.data);
@@ -170,7 +170,7 @@ const AppSignup = () => {
       {/* Consideration for the Footer */}
       <div className='row mt-5'>
         <div className='col text-center'>
-          <p>&copy; 2024 Your Company. All rights reserved.</p>
+          <p> </p>
         </div>
       </div>
     </div>

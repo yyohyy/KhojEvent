@@ -83,8 +83,8 @@ function App() {
               <Route path="/login" element={<AppLogin />} />
               <Route path="/user-type-selection" element={<UserTypeSelection />} />
               <Route path="/attendee-signup" element={<AttendeeSignup/>} />
-              <Route path="//organizer-signup" element={<OrganizerSignup/>} />
-              <Route exact path='/activate/:uid/:token' component={Activate} />
+              <Route path="/organizer-signup" element={<OrganizerSignup/>} />
+              <Route path='/activate/:uid/:token' element={<Activate/>} />
               <Route path="/events/:event_id" element={<AppEventDetails />} />
             </Routes>
           </BrowserRouter>

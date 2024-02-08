@@ -159,15 +159,16 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
+       
     ),
     
     
 }
-
+DOMAIN= 'localhost:3000'
+SITE_NAME= 'KhojEvent'
 DJOSER= {
     'USER_CREATE_PASSWORD_RETYPE' : True  ,
-    'ACTIVATION_URL' :'/activate/{uid}/{token}',
+    'ACTIVATION_URL' :'activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL' : True ,
     'SEND_CONFIRMATION_EMAIL' : True,
     'PASSWORD_CHANGED_EMAIL_CONFIRMATION' : True,
@@ -191,3 +192,5 @@ AUTH_USER_MODEL = "users.User"
 
 CORS_ORIGIN_ALLOW_ALL= True
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

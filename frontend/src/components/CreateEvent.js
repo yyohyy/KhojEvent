@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import './CreateEvent.css';
 import AxiosInstance from './axios';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +19,13 @@ const CreateEvent = () => {
     is_paid: 'False',
     image: null,
   };
-
+  useEffect(() => {
+    // Fetch and set the authentication token when the component mounts
+    const token = localStorage.getItem('Bearer'); 
+    if (token) {
+      AxiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    }
+  }, []);
   const [formData, setFormData] = useState(defaultValues);
 
   const submission = async (data) => {

@@ -29,8 +29,8 @@ class ReviewSerializer(serializers.ModelSerializer):
         
 
 class EventSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(many=True,read_only=True)
-    category = CategorySerializer(many=False,read_only=True)
+    tags = TagSerializer(many=True)
+    category = CategorySerializer(many=False)
    # organizer = OrganiserSerializer(many=False)
     class Meta:
         model = Event
