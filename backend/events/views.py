@@ -74,7 +74,7 @@ class EventDetailsView(generics.RetrieveUpdateDestroyAPIView):
     # http_method_names=['get','patch','delete']
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    #permission_classes = [OrganiserCanUpdate]
+    permission_classes = [OrganiserCanUpdate]
     # lookup_field='pk'
 
     def delete(self, request, *args, **kwargs):
@@ -125,6 +125,7 @@ class SearchView(APIView):
         return Response({
             'event_results': event_serializer.data,
         }, status=status.HTTP_200_OK)
+        
 
 class MarkInterestedView(generics.ListCreateAPIView):
     queryset = Interested.objects.all() 
@@ -139,6 +140,7 @@ class MarkInterestedView(generics.ListCreateAPIView):
         if existing_interested:
             raise serializers.ValidationError("You have already marked interest for this event.")
         serializer.save(attendee=attendee)
+        
         
         
 class InterestedDetailView(generics.RetrieveDestroyAPIView):

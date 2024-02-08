@@ -54,6 +54,7 @@ class EventSerializer(serializers.ModelSerializer):
         event_instance.tags.set(tags_instances)
 
         return event_instance
+    
     def update(self, instance, validated_data):
         # Update standard fields
         instance.name = validated_data.get('name', instance.name)

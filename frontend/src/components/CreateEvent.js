@@ -71,7 +71,7 @@ const CreateEvent = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="event-form" encType="multipart/form-data" method="post">
+    <form onSubmit={handleSubmit} className="event-form">
       <label>
         Name:
         <input type="text" name="name" value={formData.name} onChange={handleInputChange} />
@@ -127,7 +127,7 @@ const CreateEvent = () => {
       <label>
         Event Image:
         
-        <input type="file" name="image"  onChange={handleImageChange} />
+        <input type="file" name="image" accept="image/*" onChange={handleImageChange} />
       </label>
 
       <label>
