@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
  const AppLogin = () => {
      const [email, setEmail] = useState('');
      const [password, setPassword] = useState('');
+     const [isLoggedIn, setIsLoggedIn] = useState(false); 
      const navigate = useNavigate();
      // Create the submit method.
      const submit = async e => {
@@ -28,6 +29,7 @@ import { useNavigate } from 'react-router-dom';
                 localStorage.setItem('Bearer', access);
                 //navigation
                 console.log("You are logged in.");
+                setIsLoggedIn(true);
                 navigate('/');
                 } catch (error) {
                 // Handle authentication failure
