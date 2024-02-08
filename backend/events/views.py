@@ -4,17 +4,19 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
-from .serializers import EventSerializer, CategorySerializer, TagSerializer
-from events.models import Event, Tag, Category
-from .permissions import OrganiserCanUpdate, OrganiserCanCreate
-
+from rest_framework import serializers
+from django.http import Http404
+from .serializers import EventSerializer, CategorySerializer, TagSerializer, InterestedSerializer, ReviewSerializer, RatingSerializer
+from events.models import Event, Tag, Category, Review, Rating, Interested, Attendee
+from .permissions import OrganiserCanUpdate, OrganiserCanCreate#, AttendeeCanRate, AttendeeCanReview
 
 class GetRoutesView(APIView):
     def get(self, request):
         routes = [
             {'GET': '/events'},
             {'PATCH': '/events/id'},
-            {'POST': '/create-event/'}
+            {'POST': '/create-event/'},
+            {'GET':'/interested/id/'}
         ]
         return Response(routes)
 
@@ -37,12 +39,13 @@ class AllEventsView(ListAPIView):
 class EventCreateView(generics.CreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    permission_classes= [OrganiserCanCreate]
+    #permission_classes= [OrganiserCanCreate]
     # lookup_field= 'pk'
 
     def post(self, request, *args, **kwargs):
         print(request.data)
         return super().post(request, *args, **kwargs)
+    
     # def post(self, request):
     #     serializer = EventSerializer(data=request.data)
     #     if serializer.is_valid():
@@ -122,3 +125,98 @@ class SearchView(APIView):
         return Response({
             'event_results': event_serializer.data,
         }, status=status.HTTP_200_OK)
+        
+
+class MarkInterestedView(generics.ListCreateAPIView):
+    queryset = Interested.objects.all() 
+    serializer_class = InterestedSerializer
+    # permission_classes = [IsAuthenticated] # You may want to add permissions
+
+    def perform_create(self, serializer):
+        # Check if the user has already marked interest for this event
+        attendee = self.request.user.attendee
+        event = serializer.validated_data['event'] 
+        existing_interested = Interested.objects.filter(attendee=attendee, event=event).exists()
+        if existing_interested:
+            raise serializers.ValidationError("You have already marked interest for this event.")
+        serializer.save(attendee=attendee)
+        
+        
+        
+class InterestedDetailView(generics.RetrieveDestroyAPIView):
+
+    def get_queryset(self):
+        """
+        This method filters the queryset to only include entries related to the authenticated user's attendee.
+        """
+        user_attendee = self.request.user.attendee
+        return Interested.objects.filter(attendee=user_attendee)
+    
+    serializer_class = InterestedSerializer
+    
+    def delete(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response("Item is successfully deleted!", status=status.HTTP_204_NO_CONTENT)
+        except Http404:
+            return Response("Item does not exist.", status=status.HTTP_404_NOT_FOUND)
+
+# Additional views for marking interest 
+#class MarkInterestView(generics.UpdateAPIView):
+    #queryset = Interested.objects.all()
+    #serializer_class = InterestedSerializer
+    #permission_classes = [IsAuthenticated]
+
+
+class RatingView(generics.CreateAPIView):
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+    #permission_classes = [AttendeeCanRate]
+
+    def perform_create(self, serializer):
+        # Check if the user has already rated the event
+        existing_rating = Rating.objects.filter(attendee=self.request.user.attendee, event=serializer.validated_data['event']).exists()
+        if existing_rating:
+            raise serializers.ValidationError("You have already rated this event.")
+
+        # Automatically set the attendee based on the logged-in user
+        serializer.save(attendee=self.request.user.attendee)
+    
+
+class ReviewView(generics.CreateAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    #permission_classes = [AttendeeCanReview]
+
+    def perform_create(self, serializer):
+        # Automatically set the attendee based on the logged-in user
+         # Check if the user has already rated the event
+        existing_review = Review.objects.filter(attendee=self.request.user.attendee, event=serializer.validated_data['event']).exists()
+        if existing_review:
+            raise serializers.ValidationError("You have already reviewed this event.")
+            
+        serializer.save(attendee=self.request.user.attendee)     
+        
+
+    
+'''
+class InterestedView(APIView):
+    queryset = Interested.objects.all()
+    serializer_class = InterestedSerializer
+    
+    def perform_create(self, serializer):
+        serializer.save(attendee=self.request.user.attendee)  
+    
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.serializer_class(instance)
+        return Response(serializer.data)
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response("Item is successfully deleted!", status=status.HTTP_204_NO_CONTENT)
+        
+'''
+

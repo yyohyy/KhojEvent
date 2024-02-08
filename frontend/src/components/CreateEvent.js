@@ -126,6 +126,7 @@ const CreateEvent = () => {
 
       <label>
         Event Image:
+        
         <input type="file" name="image" accept="image/*" onChange={handleImageChange} />
       </label>
 
