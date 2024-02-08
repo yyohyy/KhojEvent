@@ -19,7 +19,7 @@ class Event(models.Model):
     venue = models.CharField(max_length=100, null=True)
     description = models.TextField(null=True)  #in a databases but may not contain info and blank is for we are allowed to submit the form with the value being empty
     tags = models.ManyToManyField('Tag')
-    image = models.ImageField(upload_to='images/events', null=True)
+    image = models.ImageField(upload_to='events_image/', null=True)
     is_paid = models.BooleanField(default=False)       # Field indicating if the event is paid
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
@@ -38,6 +38,10 @@ class Event(models.Model):
         #if self.is_approved:
             #super().save(*args, **kwargs)
         # If not approved, you can add custom logic here, or just skip saving.
+        
+class EventImage(models.Model):
+    event = models.OneToOneField(Event, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='events_image/')
 
     
     
@@ -69,7 +73,7 @@ class Rating(models.Model):
     
 class Interested(models.Model):
     attendee = models.ForeignKey(Attendee, on_delete=models.CASCADE)
-    event = models.ManyToManyField('Event')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     is_interested = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     

@@ -20,16 +20,17 @@ class UserCreateSerializer(BaseUserCreateSerializer):
 class AttendeeSignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attendee
-        fields = ['first_name', 'last_name','birth_date']  
+        fields = ['first_name', 'last_name', 'birth_date']
 
     def create(self, validated_data):
-        user = validated_data.pop('user', None)
+        user = self.context['request'].user  
 
         if user:
-            if Attendee.objects.filter(user=user).exists(): 
-                raise serializers.ValidationError("An attendee account with this email is already in use.")
+            if Attendee.objects.filter(user=user).exists():
+                raise serializers.ValidationError("An organiser account with this email is already in use.")
             if Organiser.objects.filter(user=user).exists():
-                 raise serializers.ValidationError("An organiser account with this email is already in use.")
+                raise serializers.ValidationError("An organiser account with this email is already in use.")
+
             attendee = Attendee.objects.create(user=user, **validated_data)
             return attendee
         else:
@@ -42,7 +43,7 @@ class OrganiserSignUpSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
    
-        user = validated_data.pop('user', None)
+        user = self.context['request'].user  
 
         if user:
             if Attendee.objects.filter(user=user).exists(): 
@@ -121,11 +122,12 @@ class AttendeeDetailsSerializer(serializers.ModelSerializer):
         instance.profile_picture = validated_data.get('profile_picture', instance.profile_picture)
         instance.save()
 
-        response_data = {
-            'message': 'ATTENDEE DETAILS UPDATED.',
-            'instance': instance
-        }
-        return Response(response_data, status=status.HTTP_200_OK)
+        return instance
+        # response_data = {
+        #     'message': 'ATTENDEE DETAILS UPDATED.',
+        #     'instance': instance
+        # }
+        # return Response(response_data, status=status.HTTP_200_OK)
     
 class OrganiserDetailsSerializer(serializers.ModelSerializer):
     organiser_details = OrganiserSerializer(source='organiser')#, read_only=True)
@@ -147,8 +149,10 @@ class OrganiserDetailsSerializer(serializers.ModelSerializer):
         instance.profile_picture = validated_data.get('profile_picture', instance.profile_picture)
         instance.save()
 
-        response_data = {
-            'message': 'ORGANISER DETAILS UPDATED.',
-            'instance': instance
-        }
-        return Response(response_data, status=status.HTTP_200_OK)
+        return instance
+
+        # response_data = {
+        #     'message': 'ORGANISER DETAILS UPDATED.',
+        #     'instance': instance
+        # }
+        # return Response(response_data, status=status.HTTP_200_OK)

@@ -1,31 +1,29 @@
-from rest_framework import status
+from rest_framework import generics,status
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from .models import *
-from .permissions import IsOwnerOrReadOnly   #,IsCartOwnerOrReadOnly
-from .serializers import TicketSerializer
+from .permissions import IsOwnerOrReadOnly,IsCartOwnerOrReadOnly
+from .serializers import CartDetailsSerializer,SelectTicketSerializer,TicketSerializer
 
 class TicketDetails(RetrieveUpdateDestroyAPIView):
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
     permission_classes= [IsOwnerOrReadOnly]
-    lookup_field = 'pk'  # Change this to your desired lookup field
+    lookup_field = 'pk' 
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
         return Response({"message": "Ticket deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
-# class CartDetails(RetrieveUpdateDestroyAPIView):
-#     queryset = Cart.objects.all()
-#     serializer_class = CartSerializer
-#     permission_classes = [IsCartOwnerOrReadOnly]
-#     lookup_field = 'pk'
+class SelectTicketView(generics.ListCreateAPIView):
+    serializer_class = SelectTicketSerializer
 
-#     def get_object(self):
-#         cart = super().get_object()
+    def get_queryset(self):
+        event_id = self.kwargs.get('event_id')
+        return SelectedTicket.objects.filter(ticket__ticket__event_id=event_id)
 
-#         if cart.selected_tickets:
-#             selected_ticket = cart.selected_tickets
-#             cart.selected_tickets = selected_ticket
-#         return cart
+class CartDetails(generics.RetrieveUpdateDestroyAPIView):
+    queryset=Cart.objects.all()
+    serializer_class=CartDetailsSerializer
+    permission_classes= [IsCartOwnerOrReadOnly]

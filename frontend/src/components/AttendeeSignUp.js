@@ -22,17 +22,30 @@ const AttendeeSignup = () => {
     e.preventDefault();
 
     try {
-      // Make an API call to handle attendee signup
-      const response = await axios.post('http://127.0.0.1:8000/users/attendee/', attendeeData);
+      // Retrieve the authentication token from local storage
+      const authToken = localStorage.getItem('Bearer'); // Replace with the actual key you used for storing the token
+
+      if (!authToken) {
+        // Handle the case when the token is not available
+        console.error('Authentication token not found in local storage');
+        return;
+      }
+      console.log(authToken);
+      // Make another API call with the obtained token
+      const response = await axios.post('http://127.0.0.1:8000/users/attendee/', attendeeData, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
 
       // Handle the response, show a success message or navigate to another page if needed
       console.log('Attendee signup successful:', response.data);
 
-        // Navigate to the home page
-        navigate('/');
+      // Navigate to the home page
+      navigate('/');
     } catch (error) {
       // Handle attendee signup failure
-      console.error('Attendee signup error:', error.response.data);
+      console.error('Attendee signup error:', error.response?.data || error.message);
     }
   };
 

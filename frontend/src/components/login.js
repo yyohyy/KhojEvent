@@ -25,7 +25,7 @@ import { useNavigate } from 'react-router-dom';
                 const { access } = response.data;
                    
                 // Store the token in localStorage (you might want to use more secure storage)
-                localStorage.setItem('token', access);
+                localStorage.setItem('Bearer', access);
                 //navigation
                 console.log("You are logged in.");
                 navigate('/');

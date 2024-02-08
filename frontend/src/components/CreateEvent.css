@@ -145,3 +145,35 @@ button:hover {
 .tag.selected:hover {
   background-color: #dc8a8a;
 }
+
+/* Image Styling */
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input[type="file"] {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+input[type="file"]:hover {
+  background-color: #e0e0e0;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 600px) {
+  input[type="file"] {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  input[type="file"] {
+    font-size: 12px;
+  }
+}

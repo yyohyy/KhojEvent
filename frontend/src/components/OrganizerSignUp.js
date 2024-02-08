@@ -21,20 +21,30 @@ const OrganizerSignup = () => {
     e.preventDefault();
 
     try {
-      // Make an API call to handle organizer signup
-      const response = await axios.post(
-        "http://127.0.0.1:8000/users/organiser/",
-        organizerData
-      );
+      // Retrieve the authentication token from local storage
+      const authToken = localStorage.getItem('Bearer'); // Replace with the actual key you used for storing the token
+
+      if (!authToken) {
+        // Handle the case when the token is not available
+        console.error('Authentication token not found in local storage');
+        return;
+      }
+      console.log(authToken);
+      // Make another API call with the obtained token
+      const response = await axios.post('http://127.0.0.1:8000/users/organiser/', organizerData, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
 
       // Handle the response, show a success message or navigate to another page if needed
-      console.log("Organiser signup successful:", response.data);
+      console.log('Organiser signup successful:', response.data);
 
       // Navigate to the home page
-      navigate("/");
+      navigate('/');
     } catch (error) {
-      // Handle organizer signup failure
-      console.error("Organiser signup error:", error.response.data);
+      // Handle attendee signup failure
+      console.error('Organiser signup error:', error.response?.data || error.message);
     }
   };
 
