@@ -133,3 +133,4 @@ class AttendeeEventsView(ListAPIView):
         # Retrieve the events based on the event IDs
         events = Event.objects.filter(id__in=event_ids)
         return events
+    

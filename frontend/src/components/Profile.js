@@ -40,16 +40,21 @@ const ProfileDashboard = () => {
     try {
       const authToken = localStorage.getItem('Bearer');
       // Make an API call to update user data
-      const response = await axios.patch(`http://127.0.0.1:8000/users/details/${localStorage.getItem("id")}/`, 
-      {
-       
-        first_name: newFirstName,
-        last_name: newLastName,
-        birth_date: newBirthDate,
-        headers: {
-          Authorization: `Bearer ${authToken}`,
+      const response = await axios.patch(
+        `http://127.0.0.1:8000/users/details/${localStorage.getItem("id")}/`, 
+        {
+          attendee_details: {
+            first_name: newFirstName,
+            last_name: newLastName,
+            birth_date: newBirthDate,
+          }
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
       // Update userData state with the updated data
       setUserData(response.data);
       setEditing(false);

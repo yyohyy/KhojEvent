@@ -65,7 +65,7 @@ import UserTypeSelection from './components/UserTypeSelection';
 import AttendeeSignup from './components/AttendeeSignUp';
 import OrganizerSignup from './components/OrganizerSignUp';
 import ProfileDashboard from './components/Profile';
-
+import BookingPage from './components/booking';
 function App() {
   return (
    <Provider store={store}>
@@ -88,7 +88,8 @@ function App() {
               <Route path="/attendee-signup" element={<AttendeeSignup/>} />
               <Route path="/organizer-signup" element={<OrganizerSignup/>} />
               <Route path='/activate/:uid/:token' element={<Activate/>} />
-              <Route path="/profile" element={<ProfileDashboard/>} />
+              <Route path='/booking' element={<BookingPage/>} />
+              <Route path="/profile" element={<ProfileDashboard />} />
               <Route path="/profile/:profile_id" element={<ProfileDashboard/>} />
               <Route path="/events/:event_id" element={<AppEventDetails />} />
               <Route path="/cart" element={<Cart />} />

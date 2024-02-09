@@ -11,7 +11,7 @@ const BookingPage = () => {
     // Perform your booking logic here (e.g., make an API call)
 
     // After successful booking, navigate to a confirmation page or any other page
-    history.push('/confirmation');
+    //history.push('/confirmation');
   };
 
   return (
