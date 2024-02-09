@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Carousel from "react-bootstrap/Carousel";
 import {
   FaCalendarAlt,
   FaClock,
@@ -33,28 +32,15 @@ function AppEventDetail() {
 
   return (
     <div>
-        {/* <div className="col-md-12">
-        <Carousel>
-          {eventsData.map((image, index) => (
-            <Carousel.Item key={index}>
-              <img
-                className="d-block w-100"
-                src={image}  // Assuming image is the image URL
-                alt={`Event ${index + 1} image`}
-              />
-            </Carousel.Item>
-          ))}
-        </Carousel>
-      </div> */}
-            {/* <div className="col-md-12">
-        {eventsData.image && (
+      <div className="col-md-12">
+        {activeEventData.image && (  // Check if the image field is not null
           <img
             className="d-block w-100"
-            src={eventsData.image}  // Assuming "image" is the field containing the image URL
+            src={activeEventData.image}  // Assuming "image" is the field containing the image URL
             alt={`Event Image`}
           />
         )}
-      </div> */}
+      </div>
          <div className="col-md-100">
         <div className="card p-5">
           <div className="card-body">

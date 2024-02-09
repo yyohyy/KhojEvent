@@ -33,7 +33,7 @@ class EventSerializer(serializers.ModelSerializer):
    # organizer = OrganiserSerializer(many=False)
     class Meta:
         model = Event
-        fields = ["name", "category", "description", "venue", "start_date", "end_date", "start_time", "end_time","tags", "is_paid", "image","id"]
+        fields = ["id","name", "category", "description", "venue", "start_date", "end_date", "start_time", "end_time","tags", "is_paid", "image"]
 
     def create(self, validated_data):
         category_data = validated_data.pop('category', [])
@@ -80,6 +80,11 @@ class EventSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+class EventImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = ['image']
 
 class InterestedSerializer(serializers.ModelSerializer):
     #event = EventSerializer(many=False)

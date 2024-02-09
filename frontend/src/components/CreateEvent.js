@@ -28,31 +28,6 @@ const CreateEvent = () => {
   }, []);
   const [formData, setFormData] = useState(defaultValues);
 
-  const submission = async (data) => {
-    try {
-      const formattedData = {
-        name: data.name,
-        category: { name: data.category },
-        description: data.description,
-        venue: data.venue,
-        start_date: data.start_date,
-        end_date: data.end_date,
-        start_time: data.start_time,
-        end_time: data.end_time,
-        tags: data.tags.map((tag) => ({ name: tag })),
-        is_paid: data.is_paid,
-        image: data.image,
-      };
-
-      const response = await AxiosInstance.post('create-event/', formattedData);
-
-      console.log('Response from backend:', response);
-      navigate('/');
-    } catch (error) {
-      console.error('Error submitting data:', error);
-    }
-  };
-
   const category = ['Art', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Others'];
   const availableTags = ['Fun', 'Dance', 'Music', 'Seminar', 'Night', 'Games', 'Food', 'Crafts', 'Zen', 'Comedy', 'Film', 'Photography', 'Tech', 'Thrift', 'Donation', 'Marathon', 'Cycling', 'Nature', 'Health', 'Pottery', 'Book', 'Meet & Greet'];
 
@@ -71,9 +46,40 @@ const CreateEvent = () => {
     setFormData({ ...formData, tags: updatedTags });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    submission(formData);
+    try {
+      const formDataWithoutImage = { ...formData };
+      delete formDataWithoutImage.image; // Remove image from the main form data
+
+      // Create a new FormData instance
+      const formDataForImage = new FormData();
+      formDataForImage.append('image', formData.image);
+
+      const formattedData = {
+        ...formDataWithoutImage,
+        category: {name: formData.category},
+        tags: formData.tags.map((tag) => ({ name: tag })),
+      };
+
+      // Send the main form data
+      const response = await AxiosInstance.post('create-event/', formattedData);
+
+      // Get the ID of the created event
+      const eventId = response.data.id;
+
+      // Send the image separately to the endpoint associated with the event ID
+      await AxiosInstance.patch(`event/${eventId}/image/`, formDataForImage,{
+      headers: {
+        'Content-Type': 'multipart/form-data', // Set content type as multipart/form-data
+      },
+    });
+
+      console.log('Response from backend:', response);
+      navigate('/');
+    } catch (error) {
+      console.error('Error submitting data:', error);
+    }
   };
 
   return (

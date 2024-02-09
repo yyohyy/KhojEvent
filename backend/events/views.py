@@ -6,7 +6,7 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework import serializers
 from django.http import Http404
-from .serializers import EventSerializer, CategorySerializer, TagSerializer, InterestedSerializer, ReviewSerializer, RatingSerializer
+from .serializers import EventSerializer, CategorySerializer, TagSerializer, InterestedSerializer, ReviewSerializer, RatingSerializer,EventImageSerializer
 from events.models import Event, Tag, Category, Review, Rating, Interested, Attendee
 from .permissions import OrganiserCanUpdate, OrganiserCanCreate#, AttendeeCanRate, AttendeeCanReview
 
@@ -39,13 +39,16 @@ class AllEventsView(ListAPIView):
 class EventCreateView(generics.CreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    #permission_classes= [OrganiserCanCreate]
+    permission_classes= [OrganiserCanCreate]
     # lookup_field= 'pk'
 
     def post(self, request, *args, **kwargs):
         print(request.data)
         return super().post(request, *args, **kwargs)
     
+class EventImageView(generics.RetrieveUpdateAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventImageSerializer    
     # def post(self, request):
     #     serializer = EventSerializer(data=request.data)
     #     if serializer.is_valid():
@@ -74,7 +77,7 @@ class EventDetailsView(generics.RetrieveUpdateDestroyAPIView):
     # http_method_names=['get','patch','delete']
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    permission_classes = [OrganiserCanUpdate]
+    #permission_classes = [OrganiserCanUpdate]
     # lookup_field='pk'
 
     def delete(self, request, *args, **kwargs):

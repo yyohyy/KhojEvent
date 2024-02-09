@@ -55,6 +55,7 @@ import AppEventDetails from './components/AppEventDetails';
 import AppContact from './components/contact';
 import AppFooter from './components/footer';
 import AppSignup from './components/signup';
+import Cart from './components/Cart';
 import CreateEvent from './components/CreateEvent'; // Import the new page
 import AppLogin from './components/login';
 import Activate from './components/Activate'; 
@@ -63,7 +64,8 @@ import store from './store';
 import UserTypeSelection from './components/UserTypeSelection';
 import AttendeeSignup from './components/AttendeeSignUp';
 import OrganizerSignup from './components/OrganizerSignUp';
-import Profile from './components/Profile';
+import ProfileDashboard from './components/Profile';
+
 function App() {
   return (
    <Provider store={store}>
@@ -86,8 +88,10 @@ function App() {
               <Route path="/attendee-signup" element={<AttendeeSignup/>} />
               <Route path="/organizer-signup" element={<OrganizerSignup/>} />
               <Route path='/activate/:uid/:token' element={<Activate/>} />
-              <Route path="/profile" element={<Profile/>} />
+              <Route path="/profile" element={<ProfileDashboard/>} />
+              <Route path="/profile/:profile_id" element={<ProfileDashboard/>} />
               <Route path="/events/:event_id" element={<AppEventDetails />} />
+              <Route path="/cart" element={<Cart />} />
             </Routes>
           </BrowserRouter>
         </div>

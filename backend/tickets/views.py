@@ -46,13 +46,15 @@ class SelectedTicketDeleteView(generics.ListAPIView, generics.DestroyAPIView):
             instance.cart.save(update_fields=['total_amount'])
             return Response(status=status.HTTP_204_NO_CONTENT)
             
- 
-
 class TicketDetails(RetrieveUpdateDestroyAPIView):
-    queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
-    permission_classes= [IsOwnerOrReadOnly]
-    lookup_field = 'pk' 
+    permission_classes = [IsOwnerOrReadOnly]
+    lookup_field = 'event_id'  # Use the URL keyword argument for event ID lookup
+
+    def get_queryset(self):
+        event = self.kwargs.get(self.lookup_field)
+        print(event)
+        return Ticket.objects.filter(event_id=event)
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -90,9 +92,24 @@ class SelectTicketView(generics.ListCreateAPIView):
         return SelectedTicket.objects.filter(ticket__ticket__event_id=event_id)
 
 class CartDetails(generics.RetrieveUpdateDestroyAPIView):
-    queryset=Cart.objects.all()
-    serializer_class=CartDetailsSerializer
-    permission_classes= [IsCartOwnerOrReadOnly]
+    serializer_class = CartDetailsSerializer
+    permission_classes = [IsCartOwnerOrReadOnly]
+    lookup_field = 'attendee_id'
+
+    def get_serializer(self, *args, **kwargs):
+        # Pass the instance and context dynamically to the serializer
+        kwargs['context'] = self.get_serializer_context()
+        return self.serializer_class(*args, **kwargs)
+
+    def get_queryset(self):
+        attendee = self.kwargs.get(self.lookup_field)
+        return Cart.objects.filter(attendee_id=attendee)
+    #     # Retrieve the current logged-in user
+    #     user = self.request.user
+    #     # Get the attendee instance associated with the user
+    #     attendee = Attendee.objects.get(user=user)
+    #     # Filter carts based on the attendee instance
+    #     return Cart.objects.filter(attendee=attendee)
 
 class CheckoutView(generics.CreateAPIView):
     serializer_class = OrderSerializer
