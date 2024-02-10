@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework import generics
+from .permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework import serializers
@@ -37,7 +38,7 @@ class AllEventsView(ListAPIView):
 class EventCreateView(generics.CreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    permission_classes= [OrganiserCanCreate]
+    #permission_classes= [OrganiserCanCreate]
     # lookup_field= 'pk'
 
 
@@ -97,12 +98,47 @@ class SearchView(APIView):
        
 
 
+class RatingView(APIView):
+    def post(self, request):
+        # Assuming the rating data is sent in the request body as JSON
+        rating = request.data.get('rating')
+        stars = request.data.get('stars')  # Get the stars data
+        event_id = request.data.get('event_id')  # Assuming the event ID is also sent
+        
+        # Get the attendee from the request user
+        attendee = request.user.attendee
+        
+        # Validate the data
+        if rating is None or stars is None or event_id is None:
+            return Response({'error': 'Rating data incomplete'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if the attendee has already rated the event
+        existing_rating = Rating.objects.filter(event_id=event_id, attendee=attendee).first()
+        if existing_rating:
+            return Response({'error': 'Attendee has already rated this event'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Create or update the event rating
+        try:
+            event_rating, created = Rating.objects.get_or_create(event_id=event_id, attendee=attendee)
+            event_rating.rating = rating
+            event_rating.stars = stars  # Assign stars value
+            event_rating.save()
+            return Response({'success': True, 'message': 'Rating added successfully'}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+        
+
 class ToggleInterestAPIView(APIView):
-    def post(self, request, **kwargs):
-        event_id = kwargs.get('event_id')
-        if event_id is not None:
-            try:
-                event = Event.objects.get(id=event_id)
+    permission_classes = [IsAuthenticated]  # Ensure that only authenticated users can access this endpoint
+    
+    def post(self, request, event_id, **kwargs):
+        try:
+            event = Event.objects.get(id=event_id)
+            
+            # Ensure that the user is authenticated before accessing the attendee attribute
+            if not request.user.is_anonymous:
                 attendee = request.user.attendee
                 interested, created = Interested.objects.get_or_create(
                     attendee=attendee,
@@ -115,10 +151,11 @@ class ToggleInterestAPIView(APIView):
                     # If the interested object already exists, delete it to remove the interest
                     interested.delete()
                     return Response({'success': True, 'message': 'Removed from Interested'}, status=status.HTTP_200_OK)
-            except Event.DoesNotExist:
-                return Response({'success': False, 'error': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
-        else:
-            return Response({'success': False, 'error': 'Event ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'success': False, 'error': 'User is not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+                
+        except Event.DoesNotExist:
+            return Response({'success': False, 'error': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
 
@@ -139,38 +176,38 @@ class InterestedListView(generics.ListAPIView):
 
 
 
+class ReviewView(APIView):
+    def post(self, request, event_id):
+        # Get the review body from the request data
+        body = request.data.get('body')
 
-class RatingView(generics.CreateAPIView):
-    queryset = Rating.objects.all()
-    serializer_class = RatingSerializer
-    #permission_classes = [AttendeeCanRate]
+        # Check if the body is empty
+        if not body:
+            return Response({"error": "Review text is required."}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Get the logged-in user's attendee instance
+        attendee = request.user.attendee
 
-    def perform_create(self, serializer):
-        # Check if the user has already rated the event
-        existing_rating = Rating.objects.filter(attendee=self.request.user.attendee, event=serializer.validated_data['event']).exists()
-        if existing_rating:
-            raise serializers.ValidationError("You have already rated this event.")
+        # Get the event instance corresponding to the event_id
+        try:
+            event = Event.objects.get(id=event_id)
+        except Event.DoesNotExist:
+            return Response({"error": "Event not found."}, status=status.HTTP_404_NOT_FOUND)
 
-
-        # Automatically set the attendee based on the logged-in user
-        serializer.save(attendee=self.request.user.attendee)
-   
-
-
-class ReviewView(generics.CreateAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    #permission_classes = [AttendeeCanReview]
-
-
-    def perform_create(self, serializer):
-        # Automatically set the attendee based on the logged-in user
-         # Check if the user has already rated the event
-        existing_review = Review.objects.filter(attendee=self.request.user.attendee, event=serializer.validated_data['event']).exists()
+        # Check if the attendee has already reviewed this event
+        existing_review = Review.objects.filter(attendee=attendee, event=event).exists()
         if existing_review:
-            raise serializers.ValidationError("You have already reviewed this event.")
-           
-        serializer.save(attendee=self.request.user.attendee)    
+            return Response({"error": "You have already reviewed this event."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create the review
+        review = Review.objects.create(
+            attendee=attendee,
+            event=event,
+            body=body
+        )
+
+        return Response({"message": "Review submitted successfully."}, status=status.HTTP_201_CREATED)
+
+  
        
 
