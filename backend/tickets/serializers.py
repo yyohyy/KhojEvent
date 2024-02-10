@@ -1,6 +1,7 @@
 from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from events.serializers import EventSerializer
 from users.serializers import AttendeeSerializer,OrganiserSerializer
 from .models import *
 
@@ -135,7 +136,8 @@ class SelectTicketSerializer(serializers.ModelSerializer):
           
 
 class SelectedTicketSerializer(serializers.ModelSerializer):
-
+    ticket = TicketTypeSerializer()
+    issued_to= AttendeeSerializer()
     class Meta:
         model= SelectedTicket
         fields=['id','ticket','status','quantity','amount','issued_to']
@@ -215,9 +217,10 @@ class CartDetailsSerializer(serializers.ModelSerializer):
         return instance
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    ticket = SelectedTicketSerializer()
     class Meta:
         model=OrderItem
-        fields=['id','ticket','quantity']
+        fields = ['id', 'quantity', 'ticket']
 
 class OrderSerializer(serializers.ModelSerializer):
     tickets=OrderItemSerializer(many=True,read_only=True)
