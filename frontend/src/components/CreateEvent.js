@@ -8,7 +8,7 @@ const CreateEvent = () => {
 
   const defaultValues = {
     name: '',
-    category: 'Music',
+    category: '',
     venue: '',
     description: '',
     start_date: '',
@@ -28,7 +28,7 @@ const CreateEvent = () => {
   }, []);
   const [formData, setFormData] = useState(defaultValues);
 
-  const category = ['Art', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Others'];
+  const category = ['Art and Entertainment', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Music and Concert','Festival','Others'];
   const availableTags = ['Fun', 'Dance', 'Music', 'Seminar', 'Night', 'Games', 'Food', 'Crafts', 'Zen', 'Comedy', 'Film', 'Photography', 'Tech', 'Thrift', 'Donation', 'Marathon', 'Cycling', 'Nature', 'Health', 'Pottery', 'Book', 'Meet & Greet'];
 
   const handleInputChange = (e) => {
