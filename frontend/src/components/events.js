@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { Link } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -8,19 +8,18 @@ import Pagination from 'react-bootstrap/Pagination';
 import axios from 'axios';
 
 function AppEvents() {
-  const [eventsData, seteventsData] = useState([]);
+  const [eventsData, setEventsData] = useState([]);
   const [active, setActive] = useState(1);
 
   useEffect(() => {
-    // Fetch data from Django backend
     axios.get(`http://127.0.0.1:8000/events/`)
       .then(response => {
-        seteventsData(response.data);
+        setEventsData(response.data);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
       });
-  }, []); // Empty dependency array means this effect runs once when the component mounts
+  }, []);
 
   let items = [];
   for (let number = 1; number <= 5; number++) {
@@ -32,153 +31,31 @@ function AppEvents() {
   }
 
   return (
-    <section id="events" className="block events-block">
-      <Container fluid>
-        <div className="title-holder">
-          <h2>EVENTS</h2>
-          <div className="subtitle">our awesome events</div>
-        </div>
-        <Row className='portfoliolist'>
+    <section id="events" className="block events-block py-5">
+      <Container>
+        <h2 className="text-center mb-4">Upcoming Events</h2>
+        <Row xs={1} md={2} lg={3} className="g-4">
           {eventsData.map(event => (
-            <Col sm={4} key={event.id}>
-              <div className='portfolio-wrapper'>
-                {/* Use Link to navigate to the specific event page */}
-                <Link to={`/events/${event.id}`}>
-                  <Image src={event.image} />
-                  <div className='label text-center'>
-                    <h3>{event.name}</h3>
-                    <p>{event.description}</p>
+            <Col key={event.id}>
+              <Link to={`/events/${event.id}`} className="text-decoration-none">
+                <div className="card event-card border-0 shadow">
+                  <Image src={event.image} className="card-img-top" alt={event.name} />
+                  <div className="card-body">
+                    <h5 className="card-title">{event.name}</h5>
+                    <p className="card-text text-muted small mb-1">{event.venue}</p>
+                    <p className="card-text text-muted small">{event.date}</p>
                   </div>
-                </Link>
-              </div>
+                </div>
+              </Link>
             </Col>
           ))}
         </Row>
-        <Pagination>{items}</Pagination>
+        <div className="d-flex justify-content-center mt-4">
+          <Pagination>{items}</Pagination>
+        </div>
       </Container>
     </section>
   );
 }
 
 export default AppEvents;
-
-
-
-// import Container from 'react-bootstrap/Container';
-// import Row from 'react-bootstrap/Row';
-// import Col from 'react-bootstrap/Col';
-// import Image from 'react-bootstrap/Image';
-// import Pagination from 'react-bootstrap/Pagination';
-
-// const worksData = [
-//   {
-//     id: 1,
-//     link: '/works/1',
-//     image: require('../assets/images/img2.jpg'),
-//     title: 'The Eras Tour ',
-//     subtitle: 'Concert'
-//   },
-//   {
-//     id: 2,
-//     link: '/works/2',
-//     image: require('../assets/images/img3.jpg'),
-//     title: 'PhotoKTM',
-//     subtitle: 'Art Exhibition'
-//   },
-//   {
-//     id: 3,
-//     link: '/works/3',
-//     image: require('../assets/images/img4.jpg'),
-//     title: 'Farmers market',
-//     subtitle: 'Local market'
-//   },
-//   {
-//     id: 4,
-//     link: '/works/4',
-//     image: require('../assets/images/img5.jpg'),
-//     title: 'Trekking',
-//     subtitle: 'Nature'
-//   },
-//   {
-//     id: 5,
-//     link: '/works/5',
-//     image: require('../assets/images/img6.jpg'),
-//     title: 'Yoga Retreat',
-//     subtitle: 'Healing and Meditation'
-//   },
-//   {
-//     id: 6,
-//     link: '/works/6',
-//     image: require('../assets/images/img7.jpg'),
-//     title: 'ROBO',
-//     subtitle: 'Tech and innovation'
-//   },
-//   {
-//     id: 7,
-//     link: '/works/7',
-//     image: require('../assets/images/img8.jpg'),
-//     title: 'Donation Campaign',
-//     subtitle: 'Social Service'
-//   },
-//   {
-//     id: 8,
-//     link: '/works/8',
-//     image: require('../assets/images/img9.jpg'),
-//     title: 'KTM Football Cup',
-//     subtitle: 'Sports'
-//   },
-//   {
-//     id: 9,
-//     link: '/works/9',
-//     image: require('../assets/images/img10.jpg'),
-//     title: 'Ted Talk',
-//     subtitle: 'Motivation'
-//   }
-// ]
-
-// let active = 2;
-// let items = [];
-// for (let number = 1; number <= 5; number++) {
-//   items.push(
-//     <Pagination.Item key={number} active={number === active}>
-//       {number}
-//     </Pagination.Item>,
-//   );
-// }
-
-// function AppWorks() {
-
-//   return (
-//     <section id="works" className="block works-block">
-//       <Container fluid>
-//         <div className="title-holder">
-//           <h2>EVENTS</h2>
-//           <div className="subtitle">Our awesome events</div>
-//         </div>
-//         <Row className='portfoliolist'>
-//           {
-//             worksData.map(works => {
-//               return (
-//                 <Col sm={4} key={works.id}>
-//                   <div className='portfolio-wrapper'>
-//                     <a href={works.link}>
-//                       <Image src={works.image} />
-//                       <div className='label text-center'>
-//                         <h3>{works.title}</h3>
-//                         <p>{works.subtitle}</p>
-//                       </div>
-//                     </a>
-//                   </div>
-                  
-//                 </Col>
-//               );
-//             })
-//           }
-//         </Row>
-//         <Pagination>{items}</Pagination>
-//       </Container>  
-//     </section>
-//   );
-// }
-
-// export default AppWorks;

@@ -74,7 +74,7 @@ class EventDetailsView(generics.RetrieveUpdateDestroyAPIView):
     # http_method_names=['get','patch','delete']
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    permission_classes = [OrganiserCanUpdate]
+    #permission_classes = [OrganiserCanUpdate]
     # lookup_field='pk'
 
     def delete(self, request, *args, **kwargs):

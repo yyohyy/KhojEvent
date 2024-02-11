@@ -2,26 +2,56 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const ProfileDashboard = () => {
-  const [userData, setUserData] = useState(null); // Changed initial state to null
+  const [userData, setUserData] = useState("jessica dangol 2001"); // Changed initial state to null
   const [editing, setEditing] = useState(false);
   const [newFirstName, setNewFirstName] = useState('');
   const [newLastName, setNewLastName] = useState('');
   const [newBirthDate, setNewBirthDate] = useState('');
+ 
+  const UserProfile = () => {
+    const [userId, setUserId] = useState(null);
+    const [userData, setUserData] = useState(null);
+  
+    useEffect(() => {
+      const fetchUserData = async () => {
+        try {
+          // Fetch user ID first
+          const userIdResponse = await axios.get('/api/get_user_id');
+          const fetchedUserId = userIdResponse.data.user_id;
+          setUserId(fetchedUserId);
+  
+          // Once we have the user ID, fetch user data using that ID
+          const userDataResponse = await axios.get(`http://127.0.0.1:8000/details/${fetchedUserId}/`);
+          setUserData(userDataResponse.data);
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      };
+  
+      fetchUserData();
+    }, []);
+  
+  //   return (
+  //     <div>
+  //       {userData ? (
+  //         <div>
+  //           <p>User ID: {userId}</p>
+  //           <p>User Data
+  
+  // // useEffect(() => {
+  //   // Fetch user data from the server
+  //   const fetchUserData = async () => {
+  //     try {
+  //       const response = await axios.get('http://127.0.0.1:8000/details/<int:pk>/');
+  //       setUserData(response.data);
+  //     } catch (error) {
+  //       console.error('Error fetching user data:', error);
+  //     }
+  //   };
 
-  useEffect(() => {
-    // Fetch user data from the server
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/details/<int:pk>/');
-        setUserData(response.data);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
+  //   fetchUserData();
+  // }, []);
+  }
   const handleEdit = () => {
     setEditing(true);
     // Initialize the input fields with current user data
