@@ -217,13 +217,17 @@ class CartDetailsSerializer(serializers.ModelSerializer):
         return instance
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    event = EventSerializer(source='ticket.ticket.ticket.event')
     ticket = SelectedTicketSerializer()
     class Meta:
         model=OrderItem
-        fields = ['id', 'quantity', 'ticket']
+        fields = ['id', 'quantity', 'ticket','event']
 
 class OrderSerializer(serializers.ModelSerializer):
+    
     tickets=OrderItemSerializer(many=True,read_only=True)
     class Meta:
         model=Order
         fields=['id','cart','total_amount','status','tickets','created_at']
+
+        
