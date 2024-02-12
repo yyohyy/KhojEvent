@@ -166,12 +166,14 @@ class CartDetailsSerializer(serializers.ModelSerializer):
         data['tickets'] = SelectedTicketSerializer(booked_tickets, many=True).data
         tickets_data = data['tickets']
         for ticket_data in tickets_data:
-            ticket_type_id = ticket_data.get('ticket')
+            ticket_type_id = ticket_data.get('ticket')['id']
             if ticket_type_id:
                 ticket_type = TicketType.objects.get(pk=ticket_type_id)
                 ticket_type_serializer = TicketTypeSerializer(ticket_type)
+                print(ticket_type)
                 ticket_data['ticket'] = ticket_type_serializer.data
                 event = ticket_type.ticket.event
+                print(event)
                 ticket_data['event'] = {
                     'name': event.name,
                     'image': self.get_absolute_image_url(event.image) if event.image else None,

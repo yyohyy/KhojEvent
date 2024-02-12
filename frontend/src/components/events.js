@@ -4,8 +4,10 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
-import Pagination from 'react-bootstrap/Pagination';
+import Card from 'react-bootstrap/Card';
 import axios from 'axios';
+import { FaMapMarkerAlt, FaCalendarAlt, FaClock } from "react-icons/fa"
+
 
 function AppEvents() {
   const [eventsData, seteventsData] = useState([]);
@@ -20,165 +22,50 @@ function AppEvents() {
       .catch(error => {
         console.error('Error fetching data:', error);
       });
-  }, []); // Empty dependency array means this effect runs once when the component mounts
-
-  let items = [];
-  for (let number = 1; number <= 5; number++) {
-    items.push(
-      <Pagination.Item key={number} active={number === active} onClick={() => setActive(number)}>
-        {number}
-      </Pagination.Item>,
-    );
-  }
+  }, []); 
 
   return (
     <section id="events" className="block events-block">
       <Container fluid>
         <div className="title-holder">
           <h2>EVENTS</h2>
-          <div className="subtitle">our awesome events</div>
+          <div className="subtitle">browse and be there</div>
         </div>
         <Row className='portfoliolist'>
           {eventsData.map(event => (
             <Col sm={4} key={event.id}>
               <div className='portfolio-wrapper'>
                 {/* Use Link to navigate to the specific event page */}
-                <Link to={`/events/${event.id}`}>
-                  <Image src={event.image} />
-                  <div className='label text-center'>
-                    <h3>{event.name}</h3>
-                    <p>{event.description}</p>
-                  </div>
+                <Link to={`/events/${event.id}`} className="card-link">
+                  <Card >
+                    <Card.Img variant="top" src={event.image} />
+                    <Card.Body>
+                      <div className='label text-center'>
+                      <h3 style={{ fontFamily: 'Montserrat', color: '#8f0000', fontSize:'30px' }}>{event.name}</h3>
+                        <p style={{ color: 'grey' }}>
+                        <span>
+                          <FaMapMarkerAlt style={{ fill: 'pink' }} /> {event.venue}
+                        </span>
+                      </p>
+                      <p style={{ color: 'grey' }}>
+                        <span >
+                          <FaCalendarAlt style={{ fill: 'pink' }} /> {event.start_date}
+                        </span>
+                        <span style={{ paddingLeft: '10px' }}>
+                          <FaClock style={{ fill: 'pink' }} /> {event.start_time}
+                        </span>
+                        </p>
+                      </div>
+                    </Card.Body>
+                  </Card>
                 </Link>
               </div>
             </Col>
           ))}
         </Row>
-        <Pagination>{items}</Pagination>
       </Container>
     </section>
   );
-}
+          }
 
 export default AppEvents;
-
-
-
-// import Container from 'react-bootstrap/Container';
-// import Row from 'react-bootstrap/Row';
-// import Col from 'react-bootstrap/Col';
-// import Image from 'react-bootstrap/Image';
-// import Pagination from 'react-bootstrap/Pagination';
-
-// const worksData = [
-//   {
-//     id: 1,
-//     link: '/works/1',
-//     image: require('../assets/images/img2.jpg'),
-//     title: 'The Eras Tour ',
-//     subtitle: 'Concert'
-//   },
-//   {
-//     id: 2,
-//     link: '/works/2',
-//     image: require('../assets/images/img3.jpg'),
-//     title: 'PhotoKTM',
-//     subtitle: 'Art Exhibition'
-//   },
-//   {
-//     id: 3,
-//     link: '/works/3',
-//     image: require('../assets/images/img4.jpg'),
-//     title: 'Farmers market',
-//     subtitle: 'Local market'
-//   },
-//   {
-//     id: 4,
-//     link: '/works/4',
-//     image: require('../assets/images/img5.jpg'),
-//     title: 'Trekking',
-//     subtitle: 'Nature'
-//   },
-//   {
-//     id: 5,
-//     link: '/works/5',
-//     image: require('../assets/images/img6.jpg'),
-//     title: 'Yoga Retreat',
-//     subtitle: 'Healing and Meditation'
-//   },
-//   {
-//     id: 6,
-//     link: '/works/6',
-//     image: require('../assets/images/img7.jpg'),
-//     title: 'ROBO',
-//     subtitle: 'Tech and innovation'
-//   },
-//   {
-//     id: 7,
-//     link: '/works/7',
-//     image: require('../assets/images/img8.jpg'),
-//     title: 'Donation Campaign',
-//     subtitle: 'Social Service'
-//   },
-//   {
-//     id: 8,
-//     link: '/works/8',
-//     image: require('../assets/images/img9.jpg'),
-//     title: 'KTM Football Cup',
-//     subtitle: 'Sports'
-//   },
-//   {
-//     id: 9,
-//     link: '/works/9',
-//     image: require('../assets/images/img10.jpg'),
-//     title: 'Ted Talk',
-//     subtitle: 'Motivation'
-//   }
-// ]
-
-// let active = 2;
-// let items = [];
-// for (let number = 1; number <= 5; number++) {
-//   items.push(
-//     <Pagination.Item key={number} active={number === active}>
-//       {number}
-//     </Pagination.Item>,
-//   );
-// }
-
-// function AppWorks() {
-
-//   return (
-//     <section id="works" className="block works-block">
-//       <Container fluid>
-//         <div className="title-holder">
-//           <h2>EVENTS</h2>
-//           <div className="subtitle">Our awesome events</div>
-//         </div>
-//         <Row className='portfoliolist'>
-//           {
-//             worksData.map(works => {
-//               return (
-//                 <Col sm={4} key={works.id}>
-//                   <div className='portfolio-wrapper'>
-//                     <a href={works.link}>
-//                       <Image src={works.image} />
-//                       <div className='label text-center'>
-//                         <h3>{works.title}</h3>
-//                         <p>{works.subtitle}</p>
-//                       </div>
-//                     </a>
-//                   </div>
-                  
-//                 </Col>
-//               );
-//             })
-//           }
-//         </Row>
-//         <Pagination>{items}</Pagination>
-//       </Container>  
-//     </section>
-//   );
-// }
-
-// export default AppWorks;

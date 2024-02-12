@@ -13,7 +13,7 @@ var heroData = [
     image: require('../assets/images/img-hero1.jpg'),
     title: 'Find the Events with Us',
     description: 'Welcome to KhojEvent, your one-stop destination for seamless event planning and management! At KhojEvent, we understand the importance of creating unforgettable moments, and our user-friendly website is designed to streamline the entire event management process.',
-    link: 'https://www.google.com'
+    link: 'http://localhost:3000/events'
   },
   {
     id: 2,
@@ -27,7 +27,7 @@ var heroData = [
     image: require('../assets/images/img-hero3.jpg'),
     title: 'Promote your Event ',
     description: 'Introducing EventBoost – Amplify Your Experience! Unlock the full potential of your events with our powerful promotion tools that guarantee heightened visibility and attendance. Create a buzz around your event by leveraging our strategic promotional features. Craft eye-catching event pages with customizable designs, compelling descriptions, and vibrant multimedia content. Showcase what makes your event unique and irresistible to potential attendees.',
-    link: 'https://www.twitter.com'
+    link: 'http://localhost:3000/services'
   }
 ]
 const blogData = [
@@ -80,7 +80,7 @@ function AppHero() {
           }
       </Carousel>
       <Container fluid>
-        <div className="title-holder">
+        <div className="title-holder mt-4" >
           <h2>About Us</h2>
           <div className="subtitle">learn more about us</div>
         </div>
@@ -95,7 +95,7 @@ function AppHero() {
            
           </Col>
         </Row>
-        <div className="title-holder">
+        <div className="title-holder mt-4">
           <h2>Coming Soon</h2>
           <div className="subtitle">Stay Tuned</div>
         </div>
@@ -104,7 +104,7 @@ function AppHero() {
             blogData.map(blog => {
               return (
                 <Col sm={4} key={blog.id}>
-                  <div className='holder'>
+                  <div className='holder mb-2 mt-2 text-center'>
                     <Card>
                       <Card.Img variant="top" src={blog.image} />
                       <Card.Body>
@@ -113,7 +113,9 @@ function AppHero() {
                         <Card.Text>
                           {blog.description}
                         </Card.Text>
-                        <a href={blog.link} className="btn btn-primary">Read More <i className="fas fa-chevron-right"></i></a>
+                        <div className="text-center"> {/* Center align the button */}
+                          <a href={blog.link} className="btn btn-primary">Read More <i className="fas fa-chevron-right"></i></a>
+                        </div>
                       </Card.Body>
                     </Card>
                   </div>
@@ -121,6 +123,11 @@ function AppHero() {
               )
             })
           }
+        </Row>
+        <Row className="mt-4"> {/* Add margin-top to the last Row */}
+          <Col>
+            {/* Empty column for spacing */}
+          </Col>
         </Row>
       </Container>
 
