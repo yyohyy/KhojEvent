@@ -44,12 +44,24 @@ function AppHeader() {
     const authtoken = localStorage.getItem("Bearer");
     if (authtoken) {
       setIsLoggedIn(true);
+          // Fetch the user details including user_id from the backend
+    axios.get('http://127.0.0.1:8000/users/me/', {
+      headers: {
+        Authorization: `Bearer ${authtoken}`
+      }
+    }).then(response => {
+      // Store the user_id in local storage
+      localStorage.setItem("id", response.data.id);
+    }).catch(error => {
+      console.error("Error fetching user details:", error);
+    });
           }
   }, []);
   
   const logout = () => {
     // Perform logout functionality
     localStorage.removeItem("Bearer");
+    localStorage.removeItem("id");
     setIsLoggedIn(false);
     console.log("You are logged out");
     // navigate('/'); // Redirect to login page after logout
@@ -103,7 +115,7 @@ function AppHeader() {
 
             {isLoggedIn ? (
               <NavDropdown title={<CgProfile size={20} />} id="basic-nav-dropdown">
-                <NavDropdown.Item href="/profile">
+                <NavDropdown.Item href={`/profile/${localStorage.getItem("id")}`}>
                   View Profile
                 </NavDropdown.Item>
                 <NavDropdown.Item href="/settings">Settings</NavDropdown.Item>

@@ -1,31 +1,34 @@
 from rest_framework import serializers
 from events.models import Event, Category, Tag, Organiser, Rating, Review, Interested
+from users.models import Attendee
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
-        
-        
+        fields = ['name']
+       
+       
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = '__all__'
-        
+        fields = ['name']
+       
 class OrganiserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Organiser 
+        model = Organiser
         fields = '__all__'
-        
+       
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Rating 
+        model = Rating
         fields = ["event", "stars", "attendee"]
-        
+       
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Review 
-        fields = '__all__'
+        model = Review
+        fields = ["attendee", "event", "body"]
+
 
 class EventSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
@@ -33,28 +36,33 @@ class EventSerializer(serializers.ModelSerializer):
    # organizer = OrganiserSerializer(many=False)
     class Meta:
         model = Event
-        fields = ["name", "category", "description", "venue", "start_date", "end_date", "start_time", "end_time","tags", "is_paid", "image","id"]
+        fields = ["id","name", "category", "description", "venue", "start_date", "end_date", "start_time", "end_time","tags", "is_paid", "organiser","image"]
+
 
     def create(self, validated_data):
         category_data = validated_data.pop('category', [])
         tags_data = validated_data.pop('tags', [])
 
+
         # Create or get Category instances
         category_instance, created = Category.objects.get_or_create(name=category_data["name"])
+
 
         # Create or get Tag instances
         tags_instances = [Tag.objects.get_or_create(**tag_data)[0] for tag_data in tags_data]
 
+
         validated_data['category'] = category_instance
         # Create the Event instance with the modified data
         event_instance = Event.objects.create(**validated_data)
-    
+   
         # Add the categories and tags to the Event instance
         #event_instance.categories.id = categories_instances.pk
         event_instance.tags.set(tags_instances)
 
+
         return event_instance
-    
+   
     def update(self, instance, validated_data):
         # Update standard fields
         instance.name = validated_data.get('name', instance.name)
@@ -66,37 +74,42 @@ class EventSerializer(serializers.ModelSerializer):
         instance.end_time = validated_data.get('end_time', instance.end_time)
         instance.is_paid = validated_data.get('is_paid', instance.is_paid)
 
+
         # Update category
         category_data = validated_data.get('category', {})
         category_instance, created = Category.objects.get_or_create(**category_data)
         instance.category = category_instance
+
 
         # Update tags
         tags_data = validated_data.get('tags', [])
         tags_instances = [Tag.objects.get_or_create(**tag_data)[0] for tag_data in tags_data]
         instance.tags.set(tags_instances)
 
+
         # Save the updated instance
         instance.save()
 
+
         return instance
+    
+class EventImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = ['image']
+
 
 class InterestedSerializer(serializers.ModelSerializer):
     #event = EventSerializer(many=False)
 
+
     class Meta:
         model = Interested
-        fields = ['attendee','event','is_interested', 'created']
-        
-    #def update(self, instance, validated_data):
-        # Update the main fields
-        #instance.is_interested = validated_data.get('is_interested', instance.is_interested)
-        
-        # Update the nested 'event' field
-        #event_data = validated_data.get('event', [])
-        #instance.event.set(Event.objects.filter(id__in=[event['id'] for event in event_data]))
-
-        # Save the changes
-        #instance.save()
-        #return instance 
-    
+        fields = ['attendee','event']
+       
+class InterestedDetailSerializer(serializers.ModelSerializer):
+    event = EventSerializer(many=False)
+   
+    class Meta:
+        model = Interested
+        fields = '__all__'

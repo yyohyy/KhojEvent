@@ -1176,3 +1176,7 @@ textarea {
     margin: 0;
   }
 }
+
+.bg-lightpink {
+  background-color: #fcedf0; /* This is the hexadecimal color code for light pink */
+}

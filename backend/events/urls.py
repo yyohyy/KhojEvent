@@ -1,21 +1,17 @@
 from django.urls import path
-#from .views import GoogleAPIProxy
-from .views import GetRoutesView, AllEventsView, EventCreateView, EventDetailsView , SearchView, MarkInterestedView, InterestedDetailView, RatingView, ReviewView#, UploadImageView
+from .views import GetRoutesView, AllEventsView, EventCreateView, EventDetailsView , SearchView, ToggleInterestAPIView, InterestedListView, RatingView, ReviewView, EventUpdateView, EventImageView
+
 urlpatterns = [
     path('routes/', GetRoutesView.as_view(), name='get_routes'),
     path('events/', AllEventsView.as_view(), name='get_events'),
     path('events/<str:pk>/', EventDetailsView.as_view(), name='get_event_detail'),
+    path('event-update/<str:pk>/', EventUpdateView.as_view(), name='event_update'),
     path('create-event/', EventCreateView.as_view(), name='create_event'),
-   # path('create-tag/', TagCreateView.as_view(), name='create-tag'),    
+    path('event/<int:pk>/image/',EventImageView.as_view(), name='event-image'),
+   #path('create-tag/', TagCreateView.as_view(), name='create-tag'),    
     path('search/', SearchView.as_view(), name='search-view'),
-    path('interested/', MarkInterestedView.as_view(), name='interested-list'),
-    path('interested-detail/<str:pk>/', InterestedDetailView.as_view(), name='interested-detail'),
-
-    #path('interested/mark/<int:pk>/', MarkInterestView.as_view(), name='mark-interest'),
-    path('rate-event/<str:pk>/', RatingView.as_view(), name='rate_event'),
-    path('review-event/<str:pk>/', ReviewView.as_view(), name='review_event'),
-    #path('upload_image/', UploadImageView.as_view(), name='upload_image'),
+    path('events/<int:event_id>/interested/', ToggleInterestAPIView.as_view(), name='toggle_interest'),
+    path('interested-detail/<int:attendee_id>/', InterestedListView.as_view(), name='interested-detail'),
+    path('rate/', RatingView.as_view(), name='rate_event'),
+    path('review-event/<int:event_id>/', ReviewView.as_view(), name='review_event')
 ]
-
-    #path('google-api/', GoogleAPIProxy.as_view(), name='google-api'),
-    

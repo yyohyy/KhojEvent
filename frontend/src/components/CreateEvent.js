@@ -8,7 +8,7 @@ const CreateEvent = () => {
 
   const defaultValues = {
     name: '',
-    category: 'Music',
+    category: '',
     venue: '',
     description: '',
     start_date: '',
@@ -32,6 +32,7 @@ const CreateEvent = () => {
   const [formData, setFormData] = useState(defaultValues);
   const [paidSelected, setPaidSelected] = useState(false);
 
+<<<<<<< HEAD
   const submission = async (data) => {
     try {
       const formattedData = {
@@ -69,6 +70,9 @@ const CreateEvent = () => {
   };
 
   const category = ['Art', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Others'];
+=======
+  const category = ['Art and Entertainment', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Music and Concert','Festival','Others'];
+>>>>>>> c716350fe4f8a167e75534bcc76317d4677edf32
   const availableTags = ['Fun', 'Dance', 'Music', 'Seminar', 'Night', 'Games', 'Food', 'Crafts', 'Zen', 'Comedy', 'Film', 'Photography', 'Tech', 'Thrift', 'Donation', 'Marathon', 'Cycling', 'Nature', 'Health', 'Pottery', 'Book', 'Meet & Greet'];
 
   const handleInputChange = (e) => {
@@ -86,6 +90,7 @@ const CreateEvent = () => {
     setFormData({ ...formData, tags: updatedTags });
   };
 
+<<<<<<< HEAD
   const handleTicketTypeChange = (index, e) => {
     const { name, value } = e.target;
     const updatedTicketTypes = [...formData.ticketTypes];
@@ -101,8 +106,42 @@ const CreateEvent = () => {
   };
 
   const handleSubmit = (e) => {
+=======
+  const handleSubmit = async (e) => {
+>>>>>>> c716350fe4f8a167e75534bcc76317d4677edf32
     e.preventDefault();
-    submission(formData);
+    try {
+      const formDataWithoutImage = { ...formData };
+      delete formDataWithoutImage.image; // Remove image from the main form data
+
+      // Create a new FormData instance
+      const formDataForImage = new FormData();
+      formDataForImage.append('image', formData.image);
+
+      const formattedData = {
+        ...formDataWithoutImage,
+        category: {name: formData.category},
+        tags: formData.tags.map((tag) => ({ name: tag })),
+      };
+
+      // Send the main form data
+      const response = await AxiosInstance.post('create-event/', formattedData);
+
+      // Get the ID of the created event
+      const eventId = response.data.id;
+
+      // Send the image separately to the endpoint associated with the event ID
+      await AxiosInstance.patch(`event/${eventId}/image/`, formDataForImage,{
+      headers: {
+        'Content-Type': 'multipart/form-data', // Set content type as multipart/form-data
+      },
+    });
+
+      console.log('Response from backend:', response);
+      navigate('/');
+    } catch (error) {
+      console.error('Error submitting data:', error);
+    }
   };
 
   const handlePaidOptionChange = (e) => {

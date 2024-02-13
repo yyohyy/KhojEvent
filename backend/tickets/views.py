@@ -46,13 +46,15 @@ class SelectedTicketDeleteView(generics.ListAPIView, generics.DestroyAPIView):
             instance.cart.save(update_fields=['total_amount'])
             return Response(status=status.HTTP_204_NO_CONTENT)
             
- 
-
 class TicketDetails(RetrieveUpdateDestroyAPIView):
-    queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
-    permission_classes= [IsOwnerOrReadOnly]
-    lookup_field = 'pk' 
+    permission_classes = [IsOwnerOrReadOnly]
+    lookup_field = 'event_id'  # Use the URL keyword argument for event ID lookup
+
+    def get_queryset(self):
+        event = self.kwargs.get(self.lookup_field)
+        print(event)
+        return Ticket.objects.filter(event_id=event)
 
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -89,10 +91,52 @@ class SelectTicketView(generics.ListCreateAPIView):
         event_id = self.kwargs.get('event_id')
         return SelectedTicket.objects.filter(ticket__ticket__event_id=event_id)
 
+class SelectedTicketDetails(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = SelectedTicket.objects.all()
+    serializer_class = SelectedTicketSerializer
+   # permission_classes = [IsCartOwnerOrReadOnly]
+    lookup_field = 'id'
+      
+    def destroy(self, request, *args, **kwargs):
+        with transaction.atomic():
+            instance = self.get_object()
+            previous_quantity = instance.quantity
+            ticket_type = instance.ticket
+
+            # Subtract the quantity of the deleted selected ticket from the associated tickettype
+            ticket_type.quantity_available += instance.quantity
+            ticket_type.save(update_fields=['quantity_available'])
+            cart = instance.cart
+            if cart:
+                print(cart.total_amount)
+                cart.total_amount -=(instance.amount)
+                print(instance.amount)
+                print(cart.total_amount)
+                cart.save(update_fields=['total_amount'])
+            ticket=ticket_type.ticket
+            ticket.quantity_available += instance.quantity
+            ticket.save(update_fields=['quantity_available'])
+
+
+            # Call the parent class method to delete the selected ticket instance
+            self.perform_destroy(instance)
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        
 class CartDetails(generics.RetrieveUpdateDestroyAPIView):
-    queryset=Cart.objects.all()
-    serializer_class=CartDetailsSerializer
-    permission_classes= [IsCartOwnerOrReadOnly]
+    serializer_class = CartDetailsSerializer
+    permission_classes = [IsCartOwnerOrReadOnly]
+    lookup_field = 'attendee_id'
+
+    def get_serializer(self, *args, **kwargs):
+        # Pass the instance and context dynamically to the serializer
+        kwargs['context'] = self.get_serializer_context()
+        return self.serializer_class(*args, **kwargs)
+
+    def get_queryset(self):
+        attendee = self.kwargs.get(self.lookup_field)
+        return Cart.objects.filter(attendee_id=attendee)
 
 class CheckoutView(generics.CreateAPIView):
     serializer_class = OrderSerializer
@@ -129,16 +173,26 @@ class CheckoutView(generics.CreateAPIView):
             else:
                 return Response({"message": "No cart found for the attendee"}, status=status.HTTP_404_NOT_FOUND)
 
-# class PaymentProcessView(generics.UpdateAPIView):
-#     queryset = Order.objects.all()
-#     serializer_class = OrderSerializer
+class PaymentView(generics.UpdateAPIView,generics.ListAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
 
-#     def update(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.status = 'SUCCESS'
+        instance.save()
+        for ticket in instance.tickets.all():
+            ticket.ticket.status = 'CONFIRMED'
+            ticket.ticket.save()
 
-#         instance = self.get_object()
-#         instance.payment_status = serializer.validated_data.get('payment_status')
-#         instance.save()
+        order_serializer = self.get_serializer(instance)
+        order_item_serializer = OrderItemSerializer(instance.tickets.all(), many=True)
 
-#         return Response({"message": f"Payment {instance.payment_status}"}, status=status.HTTP_200_OK)    
+        return Response({
+            'order': order_serializer.data,
+            'order_items': order_item_serializer.data
+        }, status=status.HTTP_200_OK)
+    
+class OrderDetails(generics.RetrieveAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer    
