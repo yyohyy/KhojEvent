@@ -135,27 +135,15 @@ const ProfileDashboard = () => {
     <div className="container">
       <div className="row">
         <div className="col-md-3">
-          <div className="list-group">
-            <button
-              className="list-group-item list-group-item-action"
-              onClick={() => console.log("View Liked Events")}
-            >
-              View Liked Events
-            </button>
-            <button
-              className="list-group-item list-group-item-action"
-              onClick={() => console.log("Booked Events")}
-            >
-              Booked Events
-            </button>
-            <button
-              className="list-group-item list-group-item-action"
-              onClick={() => console.log("Paid Events")}
-            >
-              Paid Events
-            </button>
-            {/* Add more options/buttons as needed */}
-          </div>
+          {/* Left Sidebar with options */}
+          
+        <div className="list-group">
+          <button className="list-group-item list-group-item-action" onClick={() => console.log("View Liked Events")}>View Liked Events</button>
+          <button className="list-group-item list-group-item-action" onClick={() => console.log("Booked Events")}>Booked Events</button>
+          <button className="list-group-item list-group-item-action" onClick={() => console.log("Paid Events")}>Paid Events</button>
+          {/* Add more options/buttons as needed */}
+        
+      </div>
         </div>
         <div className="col-md-7">
           <div

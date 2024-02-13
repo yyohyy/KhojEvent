@@ -55,6 +55,8 @@ import AppEventDetails from './components/AppEventDetails';
 import AppContact from './components/contact';
 import AppFooter from './components/footer';
 import AppSignup from './components/signup';
+import Cart from './components/Cart';
+import Checkout from './components/Checkout';
 import CreateEvent from './components/CreateEvent'; // Import the new page
 import AppLogin from './components/login';
 import Activate from './components/Activate'; 
@@ -65,6 +67,9 @@ import AttendeeSignup from './components/AttendeeSignUp';
 import OrganizerSignup from './components/OrganizerSignUp';
 import ProfileDashboard from './components/Profile';
 import BookingPage from './components/booking';
+import Payment from './components/Payment';
+import Order from './components/Order';
+
 function App() {
   return (
    <Provider store={store}>
@@ -91,6 +96,10 @@ function App() {
               <Route path="/profile" element={<ProfileDashboard />} />
               <Route path="/profile/:profile_id" element={<ProfileDashboard/>} />
               <Route path="/events/:event_id" element={<AppEventDetails />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/payment/:orderId" element={<Payment />} />
+              <Route path="/orders/:orderId" element={<Order />} />
             </Routes>
           </BrowserRouter>
         </div>

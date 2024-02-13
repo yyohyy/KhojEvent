@@ -1,6 +1,7 @@
 from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from events.serializers import EventSerializer
 from users.serializers import AttendeeSerializer,OrganiserSerializer
 from .models import *
 
@@ -135,7 +136,8 @@ class SelectTicketSerializer(serializers.ModelSerializer):
           
 
 class SelectedTicketSerializer(serializers.ModelSerializer):
-
+    ticket = TicketTypeSerializer()
+    issued_to= AttendeeSerializer()
     class Meta:
         model= SelectedTicket
         fields=['id','ticket','status','quantity','amount','issued_to']
@@ -158,14 +160,31 @@ class CartDetailsSerializer(serializers.ModelSerializer):
                 raise ValidationError(f"Cannot select more than {ticket_data['ticket'].ticket.max_limit} tickets for {ticket_data['ticket'].ticket.event.name}. Limit exceeded.")
 
         return tickets_data
-    
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        # Filter the tickets to include only those with status 'BOOKED'
         booked_tickets = instance.tickets.filter(status='BOOKED')
         data['tickets'] = SelectedTicketSerializer(booked_tickets, many=True).data
-        return data    
-    
+        tickets_data = data['tickets']
+        for ticket_data in tickets_data:
+            ticket_type_id = ticket_data.get('ticket')
+            if ticket_type_id:
+                ticket_type = TicketType.objects.get(pk=ticket_type_id)
+                ticket_type_serializer = TicketTypeSerializer(ticket_type)
+                ticket_data['ticket'] = ticket_type_serializer.data
+                event = ticket_type.ticket.event
+                ticket_data['event'] = {
+                    'name': event.name,
+                    'image': self.get_absolute_image_url(event.image) if event.image else None,
+                }
+        return data
+
+    def get_absolute_image_url(self, image):
+        if image:
+            request = self.context.get('request')
+            return request.build_absolute_uri(image.url)
+        return None
+
+        
     def update(self, instance, validated_data):
         tickets_data = validated_data.pop('tickets', [])
         existing_tickets = {str(ticket.id): ticket for ticket in instance.tickets.all()}
@@ -198,9 +217,10 @@ class CartDetailsSerializer(serializers.ModelSerializer):
         return instance
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    ticket = SelectedTicketSerializer()
     class Meta:
         model=OrderItem
-        fields=['id','ticket','quantity']
+        fields = ['id', 'quantity', 'ticket']
 
 class OrderSerializer(serializers.ModelSerializer):
     tickets=OrderItemSerializer(many=True,read_only=True)
