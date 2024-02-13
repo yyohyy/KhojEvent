@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-
+import { useNavigate } from 'react-router-dom';
 const ProfileDashboard = () => {
+  const navigate = useNavigate(); 
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -130,7 +131,11 @@ const ProfileDashboard = () => {
       console.error("Error uploading profile picture:", error);
     }
   };
-
+  const handleViewLikedEvents = () => {
+    console.log("View Liked Events");
+    // Navigate to the 'Liked Events' page
+    navigate(`/profile/${localStorage.getItem("id")}/interested`);
+};
   return (
     <div className="container">
       <div className="row">

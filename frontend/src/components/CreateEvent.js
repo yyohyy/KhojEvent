@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const CreateEvent = () => {
   const navigate = useNavigate();
 
-  const defaultValues = { // Define defaultValues before it's used
+  const defaultValues = {
     name: '',
     category: '',
     venue: '',
@@ -20,13 +20,13 @@ const CreateEvent = () => {
     organiser:'',
     image: null,
     ticketTypes: [],
+    max_limit: '',
   };
 
   const [formData, setFormData] = useState(defaultValues);
   const [paidSelected, setPaidSelected] = useState(false);
 
   useEffect(() => {
-    // Fetch and set the authentication token when the component mounts
     const token = localStorage.getItem('Bearer');
     if (token) {
       AxiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -69,9 +69,8 @@ const CreateEvent = () => {
     e.preventDefault();
     try {
       const formDataWithoutImage = { ...formData };
-      delete formDataWithoutImage.image; // Remove image from the main form data
+      delete formDataWithoutImage.image;
   
-      // Create a new FormData instance
       const formDataForImage = new FormData();
       formDataForImage.append('image', formData.image);
   
@@ -79,29 +78,25 @@ const CreateEvent = () => {
         ...formDataWithoutImage,
         category: { name: formData.category },
         tags: formData.tags.map((tag) => ({ name: tag })),
-        organiser: localStorage.getItem('id'),
-        ticket_types: formData.ticketTypes.map((ticket) => ({ // Here was the error
+        ticket_types: formData.ticketTypes.map((ticket) => ({
           ...ticket,
-          quantity_available: ticket.quantity, // Set quantity_available to the same value as quantity
+          quantity_available: ticket.quantity,
         })),
       };
   
-      // Send the main form data
       const response = await AxiosInstance.post('create-event/', formattedData);
   
       if (formData.is_paid === 'True') {
-        // Submit ticket data if paid option is chosen
-        const eventId = response.data.id; // Move this line here for eventId definition
+        const eventId = response.data.id;
         const ticketResponse = await AxiosInstance.post(`tickets/${eventId}/create/`, { ticket_types: formData.ticketTypes });
         console.log('Ticket creation response:', ticketResponse);
       }
-      // Get the ID of the created event
+  
       const eventId = response.data.id;
   
-      // Send the image separately to the endpoint associated with the event ID
       await AxiosInstance.patch(`event/${eventId}/image/`, formDataForImage, {
         headers: {
-          'Content-Type': 'multipart/form-data', // Set content type as multipart/form-data
+          'Content-Type': 'multipart/form-data',
         },
       });
   
@@ -209,6 +204,19 @@ const CreateEvent = () => {
         </div>
       </div>
 
+      {/* Max Limit (if Paid is chosen) */}
+      {paidSelected && (
+        <label>
+          Max Limit:
+          <input
+            type="number"
+            name="max_limit"
+            value={formData.max_limit}
+            onChange={handleInputChange}
+          />
+        </label>
+      )}
+
       {/* Ticket Types (if Paid is chosen) */}
       {paidSelected && (
         <div className="ticket-types-container">
@@ -255,7 +263,6 @@ const CreateEvent = () => {
                     onChange={(e) => handleTicketTypeChange(index, e)}
                   />
                 </label>
-                
               </div>
             </div>
           ))}
