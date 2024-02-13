@@ -1184,3 +1184,19 @@ textarea {
 .query {
   color: red;
 }
+.organiser-message {
+  background-color: #ffcccc; /* Light red background */
+  padding: 20px;
+  border-radius: 5px;
+  margin-bottom: 20px; /* Add margin to separate from other elements */
+  text-align: center; /* Center the content horizontally */
+}
+
+.organiser-message-text p {
+  font-size: 16px;
+  color: #c11d1d; /* Dark red text */
+}
+
+.organiser-message-button {
+  margin-top: 10px; /* Add space between the text and the button */
+}

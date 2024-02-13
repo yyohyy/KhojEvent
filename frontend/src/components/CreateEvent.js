@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './CreateEvent.css';
 import AxiosInstance from './axios';
 import { useNavigate } from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
 
 const CreateEvent = () => {
   const navigate = useNavigate();
@@ -25,12 +26,22 @@ const CreateEvent = () => {
 
   const [formData, setFormData] = useState(defaultValues);
   const [paidSelected, setPaidSelected] = useState(false);
+  const [isOrganiser, setIsOrganiser] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('Bearer');
     if (token) {
       AxiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
+    
+    // Fetch user data including is_organiser field
+    AxiosInstance.get(`http://127.0.0.1:8000/users/me/`)
+      .then(response => {
+        setIsOrganiser(response.data.is_organiser); // Assuming the is_organiser field is a boolean
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+      });
   }, []);
 
   const category = ['Art and Entertainment', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Music and Concert','Festival','Others'];
@@ -114,6 +125,26 @@ const CreateEvent = () => {
   };
 
   return (
+    <div>
+    {!isOrganiser && (
+     <section className="min-vh-100 d-flex flex-column justify-content-center" style={{ backgroundColor: "#ffffff" }}>
+     <div className="organiser-message">
+       <div className="organiser-message-text">
+         <p>
+           You need to be an organiser to create events. Please create an organiser account to proceed.
+         </p>
+       </div>
+       <div className="organiser-message-button">
+         <Button type="submit" onClick={() => navigate("/signup")}>
+           Create Organiser Account
+         </Button>
+       </div>
+     </div>
+   </section>
+   
+
+    )}
+    {isOrganiser && (
     <form onSubmit={handleSubmit} className="event-form">
       <label>
         Name:
@@ -206,27 +237,28 @@ const CreateEvent = () => {
 
       {/* Max Limit (if Paid is chosen) */}
       {paidSelected && (
-        <label>
-          Max Limit:
-          <input
-            type="number"
-            name="max_limit"
-            value={formData.max_limit}
-            onChange={handleInputChange}
-          />
-        </label>
-      )}
+  <label>
+    Max Limit:
+    <input
+      type="number"
+      name="max_limit"
+      value={formData.max_limit}
+      onChange={handleInputChange}
+      min={1} // Set the minimum value allowed
+    />
+  </label>
+)}
 
       {/* Ticket Types (if Paid is chosen) */}
       {paidSelected && (
         <div className="ticket-types-container">
-          <h2>Ticket Types</h2>
+          <h4>Add Ticket Types</h4>
           {formData.ticketTypes.map((ticket, index) => (
-            <div key={index} className="ticket-type">
+            <div key={index} className="ticket-type ">
               <button type="button" className="accordion">
                 Ticket Type {index + 1}
               </button>
-              <div className="panel">
+              <div className="panel mt-4">
                 <label>
                   Name:
                   <input
@@ -273,10 +305,12 @@ const CreateEvent = () => {
       )}
 
       <div className="form-footer">
-        <button type="submit">Submit</button>
+        <Button type="submit">Submit</Button>
       </div>
     </form>
-  );
-};
+      )}
+      </div>
+    );
+  };
 
 export default CreateEvent;
