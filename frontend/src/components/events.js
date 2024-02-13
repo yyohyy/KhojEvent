@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { Link } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -10,14 +10,13 @@ import { FaMapMarkerAlt, FaCalendarAlt, FaClock } from "react-icons/fa"
 
 
 function AppEvents() {
-  const [eventsData, seteventsData] = useState([]);
+  const [eventsData, setEventsData] = useState([]);
   const [active, setActive] = useState(1);
 
   useEffect(() => {
-    // Fetch data from Django backend
     axios.get(`http://127.0.0.1:8000/events/`)
       .then(response => {
-        seteventsData(response.data);
+        setEventsData(response.data);
       })
       .catch(error => {
         console.error('Error fetching data:', error);

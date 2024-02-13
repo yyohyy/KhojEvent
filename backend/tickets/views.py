@@ -10,7 +10,7 @@ from .serializers import *
 
 class CreateTicketView(generics.ListCreateAPIView):
     serializer_class = CreateTicketSerializer
-    permission_classes= [IsOrganiserOrReadOnly]
+    #permission_classes= [IsOrganiserOrReadOnly]
 
     def get_queryset(self):
         event_id = self.kwargs.get('event_id')

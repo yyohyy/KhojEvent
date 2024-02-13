@@ -45,7 +45,7 @@ textarea {
 .ticket-type-container {
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 40px; /* Increased margin-bottom */
 }
 
 .ticket-type-label {
@@ -99,6 +99,20 @@ button {
 
 button:hover {
   background-color: #e74c48; /* Adjusted button hover color */
+}
+
+/* Button Container Styling */
+.button-container {
+  margin-bottom: 40px; /* Increased margin-bottom */
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.form-footer button {
+  margin-left: 10px; /* Add margin if needed */
 }
 
 /* Responsive Styles */
