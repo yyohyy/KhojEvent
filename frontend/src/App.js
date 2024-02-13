@@ -25,7 +25,7 @@ import BookingPage from './components/booking';
 import Payment from './components/Payment';
 import Order from './components/Order';
 import SearchResults from './components/SearchResults';
-
+import InterestedEvents from './components/Interested';
 function App() {
   return (
    <Provider store={store}>
@@ -55,6 +55,7 @@ function App() {
               <Route path="/events/:event_id" element={<AppEventDetails />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="profile/:profile_id/interested" element={<InterestedEvents />} />
               <Route path="/payment/:orderId" element={<Payment />} />
               <Route path="/orders/:orderId" element={<Order />} />
               <Route path="/search" element={<SearchResults/>} />

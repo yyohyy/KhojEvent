@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-
+import { useNavigate } from 'react-router-dom';
 const ProfileDashboard = () => {
+  const navigate = useNavigate(); 
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -130,14 +131,18 @@ const ProfileDashboard = () => {
       console.error("Error uploading profile picture:", error);
     }
   };
-
+  const handleViewLikedEvents = () => {
+    console.log("View Liked Events");
+    // Navigate to the 'Liked Events' page
+    navigate(`/profile/${localStorage.getItem("id")}/interested`);
+};
   return (
     <div className="container">
       <div className="row">
       <div className="col-md-3">
           {/* Left Sidebar with options */}
           <div className="list-group">
-            <button className="list-group-item list-group-item-action" onClick={() => console.log("View Liked Events")}>View Liked Events</button>
+            <button className="list-group-item list-group-item-action" onClick={handleViewLikedEvents}>View Liked Events</button>
             <button className="list-group-item list-group-item-action" onClick={() => console.log("Booked Events")}>Booked Events</button>
             <button className="list-group-item list-group-item-action" onClick={() => console.log("Paid Events")}>Paid Events</button>
             {/* Add more options/buttons as needed */}
