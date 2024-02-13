@@ -1183,4 +1183,27 @@ textarea {
 
 .query {
   color: red;
+}.profile-sidebar {
+  width: 250px; /* Adjust the width as needed */
+  position: fixed;
+  top: 56px; /* Height of the navbar */
+  left: 0;
+  bottom: 0;
+  background-color: #ffffff; /* Adjust background color as needed */
+  padding: 20px;
+  border-right: 1px solid #dee2e6; /* Adjust border properties as needed */
+  overflow-y: auto; /* Enable scrolling if content exceeds height */
+  z-index: 1; /* Ensure sidebar is above other content */
+}
+
+/* Adjust footer position to accommodate sidebar */
+#footer {
+  margin-left: 250px; /* Match the width of the sidebar */
+  z-index: 0; /* Ensure footer is below other content */
+}
+
+/* Ensure content doesn't go under the footer */
+.content {
+  margin-bottom: 60px; /* Adjust according to footer height */
+  margin-left: 250px; /* Match the width of the sidebar */
 }
