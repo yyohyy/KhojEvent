@@ -17,6 +17,7 @@ const CreateEvent = () => {
     end_time: '',
     tags: [],
     is_paid: 'False',
+    organiser:'',
     image: null,
     ticketTypes: [],
     max_limit: '',

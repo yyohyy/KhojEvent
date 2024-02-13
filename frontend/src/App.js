@@ -1,4 +1,4 @@
-import React from 'react';
+import  React,{useEffect,useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Route, Routes, BrowserRouter, useLocation } from 'react-router-dom'; // Import necessary components from react-router-dom
@@ -26,12 +26,14 @@ import BookingPage from './components/booking';
 import Payment from './components/Payment';
 import Order from './components/Order';
 import SearchResults from './components/SearchResults';
-
 function SidebarRoutes() {
   const location = useLocation();
+  const [showSidebar, setShowSidebar] = useState(false);
 
-  // Determine if sidebar should be shown based on current route
-  const showSidebar = location.pathname.startsWith('/profile') || location.pathname.startsWith('/edit');
+  useEffect(() => {
+    // Check if the current path starts with '/profile'
+    setShowSidebar(location.pathname.startsWith('/profile'));
+  }, [location.pathname]);
 
   return (
     <div className="App">
@@ -39,6 +41,7 @@ function SidebarRoutes() {
         <AppHeader />
       </header>
       <div className={showSidebar ? 'content-with-sidebar' : 'content'}>
+        {/* Render ProfileSidebar only if showSidebar is true */}
         {showSidebar && <ProfileSidebar />}
         <Routes>
           <Route path="/" element={<AppHero />} />
@@ -53,8 +56,8 @@ function SidebarRoutes() {
           <Route path="/attendee-signup" element={<AttendeeSignup/>} />
           <Route path="/organizer-signup" element={<OrganizerSignup/>} />
           <Route path='/activate/:uid/:token' element={<Activate/>} />
-          <Route path='/booking' element={<BookingPage/>} />
-          <Route path="/profile" element={<ProfileDashboard />} />
+          <Route path='/booking/:event_id' element={<BookingPage/>} />
+          <Route path="/profile/*" element={<ProfileDashboard />} /> {/* Use '*' to match any route under /profile */}
           <Route path="/events/:event_id" element={<AppEventDetails />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
@@ -69,6 +72,7 @@ function SidebarRoutes() {
     </div>
   );
 }
+
 
 function App() {
   return (

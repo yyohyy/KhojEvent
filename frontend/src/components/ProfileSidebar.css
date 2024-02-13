@@ -1,0 +1,27 @@
+.profile-sidebar {
+    width: 200px;
+    background-color: #fff;
+  }
+  
+  .list-group {
+    margin: 0;
+    padding: 0;
+    padding-left: 10px; /* Add padding to the right of the entire group */
+  }
+  
+  .list-group-item {
+    border: 1px solid #c41111; /* Pink border */
+    border-radius: 10px; /* Rounded border */
+    color: #c41111; /* Pink text */
+    background-color: #fff; /* White background */
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transition for background and text color */
+    margin-bottom: 5px; /* Add margin between list items */
+    padding: 10px; /* Add padding to the right */
+  }
+  
+  .list-group-item:hover {
+    background-color: #f64b4b; /* Pink background on hover */
+    color: #fff; /* White text on hover */
+  }
+  
