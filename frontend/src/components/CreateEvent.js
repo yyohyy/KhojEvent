@@ -17,6 +17,7 @@ const CreateEvent = () => {
     end_time: '',
     tags: [],
     is_paid: 'False',
+    organiser:'',
     image: null,
     ticketTypes: [],
   };
@@ -78,6 +79,7 @@ const CreateEvent = () => {
         ...formDataWithoutImage,
         category: { name: formData.category },
         tags: formData.tags.map((tag) => ({ name: tag })),
+        organiser: localStorage.getItem('id'),
         ticket_types: formData.ticketTypes.map((ticket) => ({ // Here was the error
           ...ticket,
           quantity_available: ticket.quantity, // Set quantity_available to the same value as quantity
