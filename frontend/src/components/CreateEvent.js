@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import './CreateEvent.css';
 import AxiosInstance from './axios';
 import { useNavigate } from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
 
 const CreateEvent = () => {
   const navigate = useNavigate();
 
-  const defaultValues = { // Define defaultValues before it's used
+  const defaultValues = {
     name: '',
     category: '',
     venue: '',
@@ -17,19 +18,30 @@ const CreateEvent = () => {
     end_time: '',
     tags: [],
     is_paid: 'False',
+    organiser:'',
     image: null,
     ticketTypes: [],
+    max_limit: '',
   };
 
   const [formData, setFormData] = useState(defaultValues);
   const [paidSelected, setPaidSelected] = useState(false);
+  const [isOrganiser, setIsOrganiser] = useState(false);
 
   useEffect(() => {
-    // Fetch and set the authentication token when the component mounts
     const token = localStorage.getItem('Bearer');
     if (token) {
       AxiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     }
+    
+    // Fetch user data including is_organiser field
+    AxiosInstance.get(`http://127.0.0.1:8000/users/me/`)
+      .then(response => {
+        setIsOrganiser(response.data.is_organiser); // Assuming the is_organiser field is a boolean
+      })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+      });
   }, []);
 
   const category = ['Art and Entertainment', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Music and Concert','Festival','Others'];
@@ -68,9 +80,8 @@ const CreateEvent = () => {
     e.preventDefault();
     try {
       const formDataWithoutImage = { ...formData };
-      delete formDataWithoutImage.image; // Remove image from the main form data
+      delete formDataWithoutImage.image;
   
-      // Create a new FormData instance
       const formDataForImage = new FormData();
       formDataForImage.append('image', formData.image);
   
@@ -78,28 +89,25 @@ const CreateEvent = () => {
         ...formDataWithoutImage,
         category: { name: formData.category },
         tags: formData.tags.map((tag) => ({ name: tag })),
-        ticket_types: formData.ticketTypes.map((ticket) => ({ // Here was the error
+        ticket_types: formData.ticketTypes.map((ticket) => ({
           ...ticket,
-          quantity_available: ticket.quantity, // Set quantity_available to the same value as quantity
+          quantity_available: ticket.quantity,
         })),
       };
   
-      // Send the main form data
       const response = await AxiosInstance.post('create-event/', formattedData);
   
       if (formData.is_paid === 'True') {
-        // Submit ticket data if paid option is chosen
-        const eventId = response.data.id; // Move this line here for eventId definition
+        const eventId = response.data.id;
         const ticketResponse = await AxiosInstance.post(`tickets/${eventId}/create/`, { ticket_types: formData.ticketTypes });
         console.log('Ticket creation response:', ticketResponse);
       }
-      // Get the ID of the created event
+  
       const eventId = response.data.id;
   
-      // Send the image separately to the endpoint associated with the event ID
       await AxiosInstance.patch(`event/${eventId}/image/`, formDataForImage, {
         headers: {
-          'Content-Type': 'multipart/form-data', // Set content type as multipart/form-data
+          'Content-Type': 'multipart/form-data',
         },
       });
   
@@ -117,6 +125,26 @@ const CreateEvent = () => {
   };
 
   return (
+    <div>
+    {!isOrganiser && (
+     <section className="min-vh-100 d-flex flex-column justify-content-center" style={{ backgroundColor: "#ffffff" }}>
+     <div className="organiser-message">
+       <div className="organiser-message-text">
+         <p>
+           You need to be an organiser to create events. Please create an organiser account to proceed.
+         </p>
+       </div>
+       <div className="organiser-message-button">
+         <Button type="submit" onClick={() => navigate("/signup")}>
+           Create Organiser Account
+         </Button>
+       </div>
+     </div>
+   </section>
+   
+
+    )}
+    {isOrganiser && (
     <form onSubmit={handleSubmit} className="event-form">
       <label>
         Name:
@@ -207,16 +235,30 @@ const CreateEvent = () => {
         </div>
       </div>
 
+      {/* Max Limit (if Paid is chosen) */}
+      {paidSelected && (
+  <label>
+    Max Limit:
+    <input
+      type="number"
+      name="max_limit"
+      value={formData.max_limit}
+      onChange={handleInputChange}
+      min={1} // Set the minimum value allowed
+    />
+  </label>
+)}
+
       {/* Ticket Types (if Paid is chosen) */}
       {paidSelected && (
         <div className="ticket-types-container">
-          <h2>Ticket Types</h2>
+          <h4>Add Ticket Types</h4>
           {formData.ticketTypes.map((ticket, index) => (
-            <div key={index} className="ticket-type">
+            <div key={index} className="ticket-type ">
               <button type="button" className="accordion">
                 Ticket Type {index + 1}
               </button>
-              <div className="panel">
+              <div className="panel mt-4">
                 <label>
                   Name:
                   <input
@@ -253,7 +295,6 @@ const CreateEvent = () => {
                     onChange={(e) => handleTicketTypeChange(index, e)}
                   />
                 </label>
-                
               </div>
             </div>
           ))}
@@ -264,10 +305,12 @@ const CreateEvent = () => {
       )}
 
       <div className="form-footer">
-        <button type="submit">Submit</button>
+        <Button type="submit">Submit</Button>
       </div>
     </form>
-  );
-};
+      )}
+      </div>
+    );
+  };
 
 export default CreateEvent;
