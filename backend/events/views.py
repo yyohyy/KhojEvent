@@ -1,15 +1,16 @@
 from django.db.models import Q
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework import generics
 from .permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework import serializers
+from tickets.models import SelectedTicket
 from django.http import Http404
 from .serializers import EventSerializer, CategorySerializer, TagSerializer, InterestedSerializer, InterestedDetailSerializer, ReviewSerializer, RatingSerializer, EventImageSerializer
-from events.models import Event, Tag, Category, Review, Rating, Interested, Attendee
+from events.models import Event, Tag, Category, Review, Rating, Interested, Attendee, Organiser
 from .permissions import OrganiserCanUpdate, OrganiserCanCreate, AttendeeCanView, AttendeeCanMark#, AttendeeCanRate, AttendeeCanReview
 
 
@@ -27,26 +28,51 @@ class GetRoutesView(APIView):
 
 
 
-
 class AllEventsView(ListAPIView):
-    serializer_class= EventSerializer
-    queryset=Event.objects.all()
-    #permission_classes = [AttendeeCanView]
+    serializer_class = EventSerializer
+    
+    def get_queryset(self):
+        # Filter events to only include those that are approved
+        return Event.objects.filter(is_approved=True)
 
 
 
-class EventCreateView(generics.CreateAPIView):
+class EventCreateView(CreateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    #permission_classes= [OrganiserCanCreate]
-    # lookup_field= 'pk'
+    permission_classes = [IsAuthenticated]
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-    def post(self, request, *args, **kwargs):
-        print(request.data)
-        return super().post(request, *args, **kwargs)
+        # Set is_approved to False for events created by regular users
+        serializer.validated_data['is_approved'] = False
+
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
-
+    
+class OrganiserEventsListView(APIView):
+    def get(self, request):
+        # Assuming the authenticated user is the organiser
+        user = request.user
+        
+        # Get the organiser instance related to the authenticated user
+        organiser = Organiser.objects.get(user=user)
+        
+        # Filter events based on the organiser
+        events = Event.objects.filter(organiser=organiser)
+        
+        # Serialize the queryset
+        serializer = EventSerializer(events, many=True)
+        
+        # Return the serialized data
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
+    
 class EventImageView(generics.RetrieveUpdateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventImageSerializer  
@@ -69,12 +95,23 @@ class EventUpdateView(generics.RetrieveUpdateAPIView):
     #permission_classes = [OrganiserCanUpdate]
 
 
-    def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response("Item is successfully deleted!", status=status.HTTP_204_NO_CONTENT)
+    #def delete(self, request, *args, **kwargs):
+        #instance = self.get_object()
+        #self.perform_destroy(instance)
+        #return Response("Item is successfully deleted!", status=status.HTTP_204_NO_CONTENT)
    
-         
+
+class BookedEventsView(APIView):
+    def get(self, request):
+        # Query all selected tickets
+        selected_tickets = SelectedTicket.objects.all()
+
+        # Extract unique event IDs from selected tickets
+        event_ids = set(selected_ticket.ticket.ticket.event_id for selected_ticket in selected_tickets)
+
+        # Return event IDs or event objects as per your requirement
+        return Response(event_ids, status=status.HTTP_200_OK)
+    
 
 class SearchView(APIView):
     def get(self, request, *args, **kwargs):
@@ -176,37 +213,37 @@ class InterestedListView(generics.ListAPIView):
 
 
 
-class ReviewView(APIView):
-    def post(self, request, event_id):
-        # Get the review body from the request data
-        body = request.data.get('body')
+class ReviewDetail(APIView):
+    def get(self, request, attendee_id):
+        review = get_object_or_404(Review, pk=attendee_id)
+        serializer = ReviewSerializer(review)
+        return Response(serializer.data)
 
-        # Check if the body is empty
-        if not body:
-            return Response({"error": "Review text is required."}, status=status.HTTP_400_BAD_REQUEST)
+    def put(self, request, attendee_id):
+        review = get_object_or_404(Review, pk=attendee_id)
+        serializer = ReviewSerializer(review, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # Get the logged-in user's attendee instance
-        attendee = request.user.attendee
+    def delete(self, request, attendee_id):
+        review = get_object_or_404(Review, pk=attendee_id)
+        review.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-        # Get the event instance corresponding to the event_id
-        try:
-            event = Event.objects.get(id=event_id)
-        except Event.DoesNotExist:
-            return Response({"error": "Event not found."}, status=status.HTTP_404_NOT_FOUND)
+class ReviewList(APIView):
+    def get(self, request):
+        reviews = Review.objects.all()
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
 
-        # Check if the attendee has already reviewed this event
-        existing_review = Review.objects.filter(attendee=attendee, event=event).exists()
-        if existing_review:
-            return Response({"error": "You have already reviewed this event."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Create the review
-        review = Review.objects.create(
-            attendee=attendee,
-            event=event,
-            body=body
-        )
-
-        return Response({"message": "Review submitted successfully."}, status=status.HTTP_201_CREATED)
+    def post(self, request):
+        serializer = ReviewSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
   
        
