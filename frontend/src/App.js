@@ -1,52 +1,7 @@
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import './App.css';
-// import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom'; // Import necessary components from react-router-dom
-
-// import AppHeader from './components/header';
-// import AppHero from './components/hero';
-// import AppAbout from './components/about';
-// // import AppServices from './components/services';
-// import AppWorks from './components/works';
-// // import AppTeams from './components/teams';
-// import AppTestimonials from './components/testimonials';
-// // import AppPricing from './components/pricing';
-// import AppBlog from './components/blog';
-// import AppContact from './components/contact';
-// import AppFooter from './components/footer';
-// import CreateEvent from './components/CreateEvent'; 
-// function App() {
-//   return (
-//     <div className="App">
-//       <header id='header'>
-//         <AppHeader />
-//       </header>
-//       <main>
-//         <AppHero />
-//         <AppAbout />
-//         {/* <AppServices /> */}
-//         <AppWorks />
-//         {/* <AppTeams /> */}
-//         <AppTestimonials />
-//         {/* <AppPricing /> */}
-//         <AppBlog />
-//         <AppContact />
-//         <CreateEvent />
-//       </main>
-//       <footer id="footer">
-//         <AppFooter />
-//       </footer>
-//     </div>
-//   );
-// }
-
-// export default App;
-// App.js
-
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import { Router, Route, Link, Routes, BrowserRouter } from 'react-router-dom'; // Import necessary components from react-router-dom
-import axios from 'axios';
+import {Route, Routes, BrowserRouter } from 'react-router-dom'; // Import necessary components from react-router-dom
 import AppHeader from './components/header';
 import AppHero from './components/hero';
 import AppEvents from './components/events';
@@ -69,16 +24,17 @@ import ProfileDashboard from './components/Profile';
 import BookingPage from './components/booking';
 import Payment from './components/Payment';
 import Order from './components/Order';
+import SearchResults from './components/SearchResults';
 
 function App() {
   return (
    <Provider store={store}>
+      <BrowserRouter basename='/'>
       <div className="App">
         <header id="header">
-          <AppHeader />
+        <AppHeader />
         </header>
         <div className='content'>
-          <BrowserRouter basename='/'>
             <Routes>
               <Route path="/" element={<AppHero />} />
               <Route path="/home" element={<AppHero />} />
@@ -93,6 +49,7 @@ function App() {
               <Route path="/organizer-signup" element={<OrganizerSignup/>} />
               <Route path='/activate/:uid/:token' element={<Activate/>} />
               <Route path='/booking' element={<BookingPage/>} />
+              <Route path='/booking/:event_id' element={<BookingPage/>} />
               <Route path="/profile" element={<ProfileDashboard />} />
               <Route path="/profile/:profile_id" element={<ProfileDashboard/>} />
               <Route path="/events/:event_id" element={<AppEventDetails />} />
@@ -100,16 +57,14 @@ function App() {
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/payment/:orderId" element={<Payment />} />
               <Route path="/orders/:orderId" element={<Order />} />
+              <Route path="/search" element={<SearchResults/>} />
             </Routes>
-          </BrowserRouter>
         </div>
-          <footer id="footer">
-          <AppFooter />
+        <footer id="footer">
+        <AppFooter />
         </footer>
-    
-    
-  
-     </div>
+      </div>
+     </BrowserRouter>
      </Provider>
   );
 }

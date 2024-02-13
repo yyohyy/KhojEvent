@@ -58,11 +58,7 @@ class EventDetailsView(generics.RetrieveAPIView):
     # http_method_names=['get','patch','delete']
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-<<<<<<< HEAD
-    #permission_classes = [OrganiserCanUpdate]
-=======
     #permission_classes = [AttendeeCanView]
->>>>>>> c716350fe4f8a167e75534bcc76317d4677edf32
     # lookup_field='pk'
    
    

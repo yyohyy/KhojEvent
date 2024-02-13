@@ -48,7 +48,7 @@ class SelectedTicketDeleteView(generics.ListAPIView, generics.DestroyAPIView):
             
 class TicketDetails(RetrieveUpdateDestroyAPIView):
     serializer_class = TicketSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    #permission_classes = [IsOwnerOrReadOnly]
     lookup_field = 'event_id'  # Use the URL keyword argument for event ID lookup
 
     def get_queryset(self):

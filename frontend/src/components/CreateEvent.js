@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const CreateEvent = () => {
   const navigate = useNavigate();
 
-  const defaultValues = {
+  const defaultValues = { // Define defaultValues before it's used
     name: '',
     category: '',
     venue: '',
@@ -21,6 +21,9 @@ const CreateEvent = () => {
     ticketTypes: [],
   };
 
+  const [formData, setFormData] = useState(defaultValues);
+  const [paidSelected, setPaidSelected] = useState(false);
+
   useEffect(() => {
     // Fetch and set the authentication token when the component mounts
     const token = localStorage.getItem('Bearer');
@@ -29,50 +32,7 @@ const CreateEvent = () => {
     }
   }, []);
 
-  const [formData, setFormData] = useState(defaultValues);
-  const [paidSelected, setPaidSelected] = useState(false);
-
-<<<<<<< HEAD
-  const submission = async (data) => {
-    try {
-      const formattedData = {
-        name: data.name,
-        category: { name: data.category },
-        description: data.description,
-        venue: data.venue,
-        start_date: data.start_date,
-        end_date: data.end_date,
-        start_time: data.start_time,
-        end_time: data.end_time,
-        tags: data.tags.map((tag) => ({ name: tag })),
-        is_paid: data.is_paid,
-        image: data.image,
-        ticket_types: data.ticketTypes.map((ticket) => ({
-          ...ticket,
-          quantity_available: ticket.quantity, // Set quantity_available to the same value as quantity
-        })),
-      };
-      
-
-      const response = await AxiosInstance.post('create-event/', formattedData);
-      const eventId = response.data.id;
-
-      if (data.is_paid === 'True') {
-        // Submit ticket data if paid option is chosen
-        const ticketResponse = await AxiosInstance.post(`tickets/${eventId}/create/`, { ticket_types: data.ticketTypes });
-        console.log('Ticket creation response:', ticketResponse);
-      }
-
-      navigate('/');
-    } catch (error) {
-      console.error('Error submitting data:', error);
-    }
-  };
-
-  const category = ['Art', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Others'];
-=======
   const category = ['Art and Entertainment', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Music and Concert','Festival','Others'];
->>>>>>> c716350fe4f8a167e75534bcc76317d4677edf32
   const availableTags = ['Fun', 'Dance', 'Music', 'Seminar', 'Night', 'Games', 'Food', 'Crafts', 'Zen', 'Comedy', 'Film', 'Photography', 'Tech', 'Thrift', 'Donation', 'Marathon', 'Cycling', 'Nature', 'Health', 'Pottery', 'Book', 'Meet & Greet'];
 
   const handleInputChange = (e) => {
@@ -90,7 +50,6 @@ const CreateEvent = () => {
     setFormData({ ...formData, tags: updatedTags });
   };
 
-<<<<<<< HEAD
   const handleTicketTypeChange = (index, e) => {
     const { name, value } = e.target;
     const updatedTicketTypes = [...formData.ticketTypes];
@@ -105,38 +64,45 @@ const CreateEvent = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-=======
   const handleSubmit = async (e) => {
->>>>>>> c716350fe4f8a167e75534bcc76317d4677edf32
     e.preventDefault();
     try {
       const formDataWithoutImage = { ...formData };
       delete formDataWithoutImage.image; // Remove image from the main form data
-
+  
       // Create a new FormData instance
       const formDataForImage = new FormData();
       formDataForImage.append('image', formData.image);
-
+  
       const formattedData = {
         ...formDataWithoutImage,
-        category: {name: formData.category},
+        category: { name: formData.category },
         tags: formData.tags.map((tag) => ({ name: tag })),
+        ticket_types: formData.ticketTypes.map((ticket) => ({ // Here was the error
+          ...ticket,
+          quantity_available: ticket.quantity, // Set quantity_available to the same value as quantity
+        })),
       };
-
+  
       // Send the main form data
       const response = await AxiosInstance.post('create-event/', formattedData);
-
+  
+      if (formData.is_paid === 'True') {
+        // Submit ticket data if paid option is chosen
+        const eventId = response.data.id; // Move this line here for eventId definition
+        const ticketResponse = await AxiosInstance.post(`tickets/${eventId}/create/`, { ticket_types: formData.ticketTypes });
+        console.log('Ticket creation response:', ticketResponse);
+      }
       // Get the ID of the created event
       const eventId = response.data.id;
-
+  
       // Send the image separately to the endpoint associated with the event ID
-      await AxiosInstance.patch(`event/${eventId}/image/`, formDataForImage,{
-      headers: {
-        'Content-Type': 'multipart/form-data', // Set content type as multipart/form-data
-      },
-    });
-
+      await AxiosInstance.patch(`event/${eventId}/image/`, formDataForImage, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Set content type as multipart/form-data
+        },
+      });
+  
       console.log('Response from backend:', response);
       navigate('/');
     } catch (error) {

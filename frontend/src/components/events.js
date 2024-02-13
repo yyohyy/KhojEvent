@@ -4,8 +4,10 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
-import Pagination from 'react-bootstrap/Pagination';
+import Card from 'react-bootstrap/Card';
 import axios from 'axios';
+import { FaMapMarkerAlt, FaCalendarAlt, FaClock } from "react-icons/fa"
+
 
 function AppEvents() {
   const [eventsData, setEventsData] = useState([]);
@@ -19,43 +21,50 @@ function AppEvents() {
       .catch(error => {
         console.error('Error fetching data:', error);
       });
-  }, []);
-
-  let items = [];
-  for (let number = 1; number <= 5; number++) {
-    items.push(
-      <Pagination.Item key={number} active={number === active} onClick={() => setActive(number)}>
-        {number}
-      </Pagination.Item>,
-    );
-  }
+  }, []); 
 
   return (
-    <section id="events" className="block events-block py-5">
-      <Container>
-        <h2 className="text-center mb-4">Upcoming Events</h2>
-        <Row xs={1} md={2} lg={3} className="g-4">
+    <section id="events" className="block events-block">
+      <Container fluid>
+        <div className="title-holder">
+          <h2>EVENTS</h2>
+          <div className="subtitle">browse and be there</div>
+        </div>
+        <Row className='portfoliolist'>
           {eventsData.map(event => (
-            <Col key={event.id}>
-              <Link to={`/events/${event.id}`} className="text-decoration-none">
-                <div className="card event-card border-0 shadow">
-                  <Image src={event.image} className="card-img-top" alt={event.name} />
-                  <div className="card-body">
-                    <h5 className="card-title">{event.name}</h5>
-                    <p className="card-text text-muted small mb-1">{event.venue}</p>
-                    <p className="card-text text-muted small">{event.date}</p>
-                  </div>
-                </div>
-              </Link>
+            <Col sm={4} key={event.id}>
+              <div className='portfolio-wrapper'>
+                {/* Use Link to navigate to the specific event page */}
+                <Link to={`/events/${event.id}`} className="card-link">
+                  <Card >
+                    <Card.Img variant="top" src={event.image} />
+                    <Card.Body>
+                      <div className='label text-center'>
+                      <h3 style={{ fontFamily: 'Montserrat', color: '#8f0000', fontSize:'30px' }}>{event.name}</h3>
+                        <p style={{ color: 'grey' }}>
+                        <span>
+                          <FaMapMarkerAlt style={{ fill: 'pink' }} /> {event.venue}
+                        </span>
+                      </p>
+                      <p style={{ color: 'grey' }}>
+                        <span >
+                          <FaCalendarAlt style={{ fill: 'pink' }} /> {event.start_date}
+                        </span>
+                        <span style={{ paddingLeft: '10px' }}>
+                          <FaClock style={{ fill: 'pink' }} /> {event.start_time}
+                        </span>
+                        </p>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Link>
+              </div>
             </Col>
           ))}
         </Row>
-        <div className="d-flex justify-content-center mt-4">
-          <Pagination>{items}</Pagination>
-        </div>
       </Container>
     </section>
   );
-}
+          }
 
 export default AppEvents;

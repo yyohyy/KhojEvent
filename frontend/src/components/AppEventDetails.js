@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import AxiosInstance from './axios';
 import {
   FaCalendarAlt,
   FaClock,
@@ -10,21 +9,24 @@ import {
 } from "react-icons/fa";
 import axios from 'axios';
 import StarRatings from 'react-star-ratings';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
-function AppEventDetail() {
-  const [eventData, setEventData] = useState({});
+function AppEventDetails() {
+  const [eventsData, setEventsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const { event_id } = useParams();
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const [interested, setInterested] = useState(false); // State variable to manage interest
   const [rated, setRated] = useState(false); // State variable to track if the event has been rated
-
+ const [eventData, setEventData] = useState({});
+  
+   const navigate = useNavigate();
   useEffect(() => {
     axios.get(`http://127.0.0.1:8000/events/${event_id}/`)
       .then(response => {
         setEventsData([response.data]);
+        console.log(response.data)
         setLoading(false);
         setInterested(response.data.interested); // Update interested state from backend
         setRated(response.data.rated); // Update rated state from backend
@@ -74,19 +76,19 @@ function AppEventDetail() {
     // Prepare review data
     const reviewData = {
       body : review
-    };
+  };
 
-    // Send POST request to backend
-    axios.post(`http://127.0.0.1:8000/review-event/${event_id}/`, reviewData)
+  // Send POST request to backend
+  axios.post(`http://127.0.0.1:8000/review-event/${event_id}/`, reviewData)
       .then(response => {
-        console.log("Review submitted successfully:", response.data);
-        // Optionally, you can update UI or show a success message
+          console.log("Review submitted successfully:", response.data);
+          // Optionally, you can update UI or show a success message
       })
       .catch(error => {
-        console.error('Error submitting review:', error);
-        // Handle error, show error message, etc.
+          console.error('Error submitting review:', error);
+          // Handle error, show error message, etc.
       });
-  }
+}
 
   const handleToggleInterest = () => {
     console.log("Toggle interest button clicked");
@@ -129,7 +131,10 @@ function AppEventDetail() {
       fontSize: "15px", // Size of the label
     },
   };
-
+  const handleBooking = () => {
+    navigate(`/booking/${event_id}`);
+  };
+  
   return (
     <div>
       <div className="col-md-12">
@@ -187,39 +192,119 @@ function AppEventDetail() {
             starSpacing="2px" // Set the spacing between the stars
             disabled={rated} // Disable rating if the event has been rated
           />
-          <textarea
-            value={review}
-            onChange={handleReviewChange}
-            style={{ width: '50%', height: '5px', marginLeft: '50px', marginTop: '300px', marginBottom: '50px'}}
-          ></textarea>
+        <textarea
+          value={review}
+          onChange={handleReviewChange}
+          style={{ width: '50%', height: '5px', marginLeft: '50px', marginTop: '300px', margiBottom: '50px'}}></textarea>
           <div className="d-flex justify-content-end"> {/* Align items to the right */}
-            <button onClick={handleSubmitReview} style={{ marginRight:'660px', marginBottom: '20px', marginTop: '00px' }}>Submit Review</button>
+          <button onClick={handleSubmitReview} style={{ marginRight:'660px', marginBottom: '20px', marginTop: '00px' }}>Submit Review</button>
+        </div>
+        <span className="mt-5">
+              <FaExternalLinkAlt />{" "}
+              <a
+                href={eventWebsiteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                For more details, visit the event website
+              </a>
+            </span>
           </div>
-          <span className="mt-5">
-            <FaExternalLinkAlt />{" "}
-            <a
-              href={eventWebsiteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-decoration-none"
-            >
-              <FaExternalLinkAlt className="me-2" />
-              Visit Event Website
-            </a>
-          </span>
           <div className="text-center mt-4">
-            <button
-              type="button"
-              className="btn btn-primary btn-lg"
-              onClick={handleBooking}
-            >
-              Book Now
-            </button>
-          </div>
+              <button
+                type="button"
+                className="btn btn-primary btn-lg"
+                onClick={handleBooking}
+              >
+                Book Now
+              </button>
+            </div>
         </div>
       </div>
-    </div>
   );
 }
+export default AppEventDetails;
+// import React, { useState, useEffect } from "react";
+// import {
+//   FaCalendarAlt,
+//   FaClock,
+//   FaMapMarkerAlt,
+//   FaExternalLinkAlt,
+// } from "react-icons/fa";
+// import axios from 'axios';
+// import { useParams } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
-export default AppEventDetail;
+// function AppEventDetails() {
+//   const [eventData, setEventData] = useState({});
+//   const [loading, setLoading] = useState(true);
+//   const { event_id } = useParams();
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     axios.get(`http://127.0.0.1:8000/events/${event_id}/`)
+//       .then(response => {
+//         setEventData(response.data);
+//         setLoading(false);
+//       })
+//       .catch(error => {
+//         console.error('Error fetching event data:', error);
+//         setLoading(false);
+//       });
+//   }, [event_id]);
+
+//   const eventWebsiteUrl = "https://www.google.com/";
+
+//   const handleBooking = () => {
+//     // Perform booking logic here
+//     // After booking, navigate to the booking page
+//     navigate(`/booking/${eventData.id}`);
+//   };
+
+//   return (
+//     <div className="container mt-5">
+//       <div className="row justify-content-center">
+//         <div className="col-md-10">
+//           <div className="card border-0 shadow-lg p-5">
+//             <h1 className="card-title text-center">{eventData.name}</h1>
+//             <img src={eventData.image} alt="Event" className="img-fluid rounded mb-4" />
+//             <p className="card-text text-center">{eventData.description}</p>
+//             <div className="text-center">
+//               <div className="d-inline-block me-3">
+//                 <FaCalendarAlt /> {eventData.start_date}
+//               </div>
+//               <div className="d-inline-block me-3">
+//                 <FaClock /> {eventData.start_time}
+//               </div>
+//               <div className="d-inline-block">
+//                 <FaMapMarkerAlt /> {eventData.venue}
+//               </div>
+//             </div>
+//             <div className="text-center mt-4">
+//               <a
+//                 href={eventWebsiteUrl}
+//                 target="_blank"
+//                 rel="noopener noreferrer"
+//                 className="text-decoration-none"
+//               >
+//                 <FaExternalLinkAlt className="me-2" />
+//                 Visit Event Website
+//               </a>
+//             </div>
+//             <div className="text-center mt-4">
+//               <button
+//                 type="button"
+//                 className="btn btn-primary btn-lg"
+//                 onClick={handleBooking}
+//               >
+//                 Book Now
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default AppEventDetails;
