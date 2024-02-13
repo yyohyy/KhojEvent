@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { CgProfile } from "react-icons/cg";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaShoppingCart } from "react-icons/fa";
 
 // import {useNavigate } from 'react-router-dom';
 import {
@@ -13,38 +13,47 @@ import {
   Button,
   NavDropdown,
 } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 function AppHeader() {
   // const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [searchResults, setSearchResults] = useState({
-    event_results: [],
-  });
+  const [isAttendee,setIsAttendee] =useState(false);
+  const navigate= useNavigate();
+  // const [searchResults, setSearchResults] = useState({
+    //   event_results: [],
+    // });
 
-  // Function to handle search
-  const handleSearch = async () => {
-    try {
-      console.log("Before axios.get");
-
-      // Always make an HTTP request to your Django backend endpoint with the search query
-      const searchResponse = await axios.get(
-        `http://127.0.0.1:8000/search/?query=${searchQuery}`
-      );
-
-      // Handle the search response as needed (e.g., update state with search results)
-      console.log("Search Results:", searchResponse.data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
+  const handleSearch = (e) => {
+    console.log(e)
+    e.preventDefault();
+    // Navigate to the search endpoint with the query parameter
+    navigate(`/search/?query=${searchQuery}`);
   };
+  // // Function to handle search
+  // const handleSearch = async () => {
+  //   try {
+  //     console.log("Before axios.get");
+
+  //     // Always make an HTTP request to your Django backend endpoint with the search query
+  //     const searchResponse = await axios.get(
+  //       `http://127.0.0.1:8000/search/?query=${searchQuery}`
+  //     );
+
+  //     // Handle the search response as needed (e.g., update state with search results)
+  //     console.log("Search Results:", searchResponse.data);
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   }
+  // };
 
   // Check if the user is already logged in by retrieving the token from session storage
   useEffect(() => {
     const authtoken = localStorage.getItem("Bearer");
     if (authtoken) {
       setIsLoggedIn(true);
-          // Fetch the user details including user_id from the backend
+                // Fetch the user details including user_id from the backend
     axios.get('http://127.0.0.1:8000/users/me/', {
       headers: {
         Authorization: `Bearer ${authtoken}`
@@ -52,6 +61,7 @@ function AppHeader() {
     }).then(response => {
       // Store the user_id in local storage
       localStorage.setItem("id", response.data.id);
+      setIsAttendee(response.data.is_attendee);
     }).catch(error => {
       console.error("Error fetching user details:", error);
     });
@@ -63,25 +73,11 @@ function AppHeader() {
     localStorage.removeItem("Bearer");
     localStorage.removeItem("id");
     setIsLoggedIn(false);
+    setIsAttendee(false);
     console.log("You are logged out");
-    // navigate('/'); // Redirect to login page after logout
+    navigate('/'); 
   };
   
-
-  // Function to perform the search
-  const performSearch = async () => {
-    try {
-      // Make an HTTP request to your Django backend endpoint with the search query
-      const response = await axios.get(
-        `http://127.0.0.1:8000/events/search?query=${searchQuery}`
-      );
-      // Handle the response as needed (e.g., update state with search results)
-      setSearchResults(response.data);
-    } catch (error) {
-      console.error("Error during search:", error);
-    }
-  };
-
   return (
     <Navbar bg="dark" expand="lg">
       <Container>
@@ -92,7 +88,7 @@ function AppHeader() {
             className="d-flex"
             onSubmit={(e) => {
               e.preventDefault();
-              handleSearch();
+              handleSearch(e);
             }}
           >
             <FormControl
@@ -114,14 +110,21 @@ function AppHeader() {
             <Nav.Link href="/contact">Contact</Nav.Link>
 
             {isLoggedIn ? (
-              <NavDropdown title={<CgProfile size={20} />} id="basic-nav-dropdown">
-                <NavDropdown.Item href={`/profile/${localStorage.getItem("id")}`}>
-                  View Profile
-                </NavDropdown.Item>
-                <NavDropdown.Item href="/settings">Settings</NavDropdown.Item>
-                <NavDropdown.Divider />
-                <NavDropdown.Item onClick={logout}>Logout</NavDropdown.Item>
-              </NavDropdown>
+              <>
+                {isAttendee && ( // Display the cart only for attendees
+                  <Nav.Link href="/cart"> {/* Link it to the cart page */}
+                    <FaShoppingCart size={20} />
+                  </Nav.Link>
+                )}
+                <NavDropdown title={<CgProfile size={20} />} id="basic-nav-dropdown">
+                  <NavDropdown.Item href={`/profile/${localStorage.getItem("id")}`}>
+                    View Profile
+                  </NavDropdown.Item>
+                  <NavDropdown.Item href="/settings">Settings</NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item onClick={logout}>Logout</NavDropdown.Item>
+                </NavDropdown>
+              </>
             ) : (
               <>
                 <Nav.Link href="/signup">Sign Up</Nav.Link>
