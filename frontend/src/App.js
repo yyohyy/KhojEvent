@@ -20,31 +20,25 @@ import store from './store';
 import UserTypeSelection from './components/UserTypeSelection';
 import AttendeeSignup from './components/AttendeeSignUp';
 import OrganizerSignup from './components/OrganizerSignUp';
-import ProfileSidebar from './components/ProfileSidebar';
 import ProfileDashboard from './components/Profile';
 import BookingPage from './components/booking';
 import Payment from './components/Payment';
 import Order from './components/Order';
 import SearchResults from './components/SearchResults';
-function SidebarRoutes() {
-  const location = useLocation();
-  const [showSidebar, setShowSidebar] = useState(false);
-
-  useEffect(() => {
-    // Check if the current path starts with '/profile'
-    setShowSidebar(location.pathname.startsWith('/profile'));
-  }, [location.pathname]);
-
+import InterestedEvents from './components/Interested';
+import BookedTickets from './components/booked';
+function App() {
   return (
-    <div className="App">
-      <header id="header">
-        <AppHeader />
-      </header>
-      <div className={showSidebar ? 'content-with-sidebar' : 'content'}>
-        {/* Render ProfileSidebar only if showSidebar is true */}
-        {showSidebar && <ProfileSidebar />}
-        <Routes>
-          <Route path="/" element={<AppHero />} />
+   <Provider store={store}>
+      <div className="App">
+      <BrowserRouter basename='/'>
+        <header id="header">
+          <AppHeader />
+        </header>
+        <div className='content'>
+
+            <Routes>
+            <Route path="/" element={<AppHero />} />
           <Route path="/home" element={<AppHero />} />
           <Route path="/events" element={<AppEvents />} />
           <Route path="/testimonials" element={<AppTestimonials />} />
@@ -57,31 +51,28 @@ function SidebarRoutes() {
           <Route path="/organizer-signup" element={<OrganizerSignup/>} />
           <Route path='/activate/:uid/:token' element={<Activate/>} />
           <Route path='/booking/:event_id' element={<BookingPage/>} />
-          <Route path="/profile/*" element={<ProfileDashboard />} /> {/* Use '*' to match any route under /profile */}
+          <Route path="profile/:id" element={<ProfileDashboard />} /> {/* Use '*' to match any route under /profile */}
           <Route path="/events/:event_id" element={<AppEventDetails />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/payment/:orderId" element={<Payment />} />
           <Route path="/orders/:orderId" element={<Order />} />
           <Route path="/search" element={<SearchResults/>} />
-
-        </Routes>
-      </div>
-      <footer id="footer">
-        <AppFooter />
-      </footer>
-    </div>
-  );
-}
-
-
-function App() {
-  return (
-    <Provider store={store}>
-      <BrowserRouter basename='/'>
-        <SidebarRoutes />
-      </BrowserRouter>
-    </Provider>
+          <Route path="/profile/:id/interested" element={<InterestedEvents/>} />
+          
+          <Route path="/profile/:id/booked" element={<BookedTickets/>} />
+            </Routes>
+ 
+        </div>
+        </BrowserRouter>
+          <footer id="footer">
+          <AppFooter />
+        </footer>
+    
+    
+  
+     </div>
+     </Provider>
   );
 }
 
