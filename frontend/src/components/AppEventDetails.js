@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaExternalLinkAlt, FaHeart, FaRegHeart } from "react-icons/fa";
+import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaExternalLinkAlt, FaHeart, FaRegHeart,FaStar } from "react-icons/fa";
 import { BiEnvelope, BiPhone, BiMap } from 'react-icons/bi';
 import StarRatings from 'react-star-ratings';
 import axios from 'axios';
@@ -19,9 +19,12 @@ function AppEventDetails() {
   const [loading, setLoading] = useState(true);
   const { event_id } = useParams();
   const [rating, setRating] = useState(0);
+  const [ratings, setRatings] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [interested, setInterested] = useState(false);
   const [rated, setRated] = useState(false);
   const [eventWebsiteUrl, setEventWebsiteUrl] = useState("");
+  const [attendeeData, setAttendeeData] = useState([]);
   const [isOrganiser, setIsOrganiser] = useState(false);
   const navigate = useNavigate();
 
@@ -31,8 +34,18 @@ function AppEventDetails() {
         const eventResponse = await axiosInstance.get(`/events/${event_id}/`);
         setActiveEventData(eventResponse.data);
         setLoading(false);
-        setRated(eventResponse.data.rated);
+        //setRated(eventResponse.data.rated);
         setEventWebsiteUrl(eventResponse.data.website_url);
+
+        const ratingResponse = await axiosInstance.get(`/events/${event_id}/ratings`);
+        setRating(ratingResponse.data.average_rating);
+
+        const ratingsResponse = await axiosInstance.get(`/rated-events/${event_id}/`);
+        setRatings(ratingsResponse.data.event_ratings);
+
+        // Fetch reviews
+       // const reviewsResponse = await axiosInstance.get(`/reviews/${event_id}/`);
+        //setReviews(reviewsResponse.data);
 
         const userResponse = await axiosInstance.get(`/users/me/`);
         setIsOrganiser(userResponse.data.is_organiser);
@@ -47,6 +60,14 @@ function AppEventDetails() {
           const interestedResponse = await axiosInstance.get(`/interested-event/${event_id}/`);
           setInterested(interestedResponse.data.success);
         }
+
+        const attendeeIds = [...new Set(ratingsResponse.data.event_ratings.map(rating => rating.attendee))];
+        const attendeesData = await Promise.all(attendeeIds.map(async attendeeId => {
+          const attendeeResponse = await axiosInstance.get(`/users/details/${attendeeId}/`);
+          return attendeeResponse.data;
+        }));
+        setAttendeeData(attendeesData);
+
       } catch (error) {
         console.error('Error fetching data:', error);
         setLoading(false);
@@ -56,26 +77,31 @@ function AppEventDetails() {
     fetchData();
   }, [event_id]);
 
-  const handleRatingChange = (newRating) => {
-    if (!rated) {
-      setRating(newRating);
-      const eventData = {
-        rating: newRating,
-        event_id: event_id,
-        stars: newRating,
-      };
+  // const handleRatingChange = (newRating) => {
+  //   if (!rated) {
+  //     setRating(newRating);
+  //     const eventData = {
+  //       rating: newRating,
+  //       event_id: event_id,
+  //       stars: newRating,
+  //     };
 
-      axiosInstance.post(`/rate/`, eventData)
-        .then(response => {
-          console.log("Rating added successfully:", response.data);
-          setRated(true);
-        })
-        .catch(error => {
-          console.error('Error adding rating:', error);
-        });
-    }
-  };
+  //     axiosInstance.post(`/rate/`, eventData)
+  //       .then(response => {
+  //         console.log("Rating added successfully:", response.data);
+  //         setRated(true);
+  //       })
+  //       .catch(error => {
+  //         console.error('Error adding rating:', error);
+  //       });
+  //   }
+  // };
 
+  
+  // function findReviewByAttendee(attendeeId) {
+  //   const review = reviews.find(review => review.attendee === attendeeId);
+  //   return review ? review.comment : "No review available";
+  // }
   const handleToggleInterest = async () => {
     try {
       const response = await axiosInstance.post(`/events/${event_id}/interested/`, {});
@@ -138,12 +164,13 @@ function AppEventDetails() {
                 )}
               </div>
             )}
-            <h1 className="card-title">{activeEventData.name}</h1>
-            <div className="d-flex align-items-center mt-3">
+<div className="card-title" style={{ fontFamily: "Comfortaa, cursive", color: "#f64b4b",fontSize: '50px', color: '#333', fontWeight: 'bold' }}><h1>{activeEventData.name}</h1></div>
+
+            <div className="d-flex align-items-center mt-1 mb-2">
               <StarRatings
                 rating={rating}
                 starRatedColor="orange"
-                changeRating={handleRatingChange}
+                //changeRating={handleRatingChange}
                 numberOfStars={5}
                 name='rating'
                 starDimension="25px"
@@ -174,40 +201,83 @@ function AppEventDetails() {
                 </button>
               </div>
             )}
-
-            <div className="mt-5">
-              <div classname style={{color: '#cccccc'}}>  <h2 color>Organised By:</h2></div>
-            
-              <div className="d-flex align-items-center">
-              <div className="me-3" style={{ flex: '0 0 auto' }}>
-      <img src={organiserData.profile_picture} className="rounded-circle" alt="Organiser Profile" style={{ width: '200px', height: '200px' }} />
-      <div className="mt-3">
-                <span className="me-2"><BiPhone style={{ color: 'red' }} /></span>
-                <span>{organiserData.phone_number}</span>
-              </div>
-              <div>
-                <span className="me-2"><BiEnvelope style={{ color: 'red' }} /></span>
-                <span>{organiserData.email}</span>
-              </div>
-              <div className="me-2">
-                    <span className="me-2"><BiMap style={{ color: 'red' }} /></span>
-                    <span>{organiserData.organiser_details.address}</span>
-                  </div>
+{organiserData && organiserData.organiser_details && (
+  <div className="mt-5">
+  <div classname style={{color: '#cccccc'}}>  <h2>Organised By:</h2></div>
+    <div className="d-flex align-items-center">
+      <div className="me-3" style={{ flex: '0 0 auto' }}>
+        <img src={organiserData.profile_picture} className="rounded-circle" alt="Organiser Profile" style={{ width: '200px', height: '200px' }} />
+        <div className="mt-3">
+          <span className="me-2"><BiPhone style={{ color: 'red' }} /></span>
+          <span>{organiserData.phone_number}</span>
+        </div>
+        <div>
+          <span className="me-2"><BiEnvelope style={{ color: 'red' }} /></span>
+          <span>{organiserData.email}</span>
+        </div>
+        <div className="me-2">
+          <span className="me-2"><BiMap style={{ color: 'red' }} /></span>
+          <span>{organiserData.organiser_details.address}</span>
+        </div>
+      </div>
+      <div style={{ flex: '1', paddingLeft: '20px' }}>
+        <p style={{ fontFamily: "Comfortaa, cursive", color: "#f64b4b", fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '5px' }}>{organiserData.organiser_details.name}</p>
+        <p>{organiserData.organiser_details.description}</p>
+      </div>
     </div>
-    <div style={{ flex: '1', paddingLeft: '20px' }}>
-      <p style={{ fontFamily: "Comfortaa, cursive", color: "#f64b4b",fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '5px' }}>{organiserData.organiser_details.name}</p>
-      <p>{organiserData.organiser_details.description}</p>
+  </div>
+)}
 
-
+<div style={{ paddingTop: '20px' }}>
+  <h2 style={{ marginBottom: '30px',marginTop: '50px' }}>Ratings and Reviews:</h2>
+  {ratings.length > 0 ? (
+    ratings.map((rating, index) => (
+      <div key={index} style={{ marginBottom: '10px' }}>
+        <div className="d-flex align-items-center">
+          <div>
+            <StarRatings
+              rating={rating.stars}
+              starRatedColor="orange"
+              starDimension="20px"
+              starSpacing="2px"
+              numberOfStars={5}
+            />
+          </div>
+          <div className="ms-2" style={{ paddingLeft: '10px', marginTop: '5px' }}>
+            {attendeeData && attendeeData.length > 0 && attendeeData[index] && (
+              <p style={{ margin: '0', color: 'gray' }}>{`${attendeeData[index].attendee_details.first_name} ${attendeeData[index].attendee_details.last_name}`}</p>
+            )}
+          </div>
+        </div>
+        {index !== ratings.length - 1 && <hr />}
+      </div>
+    ))
+  ) : (
+    <p>No ratings available.</p>
+  )}
 </div>
-            </div>
+
+
+
+
           </div>
         </div>
       </div>
-      </div>
     </section>
+
   );
 }
+
+function renderStars(stars) {
+  const starIcons = [];
+
+  for (let i = 0; i < stars; i++) {
+    starIcons.push(<FaStar key={i} />);
+  }
+
+  return starIcons;
+}
+
 
 export default AppEventDetails;
 

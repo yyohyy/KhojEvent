@@ -278,7 +278,7 @@ class RateUpdateView(generics.RetrieveUpdateAPIView):
     
     
 class GetEventRatingsAPIView(APIView):
-    permission_classes = [IsAttendee]
+    #permission_classes = [IsAttendee]
 
     def get(self, request, event_id, **kwargs):
         try:
