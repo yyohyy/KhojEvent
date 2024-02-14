@@ -26,6 +26,7 @@ import BookingPage from './components/booking';
 import Payment from './components/Payment';
 import Order from './components/Order';
 import SearchResults from './components/SearchResults';
+import InterestedEvents from './components/Interested';
 function SidebarRoutes() {
   const location = useLocation();
   const [showSidebar, setShowSidebar] = useState(false);
@@ -64,6 +65,7 @@ function SidebarRoutes() {
           <Route path="/payment/:orderId" element={<Payment />} />
           <Route path="/orders/:orderId" element={<Order />} />
           <Route path="/search" element={<SearchResults/>} />
+          <Route path="/profile/:id/interested" element={<InterestedEvents/>} />
         </Routes>
       </div>
       <footer id="footer">

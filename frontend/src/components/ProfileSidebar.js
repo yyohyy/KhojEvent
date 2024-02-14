@@ -40,11 +40,11 @@ function ProfileSidebar() {
         ) : (
           <>
           <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/`)}>My Profile</button>
-            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/interested`)}>Interested Events</button>
-            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/bookings`)}>Booked Tickets</button>
-            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/purchases`)}>Events</button>
-            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/ratings-left`)}>Events You've Rated</button>
-            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/reviews-left`)}>Events You've Reviewed</button>
+            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/${localStorage.getItem("id")}/interested`)}>Interested Events</button>
+            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/${localStorage.getItem("id")}/bookings`)}>Booked Tickets</button>
+            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/${localStorage.getItem("id")}/purchases`)}>Events</button>
+            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/${localStorage.getItem("id")}/ratings-left`)}>Events You've Rated</button>
+            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/${localStorage.getItem("id")}/  reviews-left`)}>Events You've Reviewed</button>
           </>
         )}
       </div>
