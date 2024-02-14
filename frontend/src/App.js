@@ -26,8 +26,6 @@ import BookingPage from './components/booking';
 import Payment from './components/Payment';
 import Order from './components/Order';
 import SearchResults from './components/SearchResults';
-
-
 function SidebarRoutes() {
   const location = useLocation();
   const [showSidebar, setShowSidebar] = useState(false);

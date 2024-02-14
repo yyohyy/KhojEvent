@@ -5,7 +5,8 @@ from .models import Event, Category, Review, Tag , Rating, Interested
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ("organiser","name", "category", "start_date", "end_date", "start_time","end_time")
+    list_display = ("organiser","name", "category", "start_date", "end_date", "start_time","end_time", "is_approved")
+    list_filter = ["is_approved"]
     
 admin.site.register(Category)
 

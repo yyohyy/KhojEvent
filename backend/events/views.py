@@ -56,24 +56,7 @@ class EventCreateView(CreateAPIView):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
-    
-class OrganiserEventsListView(APIView):
-    def get(self, request):
-        # Assuming the authenticated user is the organiser
-        user = request.user
-        
-        # Get the organiser instance related to the authenticated user
-        organiser = Organiser.objects.get(user=user)
-        
-        # Filter events based on the organiser
-        events = Event.objects.filter(organiser=organiser)
-        
-        # Serialize the queryset
-        serializer = EventSerializer(events, many=True)
-        
-        # Return the serialized data
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
     
     
 class EventImageView(generics.RetrieveUpdateAPIView):
@@ -180,6 +163,7 @@ class ToggleInterestAPIView(APIView):
         except Event.DoesNotExist:
             return Response({'success': False, 'error': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
 
+
 class GetInterestedEventsView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -244,7 +228,7 @@ class InterestedListView(generics.ListAPIView):
 class CreateRateView(generics.CreateAPIView):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
-    #permission_classes = [IsAttendee]
+    permission_classes =[AttendeeCanView]
 
     def perform_create(self, serializer):
         # Automatically set the attendee based on the logged-in user
@@ -254,16 +238,19 @@ class CreateRateView(generics.CreateAPIView):
 
 class AttendeeRatingsView(generics.ListAPIView):
     serializer_class = RatingSerializer
+    permission_classes = [AttendeeCanView]
+
 
     def get_queryset(self):
         # Retrieve ratings rated by the logged-in attendee
         attendee = self.request.user.attendee
-        return Rating.objects.filter(attendee=attendee)
+        return Rating.objects.filter(attendee=attendee) 
 
 
 
 class RateUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = RatingSerializer
+    permission_classes = [AttendeeCanView]
 
     def get_object(self):
         # Retrieve the rating for the specific event and attendee
@@ -280,5 +267,43 @@ class RateUpdateView(generics.RetrieveUpdateAPIView):
         self.perform_update(serializer)
         return Response(serializer.data)
     
+    
+class GetEventRatingsAPIView(APIView):
+    permission_classes = [OrganiserCanCreate]
+
+    def get(self, request, event_id, **kwargs):
+        try:
+            # Retrieve all ratings for the specified event
+            event_ratings = Rating.objects.filter(event_id=event_id)
+
+            if event_ratings.exists():
+                # Serialize the event ratings data
+                serializer = RatingSerializer(event_ratings, many=True)
+                return Response({'success': True, 'event_ratings': serializer.data}, status=status.HTTP_200_OK)
+            else:
+                return Response({'success': False, 'error': 'No ratings found for the specified event'}, status=status.HTTP_404_NOT_FOUND)
+        
+        except Exception as e:
+            return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+   
+    
+class GetAttendeeRatedEventsAPIView(APIView):
+    permission_classes = [OrganiserCanCreate]
+
+    def get(self, request, attendee_id, **kwargs):
+        try:
+            # Retrieve all events rated by the specified attendee
+            rated_events = Event.objects.filter(rating__attendee_id=attendee_id)
+
+            if rated_events.exists():
+                # Serialize the rated events data
+                serializer = EventSerializer(rated_events, many=True)
+                return Response({'success': True, 'rated_events': serializer.data}, status=status.HTTP_200_OK)
+            else:
+                return Response({'success': False, 'error': 'No events have been rated by the specified attendee'}, status=status.HTTP_404_NOT_FOUND)
+        
+        except Exception as e:
+            return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+    

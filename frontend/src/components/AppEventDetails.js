@@ -17,7 +17,6 @@ function AppEventDetail() {
   const [loading, setLoading] = useState(true);
   const { event_id } = useParams();
   const { attendee_id } = useParams();
-  const { organiser_id } = useParams();
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
   const [interested, setInterested] = useState(false); // State variable to manage interest
@@ -33,13 +32,12 @@ function AppEventDetail() {
         setInterested(response.data.interested); // Update interested state from backend
         setRated(response.data.rated); // Update rated state from backend
         setIsAttendee(response.data.attendee === attendee_id); // Check if the logged-in user is the attendee
-        setIsOrganiser(response.data.organiser === organiser_id); // Check if the logged-in user is the organizer
       })
       .catch(error => {
         console.error('Error fetching event data:', error);
         setLoading(false);
       });
-  }, [event_id, attendee_id, organiser_id]);
+  }, [event_id, attendee_id]);
 
   // Function to fetch organizer ID from event data (replace with your logic)
   // const getOrganizerId = () => {
@@ -160,23 +158,6 @@ function AppEventDetail() {
     },
   };
 
-  // CSS styles
-  const Updatestyles = {
-    updateButton: {
-      display: "flex",
-      alignItems: "center",
-      cursor: "pointer",
-    },
-    updateIcon: {
-      color: "pink", // Color of the update icon
-      fontSize: "20px", // Size of the update icon
-      marginRight: "10px", // Spacing between the update icon and the label
-    },
-    updateLabel: {
-      fontSize: "15px", // Size of the label
-    },
-  }
-
   return (
     <div>
       <div className="col-md-12">
@@ -212,20 +193,6 @@ function AppEventDetail() {
             <span style={Interestedstyles.wishlistLabel}>{interested ? "Interested" : "Interested?"}</span>
           </button>
         )}
-
-          <button
-            style={{
-              ...Updatestyles.updateButton,
-              width: '100px', // Adjust the width as needed
-              height: '40px', // Adjust the height as needed
-              marginTop: '20px',
-              marginBottom: '20px',
-              marginLeft: '1350px'
-            }}
-            //onClick={handleUpdateEvent}
-          >
-            Update
-          </button>
       </div>
       <div className="col-md-100">
         <div className="card p-5">

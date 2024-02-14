@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GetRoutesView, AllEventsView, EventCreateView, EventDetailsView , SearchView, ToggleInterestAPIView, InterestedListView, EventUpdateView, EventImageView, CreateRateView, RateUpdateView, AttendeeRatingsView, GetInterestedEventsView, GetInterestedEventView
+from .views import GetRoutesView, AllEventsView, EventCreateView, EventDetailsView , SearchView, ToggleInterestAPIView, InterestedListView, EventUpdateView, EventImageView, CreateRateView, RateUpdateView, AttendeeRatingsView, GetInterestedEventsView, GetInterestedEventView, GetEventRatingsAPIView, GetAttendeeRatedEventsAPIView
 
 
 urlpatterns = [
@@ -18,5 +18,6 @@ urlpatterns = [
     path('rate-event/', CreateRateView.as_view(), name='rate-event'),
     path('attendee-ratings/', AttendeeRatingsView.as_view(), name='attendee-ratings'),
     path('event-ratings/<int:event_id>/', RateUpdateView.as_view(), name='event-ratings'),
-
+    path('rated-events/<int:event_id>/', GetEventRatingsAPIView.as_view(), name='event_ratings'),
+    path('attendee-rated-events/<int:attendee_id>/', GetAttendeeRatedEventsAPIView.as_view(), name='attendee_rated_events'),
 ]
