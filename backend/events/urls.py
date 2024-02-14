@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import GetRoutesView, AllEventsView, EventCreateView, EventDetailsView , SearchView, ToggleInterestAPIView, InterestedListView, RatingView, ReviewList, ReviewDetail, EventUpdateView, EventImageView, BookedEventsView, OrganiserEventsListView, OrganiserEventsListView
+from .views import GetRoutesView, AllEventsView, EventCreateView, EventDetailsView , SearchView, ToggleInterestAPIView, InterestedListView, EventUpdateView, EventImageView, CreateRateView, RateUpdateView, AttendeeRatingsView, GetInterestedEventsView, GetInterestedEventView
 
 
 urlpatterns = [
@@ -12,11 +12,11 @@ urlpatterns = [
    #path('create-tag/', TagCreateView.as_view(), name='create-tag'),    
     path('search/', SearchView.as_view(), name='search-view'),
     path('events/<int:event_id>/interested/', ToggleInterestAPIView.as_view(), name='toggle_interest'),
+    path('interested-events/', GetInterestedEventsView.as_view(), name='interested_events'),
+    path('interested-event/<int:event_id>/', GetInterestedEventView.as_view(), name='interested_event'),
     path('interested-detail/<int:attendee_id>/', InterestedListView.as_view(), name='interested-detail'),
-    path('rate/', RatingView.as_view(), name='rate_event'),
-    path('reviews/', ReviewList.as_view(), name='review-list'),
-    path('reviews/<int:review_id>/', ReviewDetail.as_view(), name='review-detail'),
-    path('booked-events/', BookedEventsView.as_view(), name='booked-events'),
-    path('myevents/', OrganiserEventsListView.as_view(), name='organiser-events-list'),
+    path('rate-event/', CreateRateView.as_view(), name='rate-event'),
+    path('attendee-ratings/', AttendeeRatingsView.as_view(), name='attendee-ratings'),
+    path('event-ratings/<int:event_id>/', RateUpdateView.as_view(), name='event-ratings'),
 
 ]

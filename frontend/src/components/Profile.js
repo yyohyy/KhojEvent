@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
+import ProfileSidebar from './ProfileSidebar';
 const ProfileDashboard = () => {
   const navigate = useNavigate(); 
   const [userData, setUserData] = useState(null);
@@ -140,6 +141,7 @@ const ProfileDashboard = () => {
     <div className="container">
       <div className="row">
       <div className="col-md-3">
+        <ProfileSidebar />
         </div>
         <div className="col-md-9">
           <div className="card border-8 border-emerald-400">
