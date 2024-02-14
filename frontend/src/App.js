@@ -27,6 +27,7 @@ import Payment from './components/Payment';
 import Order from './components/Order';
 import SearchResults from './components/SearchResults';
 
+
 function SidebarRoutes() {
   const location = useLocation();
 
@@ -61,6 +62,7 @@ function SidebarRoutes() {
           <Route path="/payment/:orderId" element={<Payment />} />
           <Route path="/orders/:orderId" element={<Order />} />
           <Route path="/search" element={<SearchResults/>} />
+
         </Routes>
       </div>
       <footer id="footer">

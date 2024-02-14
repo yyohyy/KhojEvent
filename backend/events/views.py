@@ -45,6 +45,9 @@ class EventCreateView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        organiser = request.user.organiser
+
+        serializer.validated_data['organiser'] = organiser
 
         # Set is_approved to False for events created by regular users
         serializer.validated_data['is_approved'] = False
@@ -99,18 +102,32 @@ class EventUpdateView(generics.RetrieveUpdateAPIView):
         #instance = self.get_object()
         #self.perform_destroy(instance)
         #return Response("Item is successfully deleted!", status=status.HTTP_204_NO_CONTENT)
-   
+'''      
+class RateEventAPIView(generics.CreateAPIView):
+    queryset = Event.objects.all()  # Specify the queryset for the view
+    serializer_class = RatingSerializer  # Specify the serializer class for the view
 
-class BookedEventsView(APIView):
-    def get(self, request):
-        # Query all selected tickets
-        selected_tickets = SelectedTicket.objects.all()
+    def create(self, request, *args, **kwargs):
+        event_id = kwargs.get('event_id')
+        rating = request.data.get('rating')
+        
+        if rating is not None:
+            try:
+                rating_value = float(rating)
+                if 0 <= rating_value <= 5:  # Assuming ratings are between 0 and 5
+                    event = self.get_object()
+                    event.rating = rating_value 
+                    event.save()
 
-        # Extract unique event IDs from selected tickets
-        event_ids = set(selected_ticket.ticket.ticket.event_id for selected_ticket in selected_tickets)
-
-        # Return event IDs or event objects as per your requirement
-        return Response(event_ids, status=status.HTTP_200_OK)
+                    serializer = self.get_serializer(event)
+                    return Response({'event': serializer.data})
+                else:
+                    return Response({'error': 'Rating value must be between 0 and 5'}, status=status.HTTP_400_BAD_REQUEST)
+            except ValueError:
+                return Response({'error': 'Invalid rating value'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'error': 'Rating value is missing'}, status=status.HTTP_400_BAD_REQUEST)
+'''
     
 
 class SearchView(APIView):
@@ -135,38 +152,7 @@ class SearchView(APIView):
        
 
 
-class RatingView(APIView):
-    def post(self, request):
-        # Assuming the rating data is sent in the request body as JSON
-        rating = request.data.get('rating')
-        stars = request.data.get('stars')  # Get the stars data
-        event_id = request.data.get('event_id')  # Assuming the event ID is also sent
         
-        # Get the attendee from the request user
-        attendee = request.user.attendee
-        
-        # Validate the data
-        if rating is None or stars is None or event_id is None:
-            return Response({'error': 'Rating data incomplete'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Check if the attendee has already rated the event
-        existing_rating = Rating.objects.filter(event_id=event_id, attendee=attendee).first()
-        if existing_rating:
-            return Response({'error': 'Attendee has already rated this event'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Create or update the event rating
-        try:
-            event_rating, created = Rating.objects.get_or_create(event_id=event_id, attendee=attendee)
-            event_rating.rating = rating
-            event_rating.stars = stars  # Assign stars value
-            event_rating.save()
-            return Response({'success': True, 'message': 'Rating added successfully'}, status=status.HTTP_201_CREATED)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-        
-
 class ToggleInterestAPIView(APIView):
     permission_classes = [IsAuthenticated]  # Ensure that only authenticated users can access this endpoint
     
@@ -194,9 +180,51 @@ class ToggleInterestAPIView(APIView):
         except Event.DoesNotExist:
             return Response({'success': False, 'error': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
 
+class GetInterestedEventsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, **kwargs):
+        try:
+            # Get the attendee associated with the current authenticated user
+            attendee = request.user.attendee
+
+            # Retrieve all events marked as interested by the attendee
+            interested_events = Event.objects.filter(interested__attendee=attendee)
+
+            # Serialize the interested events data if needed
+            # Example assuming you have a serializer for Event model
+            serializer = EventSerializer(interested_events, many=True)
+    
+            return Response({'success': True, 'interested_events': serializer.data}, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-       
+
+class GetInterestedEventView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, event_id, **kwargs):
+        try:
+            # Get the attendee associated with the current authenticated user
+            attendee = request.user.attendee
+
+            # Retrieve the specific event marked as interested by the attendee based on event ID
+            interested_event = Event.objects.filter(id=event_id, interested__attendee=attendee).first()
+
+            if interested_event:
+                # Serialize the interested event data
+                serializer = EventSerializer(interested_event)
+                return Response({'success': True, 'interested_event': serializer.data}, status=status.HTTP_200_OK)
+            else:
+                return Response({'success': False, 'error': 'Event not found or not marked as interested by the attendee'}, status=status.HTTP_404_NOT_FOUND)
+        
+        except Exception as e:
+            return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)   
+        
+        
+          
 class InterestedListView(generics.ListAPIView):
     serializer_class = InterestedDetailSerializer
     # permission_classes = [IsAuthenticated] # You can add permissions here if needed
@@ -213,38 +241,44 @@ class InterestedListView(generics.ListAPIView):
 
 
 
-class ReviewDetail(APIView):
-    def get(self, request, attendee_id):
-        review = get_object_or_404(Review, pk=attendee_id)
-        serializer = ReviewSerializer(review)
+class CreateRateView(generics.CreateAPIView):
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+    #permission_classes = [IsAttendee]
+
+    def perform_create(self, serializer):
+        # Automatically set the attendee based on the logged-in user
+        serializer.save(attendee=self.request.user.attendee)   
+
+
+
+class AttendeeRatingsView(generics.ListAPIView):
+    serializer_class = RatingSerializer
+
+    def get_queryset(self):
+        # Retrieve ratings rated by the logged-in attendee
+        attendee = self.request.user.attendee
+        return Rating.objects.filter(attendee=attendee)
+
+
+
+class RateUpdateView(generics.RetrieveUpdateAPIView):
+    serializer_class = RatingSerializer
+
+    def get_object(self):
+        # Retrieve the rating for the specific event and attendee
+        event_id = self.kwargs['event_id']
+        attendee = self.request.user.attendee
+        obj, created = Rating.objects.get_or_create(event_id=event_id, attendee=attendee)
+        return obj
+
+    def update(self, request, *args, **kwargs):
+        # Update the rating
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
         return Response(serializer.data)
+    
 
-    def put(self, request, attendee_id):
-        review = get_object_or_404(Review, pk=attendee_id)
-        serializer = ReviewSerializer(review, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, attendee_id):
-        review = get_object_or_404(Review, pk=attendee_id)
-        review.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-class ReviewList(APIView):
-    def get(self, request):
-        reviews = Review.objects.all()
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = ReviewSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-  
-       
 
