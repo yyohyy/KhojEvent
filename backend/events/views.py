@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.response import Response
 from rest_framework import generics
+from django.db.models import Avg
 from .permissions import IsAuthenticated
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
@@ -11,11 +12,11 @@ from tickets.models import SelectedTicket
 from django.http import Http404
 from .serializers import EventSerializer, CategorySerializer, TagSerializer, InterestedSerializer, InterestedDetailSerializer, ReviewSerializer, RatingSerializer, EventImageSerializer
 from events.models import Event, Tag, Category, Review, Rating, Interested, Attendee, Organiser
-from .permissions import OrganiserCanUpdate, OrganiserCanCreate, AttendeeCanView, AttendeeCanMark#, AttendeeCanRate, AttendeeCanReview
+from .permissions import OrganiserCanUpdate, IsOrganiser, IsAttendee#, AttendeeCanMark, AttendeeCanRate, AttendeeCanReview
 
 
 
-
+'''
 class GetRoutesView(APIView):
     def get(self, request):
         routes = [
@@ -25,7 +26,7 @@ class GetRoutesView(APIView):
             {'GET':'/interested/id/'}
         ]
         return Response(routes)
-
+'''
 
 
 class AllEventsView(ListAPIView):
@@ -70,7 +71,7 @@ class EventDetailsView(generics.RetrieveAPIView):
     # http_method_names=['get','patch','delete']
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    #permission_classes = [AttendeeCanView]
+    #permission_classes = [IsAttendee]
     # lookup_field='pk'
    
    
@@ -132,7 +133,11 @@ class SearchView(APIView):
         return Response({
             'event_results': event_serializer.data,
         }, status=status.HTTP_200_OK)
-       
+        
+        
+class PaidEventView(ListAPIView):
+    queryset = Event.objects.filter(is_paid=True)
+    serializer_class = EventSerializer
 
 
         
@@ -228,17 +233,21 @@ class InterestedListView(generics.ListAPIView):
 class CreateRateView(generics.CreateAPIView):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
-    permission_classes =[AttendeeCanView]
+    #permission_classes = [AttendeeCanRate]
 
     def perform_create(self, serializer):
-        # Automatically set the attendee based on the logged-in user
-        serializer.save(attendee=self.request.user.attendee)   
+        # Check if the user has already rated the event
+        existing_rating = Rating.objects.filter(attendee=self.request.user.attendee, event=serializer.validated_data['event']).exists()
+        if existing_rating:
+            raise serializers.ValidationError("You have already rated this event.")
 
+        # Automatically set the attendee based on the logged-in user
+        serializer.save(attendee=self.request.user.attendee)
 
 
 class AttendeeRatingsView(generics.ListAPIView):
     serializer_class = RatingSerializer
-    permission_classes = [AttendeeCanView]
+    permission_classes = [IsAttendee]
 
 
     def get_queryset(self):
@@ -250,7 +259,7 @@ class AttendeeRatingsView(generics.ListAPIView):
 
 class RateUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = RatingSerializer
-    permission_classes = [AttendeeCanView]
+    permission_classes = [IsAttendee]
 
     def get_object(self):
         # Retrieve the rating for the specific event and attendee
@@ -269,7 +278,7 @@ class RateUpdateView(generics.RetrieveUpdateAPIView):
     
     
 class GetEventRatingsAPIView(APIView):
-    permission_classes = [OrganiserCanCreate]
+    permission_classes = [IsAttendee]
 
     def get(self, request, event_id, **kwargs):
         try:
@@ -285,10 +294,34 @@ class GetEventRatingsAPIView(APIView):
         
         except Exception as e:
             return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-   
+  
+  
+  
+class GetAvgRatingsAPIView(APIView):
+    #permission_classes = [OrganiserCanCreate]
+
+    def get(self, request, event_id, **kwargs):
+        try:
+            # Retrieve all ratings for the specified event
+            event_ratings = Rating.objects.filter(event_id=event_id)
+
+            if event_ratings.exists():
+                # Calculate the average rating
+                avg_rating = event_ratings.aggregate(Avg('stars'))['stars__avg']
+                if avg_rating is not None:
+                    return Response({'success': True, 'average_rating': avg_rating}, status=status.HTTP_200_OK)
+                else:
+                    return Response({'success': False, 'error': 'No ratings found for the specified event'}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response({'success': False, 'error': 'No ratings found for the specified event'}, status=status.HTTP_404_NOT_FOUND)
+        
+        except Exception as e:
+            return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST) 
+    
+    
     
 class GetAttendeeRatedEventsAPIView(APIView):
-    permission_classes = [OrganiserCanCreate]
+    permission_classes = [IsOrganiser]
 
     def get(self, request, attendee_id, **kwargs):
         try:
@@ -305,5 +338,3 @@ class GetAttendeeRatedEventsAPIView(APIView):
         except Exception as e:
             return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-
-    
