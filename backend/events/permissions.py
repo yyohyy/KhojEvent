@@ -10,14 +10,14 @@ class OrganiserCanCreate(permissions.BasePermission):
             # If user is authenticated but not an organizer, raise PermissionDenied exception
             raise PermissionDenied("Only organizers can create events.")
 '''
-class OrganiserCanCreate(permissions.BasePermission):
+class IsOrganiser(permissions.BasePermission):
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False  # If user is not authenticated, deny permission
         
         if not request.user.is_organiser:
             # If user is authenticated but not an organizer, raise PermissionDenied exception
-            raise PermissionDenied("Only organizers can create events.")
+            raise PermissionDenied("Only organizers has the permission")
         
         # If user is authenticated and is an organizer, grant permission
         return True
@@ -45,7 +45,7 @@ class OrganiserCanUpdate(permissions.BasePermission):
    
    
    
-class AttendeeCanView(permissions.BasePermission):
+class IsAttendee(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated and request.user.is_attendee
     
@@ -58,13 +58,13 @@ class AttendeeCanView(permissions.BasePermission):
 
 
 
-
+'''
 class AttendeeCanMark(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated and request.user.is_attendee
 
 
-'''
+
 class AttendeeCanRate(permissions.BasePermission):
    
     def has_permission(self, request, view):
