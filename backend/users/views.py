@@ -9,7 +9,9 @@ from .models import *
 from .permissions import IsOwnerOrReadOnly
 from .serializers import *
 from events.serializers import *
-from tickets.models import OrderItem
+from tickets.models import *
+from tickets.serializers import *
+
 
 
 class CurrentUser(RetrieveUpdateAPIView):
@@ -117,20 +119,40 @@ class OrganiserEventsView(generics.ListAPIView):
         organiser_id=self.kwargs.get('organiser_id')
         return Event.objects.filter(organiser_id=organiser_id)
     
-class AttendeeEventsView(ListAPIView):
-    serializer_class = EventSerializer
+# class AttendeeEventsView(generics.ListAPIView):
+#     serializer_class = EventSerializer
+
+#     def get_queryset(self):
+#         # Retrieve the attendee object
+#         attendee_id = self.kwargs['attendee_id']
+#         attendee = get_object_or_404(Attendee, pk=attendee_id)
+
+#         # Retrieve events for which the attendee has placed an order
+#         order_items = OrderItem.objects.filter(ticket__issued_to=attendee)
+#         print(order_items)
+#         event_ids = order_items.values_list('ticket__ticket__ticket__event__id', flat=True).distinct()
+#         print(event_ids)
+#         # Retrieve the events based on the event IDs
+#         events = Event.objects.filter(id__in=event_ids)
+#         return events
+
+class UserSelectedTicketsDetails(generics.ListAPIView):
+    serializer_class = SelectedTicketSerializer
 
     def get_queryset(self):
-        # Retrieve the attendee object
-        attendee_id = self.kwargs['attendee_id']
-        attendee = get_object_or_404(Attendee, pk=attendee_id)
-
-        # Retrieve events for which the attendee has placed an order
-        order_items = OrderItem.objects.filter(ticket__issued_to=attendee)
-        print(order_items)
-        event_ids = order_items.values_list('ticket__ticket__ticket__event__id', flat=True).distinct()
-        print(event_ids)
-        # Retrieve the events based on the event IDs
-        events = Event.objects.filter(id__in=event_ids)
-        return events
+        user_id = self.kwargs['attendee_id']
+        return SelectedTicket.objects.filter(issued_to_id=user_id)    
     
+class PurchasedTicketsDetails(generics.ListAPIView):
+    serializer_class = SelectedTicketSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs['attendee_id']
+        return SelectedTicket.objects.filter(issued_to_id=user_id, status='CONFIRMED')    
+    
+class BookedTicketsDetails(generics.ListAPIView):
+    serializer_class = SelectedTicketSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs['attendee_id']
+        return SelectedTicket.objects.filter(issued_to_id=user_id, status__in=[ 'BOOKED', 'PROCESSING'])    
