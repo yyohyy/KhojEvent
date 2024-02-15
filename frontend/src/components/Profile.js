@@ -6,6 +6,7 @@ import ProfileSidebar from "./ProfileSidebar";
 
 const ProfileDashboard = () => {
   const navigate = useNavigate();
+  const [reloadImage, setReloadImage] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -39,7 +40,7 @@ const ProfileDashboard = () => {
     };
 
     fetchUserData();
-  }, [id]);
+  }, [id,reloadImage]);
   useEffect(() => {
     console.log("UserData before update:", userData);
   }, [userData]);
@@ -97,11 +98,13 @@ const ProfileDashboard = () => {
           headers: {
             Authorization: `Bearer ${authToken}`,
             // "Content-Type": "multipart/form-data",
+          
           },
         }
       );
 
       setUserData(response.data);
+      window.location.reload()
       setEditing(false);
     } catch (error) {
       console.error("Error updating user data:", error);
@@ -143,81 +146,82 @@ const ProfileDashboard = () => {
       }));
 
       console.log("Profile picture uploaded successfully:", response.data);
+      setReloadImage((prev) => !prev);
     } catch (error) {
       console.error("Error uploading profile picture:", error);
     }
   };
 
-  const handleViewLikedEvents = () => {
-    console.log("View Liked Events");
-    // Navigate to the 'Liked Events' page
-    navigate(`/profile/${localStorage.getItem("id")}/interested`);
-  };
-
-  return (
-    <div className="container">
+   return (
+    <div className="container" style={{ paddingBottom: "50px" }}>
       <div className="row">
         <div className="col-md-3">
           <ProfileSidebar />
         </div>
         <div className="col-md-9">
-          <div className="card">
-            <div className="card-body">
-              <div className="d-flex justify-content-between align-items-center">
-                <h2 className="card-title">Profile Personal:</h2>
-                {userData && (
-                  <div className="col text-end">
-                    {userData.profile_picture ? (
-                      <img
-                        src={userData.profile_picture}
-                        alt="Profile"
-                        className="img-thumbnail rounded-circle"
-                        style={{
-                          width: "100px",
-                          height: "100px",
-                          border: "1px solid",
-                        }}
-                      />
-                    ) : (
-                      <div
-                        className="img-thumbnail rounded-circle"
-                        style={{
-                          width: "100px",
-                          height: "100px",
-                          backgroundColor: "#f0f0f0",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <span className="text-muted">No Profile Picture</span>
-                      </div>
-                    )}
-                  </div>
-                )}
+        <div className="card">
+  <div className="card-body">
+    <div className="row">
+      <div className="col-md-8">
+        <h2 className="card-title mb-8">Profile Personal:</h2>
+        <div className="row mb-12 mt-6">
+          <div className="col">
+            <input
+              type="file"
+              className="form-control-file"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+          </div>
+          <div className="col">
+            <button className="btn btn-danger" onClick={handleUpload}>
+              Upload
+            </button>
+          </div>
+        </div>
+        {/* Display personal information fields here */}
+        {/* Edit and Save/Cancel buttons */}
+      </div>
+      <div className="col-md-4">
+        {userData && (
+          <div className="col text-end">
+            {userData.profile_picture ? (
+              <img
+                src={userData.profile_picture}
+                alt="Profile"
+                className="img-thumbnail rounded-circle"
+                style={{
+                  width: "200px",
+                  height: "200px",
+                  border: "1px solid",
+                }}
+              />
+            ) : (
+              <div
+                className="img-thumbnail rounded-circle"
+                style={{
+                  width: "200px",
+                  height: "200px",
+                  backgroundColor: "#f0f0f0",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <span className="text-muted">No Profile Picture</span>
               </div>
-
-              <div className="row mb-12">
-                <div className="col">
-                  <input
-                    type="file"
-                    className="form-control-file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                  />
-                  <button className="btn-sm" onClick={handleUpload}>
-                    Upload
-                  </button>
-                </div>
-                <div className="col"></div>
-              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
               {userData && (
                 <>
                   {userData.attendee_details && (
                     <>
-                    <div className="row mb-3">
+                    <div className="row mb-3 mt-4">
                         <label className="col-sm-2 col-form-label">
-                          email:
+                          Email:
                         </label>
                         <div className="col-sm-10">
                           {editing ? (
@@ -375,7 +379,7 @@ const ProfileDashboard = () => {
                       </button>
                     </>
                   ) : (
-                    <button className="btn btn-link" onClick={handleEdit}>
+                    <button className="btn btn-primary" onClick={handleEdit}>
                       Edit
                     </button>
                   )}
