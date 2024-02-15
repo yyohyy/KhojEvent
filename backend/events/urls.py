@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AllEventsView, EventCreateView, EventDetailsView , SearchView, ToggleInterestAPIView, InterestedListView, EventUpdateView, EventImageView, CreateRateView, RateUpdateView, AttendeeRatingsView, GetInterestedEventsView, GetInterestedEventView, GetEventRatingsAPIView, GetAttendeeRatedEventsAPIView, GetAvgRatingsAPIView, ReviewView, ReviewDetailView,PaidEventView, EventReviewListView, OrganizerReviewListView
+from .views import AllEventsView, EventCreateView, EventDetailsView , SearchView, ToggleInterestAPIView, InterestedListView, EventUpdateView, EventImageView, CreateRateView, RateUpdateView, AttendeeRatingsView, GetInterestedEventsView, GetInterestedEventView, GetAttendeeRatedEventsAPIView, GetAvgRatingsAPIView, ReviewView, ReviewRetrieveUpdateDestroyAPIView,PaidEventView,OrganizerReviewListView, EventRatingsAndReviewsAPIView, AttendeeReviewedEventsAPIView
 
 
 urlpatterns = [
@@ -20,10 +20,12 @@ urlpatterns = [
     path('attendee-ratings/', AttendeeRatingsView.as_view(), name='attendee-ratings'),
     path('events/<int:event_id>/ratings/', GetAvgRatingsAPIView.as_view(), name='event_ratings'),
     path('event-ratings/<int:event_id>/', RateUpdateView.as_view(), name='event-ratings'),
-    path('rated-events/<int:event_id>/', GetEventRatingsAPIView.as_view(), name='event_ratings'),
+    #path('rated-events/<int:event_id>/', GetEventRatingsAPIView.as_view(), name='event_ratings'),
     path('attendee-rated-events/<int:attendee_id>/', GetAttendeeRatedEventsAPIView.as_view(), name='attendee_rated_events'),
     path('reviews/', ReviewView.as_view(), name='review-list'),
-    path('events/<int:event_id>/reviews/', ReviewDetailView.as_view(), name='review-detail'),
-    path('event/<int:event_id>/reviews/', EventReviewListView.as_view(), name='event_reviews'),
+    path('reviews/<int:event_id>/', ReviewRetrieveUpdateDestroyAPIView.as_view(), name='review-detail'),
+    path('attendees/<int:attendee_id>/reviews/', AttendeeReviewedEventsAPIView.as_view(), name='attendee-reviewed-events'),
+    #path('event/<int:event_id>/reviews/', EventReviewListView.as_view(), name='event_reviews'),
     path('organizer/reviews/<int:event_id>/', OrganizerReviewListView.as_view(), name='organizer_reviews'),
+    path('events/<int:event_id>/ratings-and-reviews/', EventRatingsAndReviewsAPIView.as_view(), name='event_ratings_and_reviews'),
 ] 

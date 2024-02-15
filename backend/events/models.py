@@ -4,12 +4,14 @@ from users.models import Attendee, User
 # from django.utils import timezone
 # import uuid
 
+
 class Category(models.Model):
    name = models.CharField(max_length=200)
    created = models.DateTimeField(auto_now_add=True) #to know about the time and date of adding data to the db and and automatically create a time for each added model 
    
    def __str__(self):
         return self.name 
+    
     
 class Event(models.Model):
     name = models.CharField(max_length=100, null=True)
@@ -21,19 +23,14 @@ class Event(models.Model):
     image = models.ImageField(upload_to='events_image/', null=True)
     is_paid = models.BooleanField(default=False)       # Field indicating if the event is paid
     start_date = models.DateField(null=True)
-    end_date = models.DateField(null=True)
+    end_date = models.DateField(null=True, blank=True) 
     start_time = models.TimeField(null=True)
-    end_time = models.TimeField(null=True)
+    end_time = models.TimeField(null=True, blank=True)
     is_approved = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True) #to know about the time and date of adding data to the db and and automatically create a time for each added model 
     
     def __str__(self):
         return self.name
-
-    #def save(self, *args, **kwargs):
-        #if self.is_approved:
-            #super().save(*args, **kwargs)
-        # If not approved, you can add custom logic here, or just skip saving.
     
     
 class Review(models.Model):
@@ -60,12 +57,14 @@ class Rating(models.Model):
     def __str__(self):
         return f"{self.event.name} - {self.stars} Stars"
     
+    
 class Interested(models.Model):
     attendee = models.ForeignKey(Attendee, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     
     def __str__(self):
         return f"{self.attendee.first_name} {self.attendee.last_name}" 
+    
     
 class Tag(models.Model):
     name= models.CharField(max_length=200)
