@@ -132,7 +132,7 @@ const Update = () => {
       await AxiosInstance.patch(`http://127.0.0.1:8000/event-update/${event_id}/`, formattedData);
   
       if (formData.is_paid === 'True') {
-        const ticketResponse = await AxiosInstance.post(`http://127.0.0.1:8000/tickets/${event_id}/create/`, { ticket_types: formData.ticketTypes });
+        const ticketResponse = await AxiosInstance.patch(`http://127.0.0.1:8000/tickets/${event_id}/`, { ticket_types: formData.ticketTypes });
         console.log('Ticket creation response:', ticketResponse);
       }
   

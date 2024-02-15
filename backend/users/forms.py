@@ -8,7 +8,12 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ("email",)
+        fields = ("email","profile_picture","phone_number")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['profile_picture'].required = False
+        self.fields['phone_number'].required = False
 
 
 class CustomUserChangeForm(UserChangeForm):

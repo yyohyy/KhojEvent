@@ -104,7 +104,7 @@ function AppHeader() {
           </Form>
           <Nav className="me-auto">
             <Nav.Link href="/home">Home</Nav.Link>
-            <Nav.Link href="/services">Create Events</Nav.Link>
+            <Nav.Link href="/create-event">Create Events</Nav.Link>
             <Nav.Link href="/events">Events</Nav.Link>
             <Nav.Link href="/testimonials">Testimonials</Nav.Link>
             <Nav.Link href="/contact">Contact</Nav.Link>

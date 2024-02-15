@@ -6,7 +6,7 @@ const AppLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
- // const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
   const navigate = useNavigate();
 
   // Create the submit method.
@@ -22,11 +22,12 @@ const AppLogin = () => {
 
       // Handle the response
       const { access } = response.data;
+      
       // Store the token in localStorage (you might want to use more secure storage)
       localStorage.setItem('Bearer', access);
       // Clear any previous error message
       setErrorMessage('');
-
+      setIsLoggedIn(true);
       // Check user type after successful login
       const token = `Bearer ${localStorage.getItem('Bearer')}`;
       const userResponse = await axios.get('http://127.0.0.1:8000/users/me/', {
@@ -42,6 +43,7 @@ const AppLogin = () => {
       if (user.is_organiser || user.is_attendee) {
                 //etIsLoggedIn(true);
         navigate('/');
+        window.location.reload()
       } else {
         navigate('/user-type-selection');
       }
@@ -61,7 +63,7 @@ const AppLogin = () => {
 
   return (
     <div className="auth-form-container d-flex justify-content-center align-items-center vh-100">
-      <div className="auth-form-box p-4 rounded shadow">
+      <div className="auth-form-box p-4 rounded shadow" style={{ width: "400px" }}>
         <form className="auth-form" onSubmit={submit}>
           <h3 className="auth-form-title mb-4 text-center">Log In</h3>
           {errorMessage && <div className="alert alert-danger" role="alert">{errorMessage}</div>}

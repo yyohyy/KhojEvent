@@ -32,7 +32,7 @@ const UpdateEvent = () => {
     }, [organiser_id]);
 
     const handleEventUpdate = (event_id) => {
-        navigate(`/profile/${organiser_id}/events/update/${event_id}`);
+        navigate(`/profile/${localStorage.getItem("id")}/events/update/${event_id}`);
     };
 
     return (

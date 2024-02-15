@@ -25,6 +25,7 @@ class RatingSerializer(serializers.ModelSerializer):
         fields = ["event", "stars", "attendee"]
        
 class ReviewSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Review
         fields = ["attendee", "event", "body"]

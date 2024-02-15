@@ -29,6 +29,8 @@ import InterestedEvents from './components/Interested';
 import BookedTickets from './components/booked';
 import UpdateEvent from './components/UpdateEvents';
 import Update from './components/update';
+import PurchasedTickets from './components/Purchased';
+import Ratings from './components/Ratings';
 function App() {
   return (
    <Provider store={store}>
@@ -44,7 +46,7 @@ function App() {
           <Route path="/home" element={<AppHero />} />
           <Route path="/events" element={<AppEvents />} />
           <Route path="/testimonials" element={<AppTestimonials />} />
-          <Route path="/services" element={<CreateEvent />} />
+          <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/contact" element={<AppContact />} />
           <Route path="/signup" element={<AppSignup />} />
           <Route path="/login" element={<AppLogin />} />
@@ -65,6 +67,8 @@ function App() {
           <Route path="/profile/:organiser_id/events/update/:event_id" element={<Update />} />
 
           <Route path="/profile/:id/booked" element={<BookedTickets/>} />
+          <Route path="/profile/:id/purchases" element={<PurchasedTickets/>} />
+          <Route path="/profile/:id/ratings-left" element={<Ratings/>} />
             </Routes>
  
         </div>

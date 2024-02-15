@@ -144,7 +144,7 @@ const ProfileDashboard = () => {
         <ProfileSidebar />
         </div>
         <div className="col-md-9">
-          <div className="card">
+          <div className="card border-8 border-emerald-400">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center">
                 <h2 className="card-title">Profile Personal:</h2>

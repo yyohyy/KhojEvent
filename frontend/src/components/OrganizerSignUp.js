@@ -49,67 +49,63 @@ const OrganizerSignup = () => {
   };
 
   return (
-    <div className="container pt-5">
-      <div className="row justify-content-center">
-        <div className="col-sm-8 col-md-6">
-          <div className="card p-4 shadow rounded">
-            <h3 className="mb-4 text-center">Organizer Sign Up</h3>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <label htmlFor="name" className="form-label">
-                  Organization Name
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="name"
-                  placeholder="Your Organization Name"
-                  name="name"
-                  value={organizerData.name}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="address" className="form-label">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="address"
-                  placeholder="Your Address"
-                  name="address"
-                  value={organizerData.address}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="description" className="form-label">
-                  Description
-                </label>
-                <textarea
-                  className="form-control"
-                  id="description"
-                  placeholder="Your Description"
-                  name="description"
-                  value={organizerData.description}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              {/* Add more fields as needed for organizer signup */}
-              <div className="d-grid">
-                <button type="submit" className="btn btn-primary">
-                  Sign Up as Organizer
-                </button>
-              </div>
-            </form>
-          </div>
+    <div className="auth-form-container d-flex flex-column justify-content-between align-items-center vh-100" style={{ paddingTop: '50px' }}>
+    <div className="card p-4 shadow rounded" style={{ width: '450px' }}>
+      <h3 className="mb-4 text-center">Organizer Sign Up</h3>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="name" className="form-label">
+            Organization Name
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="name"
+            placeholder="Your Organization Name"
+            name="name"
+            value={organizerData.name}
+            onChange={handleInputChange}
+            required
+          />
         </div>
-      </div>
+        <div className="form-group">
+          <label htmlFor="address" className="form-label">
+            Address
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="address"
+            placeholder="Your Address"
+            name="address"
+            value={organizerData.address}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="description" className="form-label">
+            Description
+          </label>
+          <textarea
+            className="form-control"
+            id="description"
+            placeholder="Your Description"
+            name="description"
+            value={organizerData.description}
+            onChange={handleInputChange}
+            required
+          />
+        </div>
+        {/* Add more fields as needed for organizer signup */}
+        <div className="d-grid">
+          <button type="submit" className="btn btn-primary">
+            Sign Up as Organizer
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
   );
 };
 

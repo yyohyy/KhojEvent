@@ -76,15 +76,6 @@ const AppSignup = () => {
 
       // Handle the response, you might want to show a success message or navigate to the login page
       console.log('Registration successful:', response.data);
-    // Log in the user immediately after successful registration
-    // const loginResponse = await axios.post('http://127.0.0.1:8000/auth/jwt/create', {
-    //   email: formData.email,
-    //   password: formData.password,
-    // });
-
-    // // Store the JWT token in localStorage
-    // const { access } = loginResponse.data;
-    // localStorage.setItem('token', access);
       // Navigate to the user type selection page
       navigate('/login');
     } catch (error) {
@@ -94,7 +85,7 @@ const AppSignup = () => {
   };
 
   return (
-    <div className='container pt-5'>
+    <div className='container pt-5' style={{ maxWidth: "800px" }}>
       <div className='row justify-content-center'>
         <div className='col-sm-8 col-md-6'>
           <div className='card p-4 shadow rounded'>
@@ -115,7 +106,7 @@ const AppSignup = () => {
                   required
                 />
               </div>
-              <div className='form-group'>
+              <div className='form-group mt-2' >
                 <label htmlFor='password' className='form-label'>
                   Password
                 </label>
@@ -129,10 +120,14 @@ const AppSignup = () => {
                   required
                 />
                 {passwordStrengthMessage && (
-                  <p className='text-danger'>{passwordStrengthMessage}</p>
+                  <div className="mt-2 d-flex justify-content-center">
+                    <p className="text-danger mb-2 px-1" style={{ maxWidth: "400px", overflow: "hidden" }}>
+                      {passwordStrengthMessage}
+                    </p>
+                  </div>
                 )}
               </div>
-
+  
               <div className='form-group'>
                 <label htmlFor='re_password' className='form-label'>
                   Re-enter Password
@@ -147,22 +142,14 @@ const AppSignup = () => {
                   required
                 />
               </div>
-
-              <div className='form-check mb-3'>
-                <input
-                  className='form-check-input'
-                  type='checkbox'
-                  id='gridCheck'
-                />
-                <label className='form-check-label' htmlFor='gridCheck'>
-                  Already have an account?
-                </label>
-              </div>
               <div className='d-grid'>
                 <button type='submit' className='btn btn-primary'>
                   Sign Up
                 </button>
               </div>
+              <div className='text-center'>
+              <p className=" mt-4 mb-4">Already have an account? <a href="/login">Login</a></p>
+            </div>
             </form>
           </div>
         </div>
@@ -175,6 +162,7 @@ const AppSignup = () => {
       </div>
     </div>
   );
+  
 };
 
 export default AppSignup;
