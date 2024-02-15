@@ -20,14 +20,14 @@ var heroData = [
     image: require('../assets/images/img-hero2.jpg'),
     title: 'Book the Tickets ',
     description: 'Enjoy the peace of mind that comes with our secure online payment system. Purchase tickets with confidence, knowing that your transaction is protected and your information is handled with the utmost care.!',
-    link: 'https://www.facebook.com'
+    link: 'http://localhost:3000/events/paid'
   },
   {
     id: 3,
     image: require('../assets/images/img-hero3.jpg'),
     title: 'Promote your Event ',
     description: 'Introducing EventBoost – Amplify Your Experience! Unlock the full potential of your events with our powerful promotion tools that guarantee heightened visibility and attendance. Create a buzz around your event by leveraging our strategic promotional features. Craft eye-catching event pages with customizable designs, compelling descriptions, and vibrant multimedia content. Showcase what makes your event unique and irresistible to potential attendees.',
-    link: 'http://localhost:3000/services'
+    link: 'http://localhost:3000/create-event'
   }
 ]
 const blogData = [
@@ -36,7 +36,7 @@ const blogData = [
     image: require('../assets/images/blog1.jpg'),
     time: ' 01 Jan 2024',
     title: 'New Year Carnival',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt, asperiores eaque quibusdam eum quod cum nesciunt.',
+    description: "Celebrate the countdown with dazzling fireworks, festive performances, and joyful revelry at the New Year Carnival extravaganza!",
     link: 'https://www.google.com'
   },
   {
@@ -44,7 +44,7 @@ const blogData = [
     image: require('../assets/images/blog2.jpg'),
     time: '27 Jan 2024',
     title: 'Art Exhibition',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt, asperiores eaque quibusdam eum quod cum nesciunt.',
+    description:  "Explore visionary masterpieces, innovative installations, and boundless creativity at the immersive Art Exhibition showcase.",
     link: 'https://www.facebook.com'
   },
   {
@@ -52,7 +52,7 @@ const blogData = [
     image: require('../assets/images/blog3.jpg'),
     time: '15 Feb 2024',
     title: 'Bartika Eam Rai Concert',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt, asperiores eaque quibusdam eum quod cum nesciunt.',
+    description: "Experience electrifying melodies, soulful rhythms, and captivating vocals at the mesmerizing Bartika Eam Rai concert.",
     link: 'https://www.twitter.com'
   }
 ]

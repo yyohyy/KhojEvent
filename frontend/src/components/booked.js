@@ -41,40 +41,53 @@ const BookedTickets = () => {
     };
 
     return (
-        <div className="container">
-        <div className="row">
-          <div className="col-md-3">
-            <ProfileSidebar />
-          </div>
-          <div className="col-md-9">
-            <h1 className="my-4">Booked Tickets</h1>
-            <Table striped bordered hover>
-                <thead>
+        <Container fluid style={{ minHeight: "calc(100vh - 56px)", background: "#ffffff" }}>
+            <div class="custom-container"></div>
+            <Row>
+                <Col sm={3}>
+                    <ProfileSidebar />
+                </Col>
+                <Col sm={9}>
+                <div style={{ padding: '20px' }}>
+                    <h1 className="my-4"style={{ fontFamily: "Comfortaa, cursive", color: "#8B0000"}}>Booked Tickets</h1>
+                    </div>
+                    {bookedTickets.length > 0 ? (
+                        <div className="shadow-box">
+                         <table class="table table-borderless table-hover">
+                            <thead>
                     <tr>
-                        <th>Ticket Name</th>
-                        <th>Status</th>
-                        <th>Quantity</th>
-                        <th>Amount</th>
-                        <th>Action</th>
+                        <th class="text-center">Ticket Name</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Quantity</th>
+                        <th class="text-center">Amount</th>
+                        <th class="text-center">Action</th>
                     </tr>
+                    <tr className="table-heading-line">
+                    <th colSpan="6"></th> {/* Empty cell for the line */}
+                </tr>
                 </thead>
                 <tbody>
                     {bookedTickets.map(ticket => (
                         <tr key={ticket.id}>
-                            <td>{ticket.ticket.name}</td>
-                            <td>{ticket.status}</td>
-                            <td>{ticket.quantity}</td>
-                            <td>{ticket.amount}</td>
-                            <td>
+                            <td class="text-center">{ticket.ticket.name}</td>
+                            <td class="text-center">{ticket.status}</td>
+                            <td class="text-center">{ticket.quantity}</td>
+                            <td class="text-center">{ticket.amount}</td>
+                            <td class="text-center">
                                 <Button variant="danger" onClick={() => handleDelete(ticket.id)}>Delete</Button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
-            </Table>
+            </table>
         </div>
-        </div>
-        </div>
+                    ) : (
+                        <p>No booked tickets available</p>
+                    )}
+                </Col>
+            </Row>
+                            
+        </Container>
     );
 };
 

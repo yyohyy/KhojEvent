@@ -5,6 +5,7 @@ import { Route, Routes, BrowserRouter, useLocation } from 'react-router-dom'; //
 import AppHeader from './components/header';
 import AppHero from './components/hero';
 import AppEvents from './components/events';
+import PaidEvents from './components/PaidEvents';
 import AppTestimonials from './components/testimonials';
 import AppEventDetails from './components/AppEventDetails';
 import AppContact from './components/contact';
@@ -49,6 +50,7 @@ function App() {
             <Route path="/" element={<AppHero />} />
           <Route path="/home" element={<AppHero />} />
           <Route path="/events" element={<AppEvents />} />
+          <Route path="/events/paid" element={<PaidEvents />} />
           <Route path="/testimonials" element={<AppTestimonials />} />
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/contact" element={<AppContact />} />
@@ -75,7 +77,7 @@ function App() {
           <Route path="/profile/:id/attended-events" element={<AttendedEvents/>} />
           <Route path="/profile/:id/leave-feedback/:eventId" element={<Feedback/>} />
           <Route path="/profile/:id/ratings-left" element={<Ratings/>} />
-          <Route path="/profile/:id/reviews-left" element={<Ratings/>} />
+          <Route path="/profile/:id/reviews-left" element={<Reviews/>} />
           </Routes>
          </div>
         </BrowserRouter>

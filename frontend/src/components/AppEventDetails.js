@@ -183,36 +183,33 @@ function AppEventDetails() {
                   Book Now
                 </button>
               </div>
+            )}{organiserData && organiserData.organiser_details && (
+              <div className="mt-5 shadow p-3 rounded mx-auto" style={{ maxWidth: '600px' }}>
+                <div>
+                  <div className="d-flex flex-column flex-lg-row align-items-lg-center">
+                    <div className="me-lg-3 mb-3 mb-lg-0" style={{ flex: '0 0 auto' }}>
+                      <img src={organiserData.profile_picture} className="rounded-circle" alt="Organiser Profile" style={{ width: '200px', height: '200px' }} />
+                    </div>
+                    <div style={{ flex: '1', paddingLeft: '20px' }}>
+                      <h4>Brought to you by:</h4>
+                      <p style={{ fontFamily: "Comfortaa, cursive", color: "#f64b4b", fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '5px' }}>{organiserData.organiser_details.name}</p>
+                      <div className="mt-3">
+                        <span className="me-2"><BiPhone style={{ color: 'red' }} /></span>
+                        <span>{organiserData.phone_number}</span>
+                      </div>
+                      <div>
+                        <span className="me-2"><BiEnvelope style={{ color: 'red' }} /></span>
+                        <span>{organiserData.email}</span>
+                      </div>
+                      <div className="me-2">
+                        <span className="me-2"><BiMap style={{ color: 'red' }} /></span>
+                        <span>{organiserData.organiser_details.address}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
-{organiserData && organiserData.organiser_details && (
-  <div className="mt-5 shadow p-3 rounded mx-auto" style={{ width: '600px' }}>
-  <div>
-    <div className="d-flex align-items-center">
-      <div className="me-3" style={{ flex: '0 0 auto' }}>
-        <img src={organiserData.profile_picture} className="rounded-circle" alt="Organiser Profile" style={{ width: '200px', height: '200px' }} />
-      </div>
-      <div style={{ flex: '1', paddingLeft: '20px' }}>
-      <h4>Brought to you by:</h4>
-        <p style={{ fontFamily: "Comfortaa, cursive", color: "#f64b4b", fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '5px' }}>{organiserData.organiser_details.name}</p>
-        <div className="mt-3">
-          <span className="me-2"><BiPhone style={{ color: 'red' }} /></span>
-          <span>{organiserData.phone_number}</span>
-        </div>
-        <div>
-          <span className="me-2"><BiEnvelope style={{ color: 'red' }} /></span>
-          <span>{organiserData.email}</span>
-        </div>
-        <div className="me-2">
-          <span className="me-2"><BiMap style={{ color: 'red' }} /></span>
-          <span>{organiserData.organiser_details.address}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-)}
-
-
 <div style={{ paddingTop: '20px' }}>
   <h2 style={{ marginBottom: '30px', marginTop: '50px' }}>Ratings and Reviews:</h2>
   {ratingsAndReviewsData.length > 0 ? (
@@ -255,16 +252,6 @@ function AppEventDetails() {
     </section>
 
   );
-}
-
-function renderStars(stars) {
-  const starIcons = [];
-
-  for (let i = 0; i < stars; i++) {
-    starIcons.push(<FaStar key={i} />);
-  }
-
-  return starIcons;
 }
 
 export default AppEventDetails;

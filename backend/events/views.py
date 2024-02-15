@@ -399,27 +399,24 @@ class EventReviewListView(APIView):
 
 class AttendeeReviewedEventsAPIView(APIView):
     def get(self, request, attendee_id):
-        #try:
-            # Retrieve all reviews given by the specified attendee
-            reviews = Review.objects.filter(attendee_id=attendee_id)
+        try:
+            reviewed_events = Event.objects.filter(review__attendee_id=attendee_id)
 
-            # Serialize the reviews data
-            review_serializer = ReviewSerializer(reviews, many=True)
-            
-            # Extract the events associated with these reviews
-            #reviewed_events = [review.event for review in reviews]
+            if reviewed_events.exists():
+                event_data = []
+                for event in reviewed_events:
+                    review = Review.objects.filter(event=event, attendee_id=attendee_id).first()
+                    if review:
+                        event_serializer = EventSerializer(event)
+                        event_dict = event_serializer.data
+                        event_dict['review'] = review.body
+                        event_data.append(event_dict)
+                return Response({'success': True, 'reviewed_events': event_data}, status=status.HTTP_200_OK)
+            else:
+                return Response({'success': False, 'error': 'No events have been reviewed by the specified attendee'}, status=status.HTTP_404_NOT_FOUND)
 
-            # Serialize the reviewed events data
-            #event_serializer = EventSerializer(reviewed_events, many=True)
-            
-            return Response({
-                #'success': True,
-                #'reviewed_events': event_serializer.data,
-                'reviews': review_serializer.data
-            }, status=status.HTTP_200_OK)
-        
-        #except Exception as e:
-            #return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
             
 
 class OrganizerReviewListView(generics.ListAPIView):
@@ -442,21 +439,57 @@ class OrganizerReviewListView(generics.ListAPIView):
         return reviews
 
 
+# class EventRatingsAndReviewsAPIView(APIView):
+#     def get(self, request, event_id, **kwargs):
+#             # Retrieve all ratings for the specified event
+#             event_ratings = Rating.objects.filter(event_id=event_id)
+#             # Retrieve reviews for the specified event
+#             reviews = Review.objects.filter(event_id=event_id)
+            
+#             # Serialize the event ratings data
+#             rating_serializer = RatingSerializer(event_ratings, many=True)
+#             # Serialize the reviews
+#             review_serializer = ReviewSerializer(reviews, many=True)
+            
+#             return Response({
+
+#                 'event_ratings': rating_serializer.data,
+#                 'event_reviews': review_serializer.data
+#             }, status=status.HTTP_200_OK)
+        
 class EventRatingsAndReviewsAPIView(APIView):
     def get(self, request, event_id, **kwargs):
-            # Retrieve all ratings for the specified event
-            event_ratings = Rating.objects.filter(event_id=event_id)
-            # Retrieve reviews for the specified event
-            reviews = Review.objects.filter(event_id=event_id)
-            
-            # Serialize the event ratings data
-            rating_serializer = RatingSerializer(event_ratings, many=True)
-            # Serialize the reviews
-            review_serializer = ReviewSerializer(reviews, many=True)
-            
-            return Response({
+        # Retrieve all ratings for the specified event
+        event_ratings = Rating.objects.filter(event_id=event_id)
+        # Retrieve all reviews for the specified event
+        reviews = Review.objects.filter(event_id=event_id)
 
-                'event_ratings': rating_serializer.data,
-                'event_reviews': review_serializer.data
-            }, status=status.HTTP_200_OK)
-        
+        # Retrieve distinct attendees who have rated or reviewed the event
+        distinct_attendees = set(event_ratings.values_list('attendee', flat=True)) | set(reviews.values_list('attendee', flat=True))
+
+        # Create a list to store data for each attendee
+        attendee_data = []
+        for attendee_id in distinct_attendees:
+            attendee_details = {'id': attendee_id, 'details': {'rating': None, 'review': None}}
+            attendee_data.append(attendee_details)
+
+        # Populate the list with ratings and reviews for each attendee
+        for rating in event_ratings:
+            for attendee_details in attendee_data:
+                if attendee_details['id'] == rating.attendee.user.id:
+                    attendee_details['details']['rating'] = rating.stars
+                    break
+        for review in reviews:
+            for attendee_details in attendee_data:
+                if attendee_details['id'] == review.attendee.user.id:
+                    attendee_details['details']['review'] = review.body
+                    break
+
+        # Serialize the user details
+        for attendee_details in attendee_data:
+            user_id = attendee_details['id']
+            user = User.objects.get(pk=user_id)  # Retrieve user object using user ID
+            user_serializer = UserDetailsSerializer(user)
+            attendee_details['details']['user_details'] = user_serializer.data
+
+        return Response(attendee_data, status=status.HTTP_200_OK)

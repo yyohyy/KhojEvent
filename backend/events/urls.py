@@ -1,7 +1,6 @@
 from django.urls import path
 from .views import *
 
-
 urlpatterns = [
     #path('routes/', GetRoutesView.as_view(), name='get_routes'),
     path('events/', AllEventsView.as_view(), name='get_events'),

@@ -163,9 +163,9 @@ const ProfileDashboard = () => {
   <div className="card-body">
     <div className="row">
       <div className="col-md-8">
-        <h2 className="card-title mb-8">Profile Personal:</h2>
+        <h2 className="card-title mb-8" style={{ marginBottom: '75px' , marginLeft: '50px' }}>Profile Personal:</h2>
         <div className="row mb-12 mt-6">
-          <div className="col">
+          <div className="col" style={{ marginLeft: '50px' }}>
             <input
               type="file"
               className="form-control-file"
@@ -191,9 +191,10 @@ const ProfileDashboard = () => {
                 alt="Profile"
                 className="img-thumbnail rounded-circle"
                 style={{
-                  width: "200px",
-                  height: "200px",
+                  width: "250px",
+                  height: "250px",
                   border: "1px solid",
+                  marginRight: '100px' 
                 }}
               />
             ) : (
@@ -219,7 +220,7 @@ const ProfileDashboard = () => {
                 <>
                   {userData.attendee_details && (
                     <>
-                    <div className="row mb-3 mt-4">
+                    <div className="row mb-3 mt-4" style={{ marginLeft: '50px' }}>
                         <label className="col-sm-2 col-form-label">
                           Email:
                         </label>
@@ -236,7 +237,7 @@ const ProfileDashboard = () => {
                           )}
                         </div>
                       </div>
-                      <div className="row mb-3">
+                      <div className="row mb-3" style={{ marginLeft: '50px' }}>
                         <label className="col-sm-2 col-form-label">
                           First Name:
                         </label>
@@ -253,7 +254,7 @@ const ProfileDashboard = () => {
                           )}
                         </div>
                       </div>
-                      <div className="row mb-3">
+                      <div className="row mb-3" style={{ marginLeft: '50px' }}>
                         <label className="col-sm-2 col-form-label">
                           Last Name:
                         </label>
@@ -270,7 +271,7 @@ const ProfileDashboard = () => {
                           )}
                         </div>
                       </div>
-                      <div className="row mb-3">
+                      <div className="row mb-3" style={{ marginLeft: '50px' }}>
                         <label className="col-sm-2 col-form-label">
                           Birth Date:
                         </label>
@@ -291,7 +292,7 @@ const ProfileDashboard = () => {
                   )}
                   {userData.organiser_details && (
                     <>
-                    <div className="row mb-3">
+                    <div className="row mb-3" style={{ marginLeft: '50px' }}>
                         <label className="col-sm-2 col-form-label">Email:</label>
                         <div className="col-sm-10">
                           {editing ? (
@@ -306,7 +307,7 @@ const ProfileDashboard = () => {
                           )}
                         </div>
                       </div>
-                      <div className="row mb-3">
+                      <div className="row mb-3" style={{ marginLeft: '50px' }}>
                         <label className="col-sm-2 col-form-label">Name:</label>
                         <div className="col-sm-10">
                           {editing ? (
@@ -321,7 +322,7 @@ const ProfileDashboard = () => {
                           )}
                         </div>
                       </div>
-                      <div className="row mb-3">
+                      <div className="row mb-3" style={{ marginLeft: '50px' }}>
                         <label className="col-sm-2 col-form-label">
                           Description:
                         </label>
@@ -339,7 +340,7 @@ const ProfileDashboard = () => {
                           )}
                         </div>
                       </div>
-                      <div className="row mb-3">
+                      <div className="row mb-3" style={{ marginLeft: '50px' }}>
                         <label className="col-sm-2 col-form-label">
                           Address:
                         </label>
@@ -360,19 +361,19 @@ const ProfileDashboard = () => {
                   )}
                 </>
               )}
-              <div className="row mt-3">
+              <div className="row mt-3" style={{ marginLeft: '50px' }}>
                 <div className="col">
                   {editing ? (
                     <>
                       <button
-                        className="btn btn-secondary btn-sm"
+                        className="btn btn-success btn-success"
                         onClick={handleSave}
                         style={{ marginRight: "5px" }}
                       >
                         Save
                       </button>
                       <button
-                        className="btn btn-secondary btn-sm"
+                        className="btn btn-secondary btn-danger"
                         onClick={handleCancel}
                       >
                         Cancel

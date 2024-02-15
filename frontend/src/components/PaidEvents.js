@@ -8,12 +8,12 @@ import axios from 'axios';
 import { FaMapMarkerAlt, FaCalendarAlt, FaClock } from "react-icons/fa"
 
 
-function AppEvents() {
+function PaidEvents() {
   const [eventsData, setEventsData] = useState([]);
   const [active, setActive] = useState(1);
 
   useEffect(() => {
-    axios.get(`http://127.0.0.1:8000/events/`)
+    axios.get(`http://127.0.0.1:8000/paid-events/`)
       .then(response => {
         setEventsData(response.data);
       })
@@ -26,7 +26,7 @@ function AppEvents() {
     <section id="events" className="block events-block">
       <Container fluid>
         <div className="title-holder">
-          <h2>EVENTS</h2>
+          <h2>BUY YOUR TICKETS NOW</h2>
           <div className="subtitle">browse and be there</div>
         </div>
         <Row className='portfoliolist'>
@@ -66,4 +66,4 @@ function AppEvents() {
   );
           }
 
-export default AppEvents;
+export default PaidEvents;
