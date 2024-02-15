@@ -40,7 +40,7 @@ function ProfileSidebar() {
           <>
           <button className="list-group-item list-group-item-action" onClick={() => navigate(``)}>My Profile</button>
           <button className="list-group-item list-group-item-action" onClick={() => navigate('interested')}>Interested Events</button>
-            <button className="list-group-item list-group-item-action" onClick={() => navigate('booked')}>Booked Tickets</button>
+            <button className="list-group-item list-group-item-action" onClick={() => navigate(`/profile/:id/booked`)}>Booked Tickets</button>
             <button className="list-group-item list-group-item-action" onClick={() => navigate(`purchases`)}>Events</button>
             <button className="list-group-item list-group-item-action" onClick={() => navigate(`ratings-left`)}>Events You've Rated</button>
             <button className="list-group-item list-group-item-action" onClick={() => navigate(`reviews-left`)}>Events You've Reviewed</button>

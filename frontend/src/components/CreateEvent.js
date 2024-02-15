@@ -89,6 +89,7 @@ const CreateEvent = () => {
         ...formDataWithoutImage,
         category: { name: formData.category },
         tags: formData.tags.map((tag) => ({ name: tag })),
+        max_limit: formData.max_limit,
         ticket_types: formData.ticketTypes.map((ticket) => ({
           ...ticket,
           quantity_available: ticket.quantity,

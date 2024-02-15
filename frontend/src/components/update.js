@@ -47,11 +47,11 @@ const Update = () => {
           end_date: response.data.end_date,
           start_time: response.data.start_time,
           end_time: response.data.end_time,
-          tags: response.data.tags || [], // Ensure tags is initialized as an array
+          tags: response.data.tags,
           is_paid: response.data.is_paid ? response.data.is_paid.toString() : 'False',
           organiser: response.data.organiser,
           image: response.data.image, // Fetching previous image
-          ticketTypes: response.data.ticket_types || [], // Ensure ticketTypes is initialized as an array
+          ticketTypes: response.data.ticket_types,
           max_limit: response.data.max_limit ? response.data.max_limit.toString() : '',
         });
       })
@@ -115,8 +115,8 @@ const Update = () => {
       formDataForImage.append('image', formData.image);
   
       // Check if formData.category and formData.tags exist before formatting them
-      const formattedCategory = formData.category && formData.category.name ? formData.category.name : '';
-      const formattedTags = formData.tags ? formData.tags.map(tag => tag.name) : [];
+      const formattedCategory = formData.category ? { name: formData.category } : '';
+      const formattedTags = formData.tags ? formData.tags.map(tag => ({ name: tag })) : [];
   
       const formattedData = {
         ...formDataWithoutImage,
@@ -150,6 +150,7 @@ const Update = () => {
       console.error('Error updating event:', error);
     }
   };
+  
   
   return (
     <div>
@@ -228,7 +229,7 @@ const Update = () => {
         Tags:
         <div className="tags-container">
           {availableTags && availableTags.map((tag) => (
-            <div key={tag} className={`tag ${formData.tags.includes(tag) ? 'selected' : ''}`} onClick={() => toggleTag(tag)}>
+            <div key={tag} className={`tag ${formData.tags.map(t => t.name).includes(tag) ? 'selected' : ''}`} onClick={() => toggleTag(tag)}>
               {tag}
             </div>
           ))}

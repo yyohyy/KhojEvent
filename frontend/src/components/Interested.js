@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Container, Table, Col, Button,Row } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import ProfileSidebar from './ProfileSidebar';
+
 
 const InterestedEvents = () => {
     const navigate = useNavigate();
@@ -55,6 +57,12 @@ const InterestedEvents = () => {
     };
 
     return (
+        <div className="container">
+        <div className="row">
+        <div className="col-md-3">
+          <ProfileSidebar />
+          </div>
+          <div className="col-md-9">
         <Container fluid>
         <Row className="justify-content-end">
         <Col sm={9}>
@@ -92,6 +100,8 @@ const InterestedEvents = () => {
 </Col>
 </Row>
 </Container>
+</div>
+</div></div>
     );
 };
 
