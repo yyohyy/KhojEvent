@@ -77,27 +77,7 @@ function AppEventDetails() {
     fetchData();
   }, [event_id]);
 
-  // const handleRatingChange = (newRating) => {
-  //   if (!rated) {
-  //     setRating(newRating);
-  //     const eventData = {
-  //       rating: newRating,
-  //       event_id: event_id,
-  //       stars: newRating,
-  //     };
-
-  //     axiosInstance.post(`/rate/`, eventData)
-  //       .then(response => {
-  //         console.log("Rating added successfully:", response.data);
-  //         setRated(true);
-  //       })
-  //       .catch(error => {
-  //         console.error('Error adding rating:', error);
-  //       });
-  //   }
-  // };
-
-  
+ 
   // function findReviewByAttendee(attendeeId) {
   //   const review = reviews.find(review => review.attendee === attendeeId);
   //   return review ? review.comment : "No review available";
@@ -189,7 +169,7 @@ function AppEventDetails() {
                 <FaCalendarAlt /> {activeEventData.start_date}
               </span>
             </div>
-            <p className="card-text mt-3">{activeEventData.description}</p>
+            <p className="card-text mt-3" style={{ textAlign: 'justify' }}>{activeEventData.description}</p>
             {!isOrganiser && (
               <div className="text-center mt-4">
                 <button
@@ -202,11 +182,15 @@ function AppEventDetails() {
               </div>
             )}
 {organiserData && organiserData.organiser_details && (
-  <div className="mt-5">
-  <div classname style={{color: '#cccccc'}}>  <h2>Organised By:</h2></div>
+  <div className="mt-5 shadow p-3 rounded mx-auto" style={{ width: '600px' }}>
+  <div>
     <div className="d-flex align-items-center">
       <div className="me-3" style={{ flex: '0 0 auto' }}>
         <img src={organiserData.profile_picture} className="rounded-circle" alt="Organiser Profile" style={{ width: '200px', height: '200px' }} />
+      </div>
+      <div style={{ flex: '1', paddingLeft: '20px' }}>
+      <h4>Brought to you by:</h4>
+        <p style={{ fontFamily: "Comfortaa, cursive", color: "#f64b4b", fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '5px' }}>{organiserData.organiser_details.name}</p>
         <div className="mt-3">
           <span className="me-2"><BiPhone style={{ color: 'red' }} /></span>
           <span>{organiserData.phone_number}</span>
@@ -220,12 +204,12 @@ function AppEventDetails() {
           <span>{organiserData.organiser_details.address}</span>
         </div>
       </div>
-      <div style={{ flex: '1', paddingLeft: '20px' }}>
-        <p style={{ fontFamily: "Comfortaa, cursive", color: "#f64b4b", fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '5px' }}>{organiserData.organiser_details.name}</p>
-        <p>{organiserData.organiser_details.description}</p>
-      </div>
     </div>
   </div>
+</div>
+
+
+
 )}
 
 <div style={{ paddingTop: '20px' }}>
@@ -256,10 +240,6 @@ function AppEventDetails() {
     <p>No ratings available.</p>
   )}
 </div>
-
-
-
-
           </div>
         </div>
       </div>
@@ -281,6 +261,27 @@ function renderStars(stars) {
 
 export default AppEventDetails;
 
+
+
+  // const handleRatingChange = (newRating) => {
+  //   if (!rated) {
+  //     setRating(newRating);
+  //     const eventData = {
+  //       rating: newRating,
+  //       event_id: event_id,
+  //       stars: newRating,
+  //     };
+
+  //     axiosInstance.post(`/rate/`, eventData)
+  //       .then(response => {
+  //         console.log("Rating added successfully:", response.data);
+  //         setRated(true);
+  //       })
+  //       .catch(error => {
+  //         console.error('Error adding rating:', error);
+  //       });
+  //   }
+  // };
 
 
 // const handleReviewChange = (e) => {

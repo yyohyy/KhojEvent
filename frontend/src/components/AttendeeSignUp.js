@@ -49,70 +49,72 @@ const AttendeeSignup = () => {
     }
   };
 
-  return (
-    <div className='container pt-5'>
-      <div className='row justify-content-center'>
-      <div className='col-sm-8 col-md-6'>
-  <div className='card p-4 shadow rounded'>
-    <h3 className='mb-4 text-center'>Attendee Sign Up</h3>
-    <form onSubmit={handleSubmit}>
-      <div className='form-group'>
-        <label htmlFor='first_name' className='form-label'>
-          First Name
-        </label>
-        <input
-          type='text'
-          className='form-control'
-          id='first_name'
-          placeholder='Your First Name'
-          name='first_name'
-          value={attendeeData.firstName}
-          onChange={handleInputChange}
-          required
-        />
+    return (
+      <div className='auth-form-container d-flex flex-column justify-content-between align-items-center vh-100' style={{ paddingTop: '50px' }}>
+        <div className='card p-4 shadow rounded' style={{ width: '400px' }}>
+          <h3 className='mb-4 text-center'>Attendee Sign Up</h3>
+          <form onSubmit={handleSubmit}>
+            <div className='form-group'>
+              <label htmlFor='first_name' className='form-label'>
+                First Name
+              </label>
+              <input
+                type='text'
+                className='form-control'
+                id='first_name'
+                placeholder='Your First Name'
+                name='first_name'
+                value={attendeeData.firstName}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className='form-group'>
+              <label htmlFor='last_name' className='form-label'>
+                Last Name
+              </label>
+              <input
+                type='text'
+                className='form-control'
+                id='last_name'
+                placeholder='Your Last Name'
+                name='last_name'
+                value={attendeeData.last_name}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className='form-group'>
+              <label htmlFor='birth_date' className='form-label'>
+                Date of Birth
+              </label>
+              <input
+                type='date'
+                className='form-control'
+                id='birth_date'
+                name='birth_date'
+                value={attendeeData.birth_date}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            {/* Add more fields as needed for attendee signup */}
+            <div className='d-grid'>
+              <button type='submit' className='btn btn-primary'>
+                Sign Up as Attendee
+              </button>
+            </div>
+          </form>
+        </div>
+        <footer className="container mt-auto">
+          <div className="row">
+            <div className="col text-center">
+              <p>Footer Content Here</p>
+            </div>
+          </div>
+        </footer>
       </div>
-      <div className='form-group'>
-        <label htmlFor='last_name' className='form-label'>
-          Last Name
-        </label>
-        <input
-          type='text'
-          className='form-control'
-          id='last_name'
-          placeholder='Your Last Name'
-          name='last_name'
-          value={attendeeData.last_name}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-      <div className='form-group'>
-        <label htmlFor='birth_date' className='form-label'>
-          Date of Birth
-        </label>
-        <input
-          type='date'
-          className='form-control'
-          id='birth_date'
-          name='birth_date'
-          value={attendeeData.birth_date}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-      {/* Add more fields as needed for attendee signup */}
-      <div className='d-grid'>
-        <button type='submit' className='btn btn-primary'>
-          Sign Up as Attendee
-        </button>
-      </div>
-    </form>
-  </div>
-</div>
-
-      </div>
-    </div>
-  );
-};
+    );
+  };
 
 export default AttendeeSignup;

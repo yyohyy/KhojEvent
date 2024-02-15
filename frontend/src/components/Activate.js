@@ -31,7 +31,7 @@ const Activate = () => {
         {activationStatus === 'success' && <p>Account activated successfully. You can now log in.</p>}
         {activationStatus === 'error' && <p style={{ color: 'red' }}>{errorMessage}</p>}
         <div>
-          <button onClick={handleActivate}>Activate Account</button>
+          <button className="btn btn-primary" onClick={handleActivate}>Activate Account</button>
         </div>
       </div>
     </div>

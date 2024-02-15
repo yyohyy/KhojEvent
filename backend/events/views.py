@@ -321,7 +321,7 @@ class GetAvgRatingsAPIView(APIView):
     
     
 class GetAttendeeRatedEventsAPIView(APIView):
-    permission_classes = [IsOrganiser]
+    #permission_classes = [IsOrganiser]
 
     def get(self, request, attendee_id, **kwargs):
         try:
@@ -329,9 +329,15 @@ class GetAttendeeRatedEventsAPIView(APIView):
             rated_events = Event.objects.filter(rating__attendee_id=attendee_id)
 
             if rated_events.exists():
-                # Serialize the rated events data
-                serializer = EventSerializer(rated_events, many=True)
-                return Response({'success': True, 'rated_events': serializer.data}, status=status.HTTP_200_OK)
+                event_data = []
+                for event in rated_events:
+                    rating = Rating.objects.filter(event=event, attendee_id=attendee_id).first()
+                    if rating:
+                        event_serializer = EventSerializer(event)
+                        event_dict = event_serializer.data
+                        event_dict['rating'] = rating.stars
+                        event_data.append(event_dict)
+                return Response({'success': True, 'rated_events': event_data}, status=status.HTTP_200_OK)
             else:
                 return Response({'success': False, 'error': 'No events have been rated by the specified attendee'}, status=status.HTTP_404_NOT_FOUND)
         

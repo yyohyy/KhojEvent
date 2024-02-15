@@ -27,6 +27,8 @@ import Order from './components/Order';
 import SearchResults from './components/SearchResults';
 import InterestedEvents from './components/Interested';
 import BookedTickets from './components/booked';
+import PurchasedTickets from './components/Purchased';
+import Ratings from './components/Ratings';
 function App() {
   return (
    <Provider store={store}>
@@ -42,7 +44,7 @@ function App() {
           <Route path="/home" element={<AppHero />} />
           <Route path="/events" element={<AppEvents />} />
           <Route path="/testimonials" element={<AppTestimonials />} />
-          <Route path="/services" element={<CreateEvent />} />
+          <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/contact" element={<AppContact />} />
           <Route path="/signup" element={<AppSignup />} />
           <Route path="/login" element={<AppLogin />} />
@@ -59,8 +61,9 @@ function App() {
           <Route path="/orders/:orderId" element={<Order />} />
           <Route path="/search" element={<SearchResults/>} />
           <Route path="/profile/:id/interested" element={<InterestedEvents/>} />
-          
           <Route path="/profile/:id/booked" element={<BookedTickets/>} />
+          <Route path="/profile/:id/purchases" element={<PurchasedTickets/>} />
+          <Route path="/profile/:id/ratings-left" element={<Ratings/>} />
             </Routes>
  
         </div>
