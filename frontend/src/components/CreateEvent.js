@@ -20,8 +20,10 @@ const CreateEvent = () => {
     is_paid: 'False',
     organiser:'',
     image: null,
-    ticketTypes: [],
-    max_limit: '',
+    tickets: [{
+      max_limit: '',
+      ticketTypes: []
+    }]
   };
 
   const [formData, setFormData] = useState(defaultValues);
@@ -44,7 +46,7 @@ const CreateEvent = () => {
       });
   }, []);
 
-  const category = ['Art and Entertainment', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Music and Concert','Festival','Others'];
+  const category = ['Choose any one', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Music and Concert','Festival','Others'];
   const availableTags = ['Fun', 'Dance', 'Music', 'Seminar', 'Night', 'Games', 'Food', 'Crafts', 'Zen', 'Comedy', 'Film', 'Photography', 'Tech', 'Thrift', 'Donation', 'Marathon', 'Cycling', 'Nature', 'Health', 'Pottery', 'Book', 'Meet & Greet'];
 
   const handleInputChange = (e) => {
@@ -65,14 +67,14 @@ const CreateEvent = () => {
   const handleTicketTypeChange = (index, e) => {
     const { name, value } = e.target;
     const updatedTicketTypes = [...formData.ticketTypes];
-    updatedTicketTypes[index][name] = value;
+    updatedTicketTypes[index][name] = value||'1';
     setFormData({ ...formData, ticketTypes: updatedTicketTypes });
   };
 
   const addTicketType = () => {
     setFormData((prevState) => ({
-      ...prevState,
-      ticketTypes: [...prevState.ticketTypes, { name: '', description: '', price: '', quantity: '' }],
+      ...formData,
+      tickets: [{ ...prevState.tickets[0], ticketTypes: [...prevState.tickets[0].ticketTypes, { name: '', description: '', price: '', quantity: '' }] }]
     }));
   };
 
@@ -85,22 +87,27 @@ const CreateEvent = () => {
       const formDataForImage = new FormData();
       formDataForImage.append('image', formData.image);
   
+      const totalQuantity = formData.ticketTypes.reduce((acc, ticket) => acc + Number(ticket.quantity), 0);
+      console.log(totalQuantity)
+
       const formattedData = {
         ...formDataWithoutImage,
         category: { name: formData.category },
         tags: formData.tags.map((tag) => ({ name: tag })),
         organiser: localStorage.getItem('id'),
-        ticket_types: formData.ticketTypes.map((ticket) => ({
+        ticket_types: formData.tickets[0].ticketTypes.map((ticket) => ({
           ...ticket,
-          quantity_available: ticket.quantity,
+          quantity_available: ticket.quantity
+          
         })),
+        max_limit: formData.tickets[0].max_limit
       };
   
       const response = await AxiosInstance.post('create-event/', formattedData);
   
       if (formData.is_paid === 'True') {
         const eventId = response.data.id;
-        const ticketResponse = await AxiosInstance.post(`tickets/${eventId}/create/`, { ticket_types: formData.ticketTypes });
+        const ticketResponse = await AxiosInstance.post(`tickets/${eventId}/create/`, {max_limit:formData.max_limit,quantity_available:totalQuantity,ticket_types: formData.ticketTypes });
         console.log('Ticket creation response:', ticketResponse);
       }
   
@@ -123,6 +130,11 @@ const CreateEvent = () => {
     const { value } = e.target;
     setFormData({ ...formData, is_paid: value });
     setPaidSelected(value === 'True');
+  
+    // If switching from paid to free, reset max_limit
+    if (value === 'False') {
+      setFormData({ ...formData, tickets: [{ ...formData.tickets[0], max_limit: '' }] });
+    }
   };
 
   return (
@@ -238,23 +250,23 @@ const CreateEvent = () => {
 
       {/* Max Limit (if Paid is chosen) */}
       {paidSelected && (
-  <label>
-    Max Limit:
-    <input
-      type="number"
-      name="max_limit"
-      value={formData.max_limit}
-      onChange={handleInputChange}
-      min={1} // Set the minimum value allowed
-    />
-  </label>
-)}
+        <label>
+          Max Limit:
+          <input
+            type="number"
+            name="max_limit"
+            value={formData.tickets[0].max_limit}
+            onChange={handleInputChange}
+            min={1} // Set the minimum value allowed
+          />
+        </label>
+      )}
 
       {/* Ticket Types (if Paid is chosen) */}
       {paidSelected && (
         <div className="ticket-types-container">
           <h4>Add Ticket Types</h4>
-          {formData.ticketTypes.map((ticket, index) => (
+          {formData.tickets[0].ticketTypes.map((ticket, index) => (
             <div key={index} className="ticket-type ">
               <button type="button" className="accordion">
                 Ticket Type {index + 1}
@@ -285,6 +297,7 @@ const CreateEvent = () => {
                     name="price"
                     value={ticket.price}
                     onChange={(e) => handleTicketTypeChange(index, e)}
+                    min={0}
                   />
                 </label>
                 <label>
@@ -294,6 +307,7 @@ const CreateEvent = () => {
                     name="quantity"
                     value={ticket.quantity}
                     onChange={(e) => handleTicketTypeChange(index, e)}
+                    min={1}
                   />
                 </label>
               </div>
@@ -309,9 +323,11 @@ const CreateEvent = () => {
         <Button type="submit">Submit</Button>
       </div>
     </form>
-      )}
-      </div>
-    );
-  };
+  )}
+  </div>
+);
+
+};
 
 export default CreateEvent;
+

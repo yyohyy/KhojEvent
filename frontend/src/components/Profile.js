@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { useNavigate } from 'react-router-dom';
-import ProfileSidebar from './ProfileSidebar';
+import { useNavigate } from "react-router-dom";
+import ProfileSidebar from "./ProfileSidebar";
+
 const ProfileDashboard = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
+  const [newEmail, setNewEmail] = useState("");
   const [newFirstName, setNewFirstName] = useState("");
   const [newLastName, setNewLastName] = useState("");
   const [newBirthDate, setNewBirthDate] = useState("");
@@ -38,14 +40,18 @@ const ProfileDashboard = () => {
 
     fetchUserData();
   }, [id]);
-
+  useEffect(() => {
+    console.log("UserData before update:", userData);
+  }, [userData]);
   const handleEdit = () => {
     setEditing(true);
     if (userData.attendee_details) {
+      setNewEmail(userData.email);
       setNewFirstName(userData.attendee_details.first_name);
       setNewLastName(userData.attendee_details.last_name);
       setNewBirthDate(userData.attendee_details.birth_date);
     } else if (userData.organiser_details) {
+      setNewEmail(userData.email);
       setNewName(userData.organiser_details.name);
       setNewDescription(userData.organiser_details.description);
       setNewAddress(userData.organiser_details.address);
@@ -58,25 +64,30 @@ const ProfileDashboard = () => {
 
   const handleSave = async () => {
     try {
-      const authToken = localStorage.getItem("Bearer");
-      const requestData = new FormData();
-
-      if (profilePicture) {
-        requestData.append("profile_picture", profilePicture);
-      }
-
+      const authToken = localStorage.getItem('Bearer');
+      let requestData = {};
       if (userData.attendee_details) {
-        requestData.append("attendee_details[first_name]", newFirstName);
-        requestData.append("attendee_details[last_name]", newLastName);
-        requestData.append("attendee_details[birth_date]", newBirthDate);
+        requestData = {
+          attendee_details: {
+            email:newEmail,
+            first_name: newFirstName,
+            last_name: newLastName,
+            birth_date: newBirthDate,
+          }
+        };
       } else if (userData.organiser_details) {
-        requestData.append("organiser_details[name]", newName);
-        requestData.append("organiser_details[description]", newDescription);
-        requestData.append("organiser_details[address]", newAddress);
-        requestData.append("organiser_details[facebook]", newFacebookLink);
-        requestData.append("organiser_details[instagram]", newInstagramLink);
-        requestData.append("organiser_details[twitter]", newTwitterLink);
-        requestData.append("organiser_details[website]", newWebsiteLink);
+        requestData = {
+          organiser_details: {
+            email:newEmail,
+            name: newName,
+            description: newDescription,
+            address: newAddress,
+            // facebook: newFacebook,
+            // instagram: newInstagram,
+            // twitter: newTwitter,
+            // website: newWebsite,
+          }
+        };
       }
 
       const response = await axios.patch(
@@ -85,7 +96,7 @@ const ProfileDashboard = () => {
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
-            "Content-Type": "multipart/form-data",
+            // "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -126,25 +137,31 @@ const ProfileDashboard = () => {
           },
         }
       );
+      setUserData((prevUserData) => ({
+        ...prevUserData,
+        profile_picture: response.data.profile_picture,
+      }));
 
       console.log("Profile picture uploaded successfully:", response.data);
     } catch (error) {
       console.error("Error uploading profile picture:", error);
     }
   };
+
   const handleViewLikedEvents = () => {
     console.log("View Liked Events");
     // Navigate to the 'Liked Events' page
     navigate(`/profile/${localStorage.getItem("id")}/interested`);
-};
+  };
+
   return (
     <div className="container">
       <div className="row">
-      <div className="col-md-3">
-        <ProfileSidebar />
+        <div className="col-md-3">
+          <ProfileSidebar />
         </div>
         <div className="col-md-9">
-          <div className="card border-8 border-emerald-400">
+          <div className="card">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center">
                 <h2 className="card-title">Profile Personal:</h2>
@@ -155,7 +172,11 @@ const ProfileDashboard = () => {
                         src={userData.profile_picture}
                         alt="Profile"
                         className="img-thumbnail rounded-circle"
-                        style={{ width: "100px", height: "100px" }}
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          border: "1px solid",
+                        }}
                       />
                     ) : (
                       <div
@@ -174,8 +195,9 @@ const ProfileDashboard = () => {
                     )}
                   </div>
                 )}
-              
-              <div className="row mb-3">
+              </div>
+
+              <div className="row mb-12">
                 <div className="col">
                   <input
                     type="file"
@@ -183,131 +205,188 @@ const ProfileDashboard = () => {
                     accept="image/*"
                     onChange={handleFileChange}
                   />
-                </div>
-                <div className="col">
-                  <button className="btn btn-primary" onClick={handleUpload}>
+                  <button className="btn-sm" onClick={handleUpload}>
                     Upload
                   </button>
                 </div>
+                <div className="col"></div>
               </div>
-              {/* Rest of the profile details */}
-             
-            </div>
-            {userData && (
-              <>
-                {userData.attendee_details && (
-                  <>
+              {userData && (
+                <>
+                  {userData.attendee_details && (
+                    <>
                     <div className="row mb-3">
-                      <label className="col-sm-2 col-form-label">
-                        First Name:
-                      </label>
-                      <div className="col-sm-10">
-                        {userData.attendee_details.first_name}
-                      </div>
-                    </div>
-                    <div className="row mb-3">
-                      <label className="col-sm-2 col-form-label">
-                        Last Name:
-                      </label>
-                      <div className="col-sm-10">
-                        {userData.attendee_details.last_name}
-                      </div>
-                    </div>
-                    <div className="row mb-3">
-                      <label className="col-sm-2 col-form-label">
-                        Birth Date:
-                      </label>
-                      <div className="col-sm-10">
-                        {userData.attendee_details.birth_date}
-                      </div>
-                    </div>
-                  </>
-                )}
-                {userData.organiser_details && (
-                  <>
-                    <div className="row mb-3">
-                      <label className="col-sm-2 col-form-label">
-                        Name:
-                      </label>
-                      <div className="col-sm-10">
-                        <div className="border p-2 rounded bg-white">
-                          {userData.organiser_details.name}
+                        <label className="col-sm-2 col-form-label">
+                          email:
+                        </label>
+                        <div className="col-sm-10">
+                          {editing ? (
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={newEmail}
+                              onChange={(e) => setNewEmail(e.target.value)}
+                            />
+                          ) : (
+                            userData.email
+                          )}
                         </div>
                       </div>
-                    </div>
-                    <div className="row mb-3">
-                      <label className="col-sm-2 col-form-label">
-                        Description:
-                      </label>
-                      <div className="col-sm-10">
-                        <div className="border p-2 rounded bg-white">
-                          {userData.organiser_details.description}
+                      <div className="row mb-3">
+                        <label className="col-sm-2 col-form-label">
+                          First Name:
+                        </label>
+                        <div className="col-sm-10">
+                          {editing ? (
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={newFirstName}
+                              onChange={(e) => setNewFirstName(e.target.value)}
+                            />
+                          ) : (
+                            userData.attendee_details.first_name
+                          )}
                         </div>
                       </div>
-                    </div>
-                    <div className="row mb-3">
-                      <label className="col-sm-2 col-form-label">
-                        Address:
-                      </label>
-                      <div className="col-sm-10">
-                        <div className="border p-2 rounded bg-white">
-                          {userData.organiser_details.address}
+                      <div className="row mb-3">
+                        <label className="col-sm-2 col-form-label">
+                          Last Name:
+                        </label>
+                        <div className="col-sm-10">
+                          {editing ? (
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={newLastName}
+                              onChange={(e) => setNewLastName(e.target.value)}
+                            />
+                          ) : (
+                            userData.attendee_details.last_name
+                          )}
                         </div>
                       </div>
-                    </div>
-                  </>
-                )}
-              </>
-            )}
-            {editing ? (
-              <div className="row mb-3">
+                      <div className="row mb-3">
+                        <label className="col-sm-2 col-form-label">
+                          Birth Date:
+                        </label>
+                        <div className="col-sm-10">
+                          {editing ? (
+                            <input
+                              type="date"
+                              className="form-control"
+                              value={newBirthDate}
+                              onChange={(e) => setNewBirthDate(e.target.value)}
+                            />
+                          ) : (
+                            userData.attendee_details.birth_date
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  {userData.organiser_details && (
+                    <>
+                    <div className="row mb-3">
+                        <label className="col-sm-2 col-form-label">Email:</label>
+                        <div className="col-sm-10">
+                          {editing ? (
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={newEmail}
+                              onChange={(e) => setNewEmail(e.target.value)}
+                            />
+                          ) : (
+                            userData.email
+                          )}
+                        </div>
+                      </div>
+                      <div className="row mb-3">
+                        <label className="col-sm-2 col-form-label">Name:</label>
+                        <div className="col-sm-10">
+                          {editing ? (
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={newName}
+                              onChange={(e) => setNewName(e.target.value)}
+                            />
+                          ) : (
+                            userData.organiser_details.name
+                          )}
+                        </div>
+                      </div>
+                      <div className="row mb-3">
+                        <label className="col-sm-2 col-form-label">
+                          Description:
+                        </label>
+                        <div className="col-sm-10">
+                          {editing ? (
+                            <textarea
+                              className="form-control"
+                              value={newDescription}
+                              onChange={(e) =>
+                                setNewDescription(e.target.value)
+                              }
+                            />
+                          ) : (
+                            userData.organiser_details.description
+                          )}
+                        </div>
+                      </div>
+                      <div className="row mb-3">
+                        <label className="col-sm-2 col-form-label">
+                          Address:
+                        </label>
+                        <div className="col-sm-10">
+                          {editing ? (
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={newAddress}
+                              onChange={(e) => setNewAddress(e.target.value)}
+                            />
+                          ) : (
+                            userData.organiser_details.address
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
+              <div className="row mt-3">
                 <div className="col">
-                  {/* Input fields for editing user data */}
+                  {editing ? (
+                    <>
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        onClick={handleSave}
+                        style={{ marginRight: "5px" }}
+                      >
+                        Save
+                      </button>
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        onClick={handleCancel}
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <button className="btn btn-link" onClick={handleEdit}>
+                      Edit
+                    </button>
+                  )}
                 </div>
-                <div className="col">
-                  <button
-                    className="btn btn-secondary btn-sm"
-                    onClick={handleSave}
-                    style={{ marginRight: "5px" }}
-                  >
-                    Save
-                  </button>
-                  <button
-                    className="btn btn-secondary btn-sm"
-                    onClick={handleCancel}
-                  >
-                    Cancel
-                  </button>
-                </div>
               </div>
-            ) : (
-              <div>
-                <p style={{ display: "inline" }}>Do you want to edit?</p>
-                <button
-                  className="btn btn-link"
-                  onClick={handleEdit}
-                >
-                  Edit
-                </button>
-              </div>
-            )}
-            <div className="row mt-3">
-              <div className="col">
-                <button
-                  className="btn btn-link"
-                  onClick={() => setUseLinkInputs(!useLinkInputs)}
-                >
-                  {useLinkInputs ? "Use text inputs" : "Use link inputs"}
-                </button>
-              </div>
-              </div>
-            </div>
+              
             </div>
           </div>
         </div>
       </div>
-      
-    
+    </div>
   );
 };
 

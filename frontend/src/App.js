@@ -1,4 +1,4 @@
-import  React,{useEffect,useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { Route, Routes, BrowserRouter, useLocation } from 'react-router-dom'; // Import necessary components from react-router-dom
@@ -24,11 +24,18 @@ import ProfileDashboard from './components/Profile';
 import BookingPage from './components/booking';
 import Payment from './components/Payment';
 import Order from './components/Order';
-import SearchResults from './components/SearchResults';
 import InterestedEvents from './components/Interested';
+import SearchResults from './components/SearchResults';
+// import InterestedEvents from './components/Interested';
 import BookedTickets from './components/booked';
+import UpdateEvent from './components/UpdateEvents';
+import Update from './components/update';
 import PurchasedTickets from './components/Purchased';
+import AttendedEvents from './components/AttendedEvents';
 import Ratings from './components/Ratings';
+import Reviews from './components/Reviews';
+import Feedback from './components/Feedback';
+
 function App() {
   return (
    <Provider store={store}>
@@ -38,7 +45,6 @@ function App() {
           <AppHeader />
         </header>
         <div className='content'>
-
             <Routes>
             <Route path="/" element={<AppHero />} />
           <Route path="/home" element={<AppHero />} />
@@ -61,19 +67,21 @@ function App() {
           <Route path="/orders/:orderId" element={<Order />} />
           <Route path="/search" element={<SearchResults/>} />
           <Route path="/profile/:id/interested" element={<InterestedEvents/>} />
+          <Route path="/profile/:oganiser_id/events" element={<UpdateEvent/>} />
+          <Route path="/profile/:organiser_id/events/update/:event_id" element={<Update />} />
+
           <Route path="/profile/:id/booked" element={<BookedTickets/>} />
           <Route path="/profile/:id/purchases" element={<PurchasedTickets/>} />
+          <Route path="/profile/:id/attended-events" element={<AttendedEvents/>} />
+          <Route path="/profile/:id/leave-feedback/:eventId" element={<Feedback/>} />
           <Route path="/profile/:id/ratings-left" element={<Ratings/>} />
-            </Routes>
- 
-        </div>
+          <Route path="/profile/:id/reviews-left" element={<Ratings/>} />
+          </Routes>
+         </div>
         </BrowserRouter>
           <footer id="footer">
           <AppFooter />
         </footer>
-    
-    
-  
      </div>
      </Provider>
   );

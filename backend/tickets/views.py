@@ -31,18 +31,16 @@ class SelectedTicketDeleteView(generics.ListAPIView, generics.DestroyAPIView):
             instance = self.get_object()
             self.perform_destroy(instance)
             
-            # Update the quantity_available of the associated TicketType
             ticket_type = instance.ticket
             ticket_type.quantity_available += instance.quantity
             ticket_type.save(update_fields=['quantity_available'])
-            
-            # Update the quantity_available of the associated Ticket
+
             ticket = ticket_type.ticket
             ticket.quantity_available += instance.quantity
             ticket.save(update_fields=['quantity_available'])
-            
-            # Update the associated Cart's total amount
+
             instance.cart.total_amount -= instance.amount
+            print(instance.cart.total_amount)
             instance.cart.save(update_fields=['total_amount'])
             return Response(status=status.HTTP_204_NO_CONTENT)
             

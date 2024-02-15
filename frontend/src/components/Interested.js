@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Table, Button, Row, Col } from 'react-bootstrap';
+import { Container,  Button, Row, Col } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ProfileSidebar from './ProfileSidebar';

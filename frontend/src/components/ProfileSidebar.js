@@ -1,3 +1,4 @@
+// ProfileSidebar.js
 import React, { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap'; // Import Button from react-bootstrap
 import { Link, useNavigate } from 'react-router-dom'; 
@@ -39,6 +40,7 @@ function ProfileSidebar() {
           <>
             <Button className="sidebar-btn" variant="light" onClick={() => navigate(`/profile/${localStorage.getItem('id')}`)}>My Profile</Button>
             <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/interested`)}>Interested Events</Button>
+            <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/attended-events`)}>Attended Events</Button>
             <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/booked`)}>Booked Tickets</Button>
             <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/purchases`)}>Purchased Tickets</Button>
             <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/ratings-left`)}>Events You've Rated</Button>

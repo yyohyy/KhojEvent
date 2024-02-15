@@ -10,10 +10,11 @@ from rest_framework.generics import get_object_or_404
 from rest_framework import serializers
 from tickets.models import SelectedTicket
 from django.http import Http404
-from .serializers import EventSerializer, CategorySerializer, TagSerializer, InterestedSerializer, InterestedDetailSerializer, ReviewSerializer, RatingSerializer, EventImageSerializer
-from events.models import Event, Tag, Category, Review, Rating, Interested, Attendee, Organiser
+from .serializers import *
+from events.models import *
 from .permissions import OrganiserCanUpdate, IsOrganiser, IsAttendee#, AttendeeCanMark, AttendeeCanRate, AttendeeCanReview
-
+from users.serializers import UserDetailsSerializer
+from users.models import User
 
 
 class AllEventsView(ListAPIView):

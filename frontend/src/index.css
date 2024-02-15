@@ -19,3 +19,12 @@ code {
   color:black !important
 
 }
+/* ProfileSidebar.css */
+.profile-sidebar {
+  margin-right: 15px; /* Adjust margin as needed */
+}
+
+/* ProfileDashboard.css */
+.profile-dashboard {
+  margin-left: 15px; /* Adjust margin as needed */
+}
