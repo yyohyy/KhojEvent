@@ -192,7 +192,7 @@ class GetInterestedEventsView(APIView):
 
 
 class GetInterestedEventView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request, event_id, **kwargs):
         try:
@@ -259,7 +259,7 @@ class AttendeeRatingsView(generics.ListAPIView):
 
 class RateUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = RatingSerializer
-    permission_classes = [IsAttendee]
+    #permission_classes = [IsAttendee]
 
     def get_object(self):
         # Retrieve the rating for the specific event and attendee
@@ -339,4 +339,57 @@ class GetAttendeeRatedEventsAPIView(APIView):
             return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
         
+
+class ReviewView(generics.CreateAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    
+
+    def perform_create(self, serializer):
+                # Check if the user has already rated the event
+        existing_review = Review.objects.filter(attendee=self.request.user.attendee, event=serializer.validated_data['event']).exists()
+        if existing_review:
+            raise serializers.ValidationError("You have already rated this event.")
+        serializer.save(attendee=self.request.user.attendee)
+        
+'''
+class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ReviewSerializer
+    lookup_url_kwarg = 'event_id'  # Specify the lookup URL keyword argument
+    
+    def get_queryset(self):
+        # Get the event ID from the URL parameter
+        event_id = self.kwargs['event_id']
+        # Filter reviews by the event ID
+        return Review.objects.filter(event_id=event_id)
+'''
+
+class ReviewDetailView(APIView):
+
+    def get(self, request, event_id=None):
+        if event_id is not None:
+            reviews = Review.objects.filter(event_id=event_id)
+        else:
+            reviews = Review.objects.all()
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
+
+    def put(self, request, event_id):
+        try:
+            review = Review.objects.get(event_id=event_id)
+        except Review.DoesNotExist:
+            raise Http404
+        serializer = ReviewSerializer(review, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, event_id):
+        try:
+            review = Review.objects.get(event_id=event_id)
+        except Review.DoesNotExist:
+            raise Http404
+        review.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
