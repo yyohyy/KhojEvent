@@ -337,4 +337,6 @@ class GetAttendeeRatedEventsAPIView(APIView):
         
         except Exception as e:
             return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+        
 
