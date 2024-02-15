@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Table, Button } from 'react-bootstrap';
+import { Container, Row, Col , Button } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ProfileSidebar from './ProfileSidebar';
@@ -36,15 +36,19 @@ const UpdateEvent = () => {
     };
 
     return (
-        <div className="container">
-            <div className="row">
-                <div className="col-md-3">
+        <Container fluid style={{ minHeight: "calc(100vh - 56px)", background: "#ffffff" }}>
+            <div class="custom-container"></div>
+            <Row>
+                <Col sm={3}>
                     <ProfileSidebar />
-                </div>
-                <div className="col-md-9">
-                    <Container fluid>
-                        <h1 className="my-4">Organizer Events</h1>
-                        <Table striped bordered hover>
+                </Col>
+                <Col sm={9}>
+                <div style={{ padding: '20px' }}>
+                    <h1 className="my-4"style={{ fontFamily: "Comfortaa, cursive", color: "#8B0000"}}>Organizer Events</h1>
+                    </div>
+                    {events.length > 0 ? (
+                        <div className="shadow-box">
+                         <table class="table table-borderless table-hover">
                             <thead>
                                 <tr>
                                     <th>Event Name</th>
@@ -53,6 +57,9 @@ const UpdateEvent = () => {
                                     <th>Venue</th>
                                     <th>Actions</th>
                                 </tr>
+                                <tr className="table-heading-line">
+                    <th colSpan="6"></th> {/* Empty cell for the line */}
+                </tr>
                             </thead>
                             <tbody>
                                 {events.map(event => (
@@ -62,16 +69,20 @@ const UpdateEvent = () => {
                                         <td>{event.start_time} - {event.end_time}</td>
                                         <td>{event.venue}</td>
                                         <td>
-                                            <Button variant="primary" onClick={() => handleEventUpdate(event.id)}>Update</Button>
+                                            <Button variant="danger" onClick={() => handleEventUpdate(event.id)}>Update</Button>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
-                        </Table>
-                    </Container>
-                </div>
-            </div>
-        </div>
+                            </table>
+                        </div>
+                    ) : (
+                        <p>No organized events available</p>
+                    )}
+                </Col>
+            </Row>
+                            
+        </Container>
     );
 };
 
