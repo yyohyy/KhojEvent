@@ -26,7 +26,7 @@ import Payment from './components/Payment';
 import Order from './components/Order';
 import InterestedEvents from './components/Interested';
 import SearchResults from './components/SearchResults';
-import InterestedEvents from './components/Interested';
+// import InterestedEvents from './components/Interested';
 import BookedTickets from './components/booked';
 import PurchasedTickets from './components/Purchased';
 import Ratings from './components/Ratings';
@@ -61,7 +61,7 @@ function App() {
           <Route path="/payment/:orderId" element={<Payment />} />
           <Route path="/orders/:orderId" element={<Order />} />
           <Route path="/search" element={<SearchResults/>} />
-          <Route path="/profile/:id/interested" element={<InterestedEvents/>} />
+          <Route path="/profile/:id/Interested" element={<InterestedEvents/>} />
           <Route path="/profile/:id/booked" element={<BookedTickets/>} />
           <Route path="/profile/:id/purchases" element={<PurchasedTickets/>} />
           <Route path="/profile/:id/ratings-left" element={<Ratings/>} />
