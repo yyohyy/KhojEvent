@@ -1200,3 +1200,24 @@ textarea {
 .organiser-message-button {
   margin-top: 10px; /* Add space between the text and the button */
 }
+
+.shadow-box {
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 20px;
+}
+.table-heading-line th {
+  border-bottom: 2px solid #dee2e6; /* Adjust the color as needed */
+  padding-bottom: 15px; /* Adjust the padding as needed */
+}
+
+/* Adjustments for better alignment */
+.table-heading-line th {
+  padding: 0 !important;
+  height: 1px;
+}
+.table-heading-line th {
+  border-bottom: 2px solid #dee2e6; /* Add line below headings */
+  padding-bottom: 10px; /* Add padding after the line */
+}
+

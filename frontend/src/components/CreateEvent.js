@@ -89,6 +89,7 @@ const CreateEvent = () => {
         ...formDataWithoutImage,
         category: { name: formData.category },
         tags: formData.tags.map((tag) => ({ name: tag })),
+        organiser: localStorage.getItem('id'),
         ticket_types: formData.ticketTypes.map((ticket) => ({
           ...ticket,
           quantity_available: ticket.quantity,

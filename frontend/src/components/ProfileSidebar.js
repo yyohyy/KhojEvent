@@ -1,8 +1,9 @@
 // ProfileSidebar.js
 import React, { useState, useEffect } from 'react';
+import { Button } from 'react-bootstrap'; // Import Button from react-bootstrap
 import { Link, useNavigate } from 'react-router-dom'; 
-import './ProfileSidebar.css';
 import axios from 'axios';
+import './ProfileSidebar.css'; // Import custom CSS file
 
 function ProfileSidebar() {
   const [isOrganiser, setIsOrganiser] = useState(false);
@@ -13,8 +14,7 @@ function ProfileSidebar() {
       try {
         const response = await axios.get('http://127.0.0.1:8000/users/me/', {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('Bearer')}`, // Example of sending an Authorization header
-            // Add other headers as needed
+            Authorization: `Bearer ${localStorage.getItem('Bearer')}`,
           },
         });
         const { is_organiser } = response.data;
@@ -30,22 +30,20 @@ function ProfileSidebar() {
   return (
     <div className="profile-sidebar">
       <div className="list-group">
-        {/* Conditionally render buttons based on user type */}
         {isOrganiser ? (
           <>
-          <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/`)}>Profile</button>
-            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/events`)}>Events</button>
-            <button className="list-group-item list-group-item-action" onClick={() => navigate(`create-event`)}>Create Event </button>
-            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/`)}>Create Event</button>
+            <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}`)}>Profile</Button>
+            <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/events`)}>Events</Button>
+            <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/create-event`)}>Create Event</Button>
           </>
         ) : (
           <>
-          <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/`)}>My Profile</button>
-          <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/${localStorage.getItem("id")}/interested`)}>Interested Events</button>
-            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/${localStorage.getItem("id")}/bookings`)}>Booked Tickets</button>
-            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/${localStorage.getItem("id")}/purchases`)}>Events</button>
-            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/${localStorage.getItem("id")}/ratings-left`)}>Events You've Rated</button>
-            <button className="list-group-item list-group-item-action" onClick={() => navigate(`profile/${localStorage.getItem("id")}/reviews-left`)}>Events You've Reviewed</button>
+            <Button className="sidebar-btn" variant="light" onClick={() => navigate(`/profile/${localStorage.getItem('id')}`)}>My Profile</Button>
+            <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/interested`)}>Interested Events</Button>
+            <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/booked`)}>Booked Tickets</Button>
+            <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/purchases`)}>Purchased Tickets</Button>
+            <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/ratings-left`)}>Events You've Rated</Button>
+            <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/reviews-left`)}>Events You've Reviewed</Button>
           </>
         )}
       </div>

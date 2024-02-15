@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
+import ProfileSidebar from './ProfileSidebar';
 
 const ProfileDashboard = () => {
   const navigate = useNavigate(); 
@@ -143,35 +144,49 @@ const ProfileDashboard = () => {
   return (
     <div className="container">
       <div className="row">
-        <div className="col-md-3"></div>
-        <div className="col-md-8">
-          <div className="card bg-light p-3">
-            <div className="d-flex justify-content-between align-items-center">
-              <h2 className="card-title">Profile Personal:</h2>
-              {userData && (
-                <div className="col text-end">
-                  {userData.profile_picture ? (
-                    <img
-                      src={userData.profile_picture}
-                      alt="Profile"
-                      className="img-thumbnail rounded-circle"
-                      style={{ width: "100px", height: "100px" }}
-                    />
-                  ) : (
-                    <div
-                      className="img-thumbnail rounded-circle"
-                      style={{
-                        width: "100px",
-                        height: "100px",
-                        backgroundColor: "#f0f0f0",
-                        display: "flex",
-                        justifyContent: "right",
-                        alignItems: "center",
-                      }}
-                    >
-                      <span className="text-muted">No Profile Picture</span>
-                    </div>
-                  )}
+      <div className="col-md-3">
+        <ProfileSidebar />
+        </div>
+        <div className="col-md-9">
+          <div className="card border-8 border-emerald-400">
+            <div className="card-body">
+              <div className="d-flex justify-content-between align-items-center">
+                <h2 className="card-title">Profile Personal:</h2>
+                {userData && (
+                  <div className="col text-end">
+                    {userData.profile_picture ? (
+                      <img
+                        src={userData.profile_picture}
+                        alt="Profile"
+                        className="img-thumbnail rounded-circle"
+                        style={{ width: "100px", height: "100px" }}
+                      />
+                    ) : (
+                      <div
+                        className="img-thumbnail rounded-circle"
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          backgroundColor: "#f0f0f0",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span className="text-muted">No Profile Picture</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              
+              <div className="row mb-3">
+                <div className="col">
+                  <input
+                    type="file"
+                    className="form-control-file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
                 </div>
               )}
             </div>

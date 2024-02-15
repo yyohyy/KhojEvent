@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
-import axios from 'axios'
+import { Container, Table, Button, Row, Col } from 'react-bootstrap';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import ProfileSidebar from './ProfileSidebar';
 
 const InterestedEvents = () => {
-    const {id}= useParams()
+    const navigate = useNavigate();
+    const { id } = useParams();
     const [events, setEvents] = useState([]);
+
     useEffect(() => {
-        // Fetch interested events when component mounts
-        const authToken = localStorage.getItem("Bearer");
-        
         const fetchInterestedEvents = async () => {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/interested-detail/${localStorage.getItem("id")}/`,{
+                const authToken = localStorage.getItem("Bearer");
+                const response = await axios.get(`http://127.0.0.1:8000/interested-detail/${localStorage.getItem("id")}/`, {
                     headers: {
-                      Authorization: `Bearer ${authToken}`,
+                        Authorization: `Bearer ${authToken}`,
                     },
-                  }
-                  )
+                });
                 setEvents(response.data);
             } catch (error) {
                 console.error('Error fetching interested events:', error);
@@ -26,32 +26,89 @@ const InterestedEvents = () => {
 
         fetchInterestedEvents();
 
-        // Clean up function
         return () => {
-            // Perform any cleanup if needed
+            // Clean up function if needed
         };
     }, [id]);
+
+    const handleEventClick = (eventId) => {
+        navigate(`/events/${eventId}`);
+    };
+
+    const handleRemoveClick = async (eventId) => {
+        try {
+            const authToken = localStorage.getItem("Bearer");
+            await axios.delete(`http://127.0.0.1:8000/remove-event/${eventId}/`, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
+            // After removing event, refetch the interested events
+            const response = await axios.get(`http://127.0.0.1:8000/interested-detail/${localStorage.getItem("id")}/`, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
+            setEvents(response.data);
+        } catch (error) {
+            console.error('Error removing event:', error);
+        }
+    };
+
     return (
-        <Container>
-            <h1 className="my-4">Interested Events</h1>
+        <Container fluid style={{ minHeight: "calc(100vh - 56px)", background: "#ffffff" }}>
+            <div class="custom-container"></div>
             <Row>
-                {events.map(event => (
-                    <Col key={event.id} md={4} className="mb-4">
-                        <Card>
-                        <Card.Img variant="top" src={event.image} />
-                            <Card.Body>
-                                <Card.Title>{event.event.name}</Card.Title>
-                                <Card.Text>Date: {event.event.start_date}</Card.Text>
-                                <Card.Text>Time: {event.event.start_time} - {event.event.end_time}</Card.Text>
-                                <Card.Text>Venue: {event.event.venue}</Card.Text>
-                                <Card.Text>Description: {event.event.description}</Card.Text>
-                               
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                ))}
+                <Col sm={3}>
+                    <ProfileSidebar />
+                </Col>
+                <Col sm={9}>
+                <div style={{ padding: '20px' }}>
+                    <h1 className="my-4"style={{ fontFamily: "Comfortaa, cursive", color: "#8B0000"}}>Interested Events</h1>
+                    </div>
+                    
+                    {events.length > 0 ? (
+                        <div className="shadow-box">
+                         <table class="table table-borderless table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" >Event Name</th>
+                                    <th class="text-center">Date</th>
+                                    <th class="text-center">Time</th>
+                                    <th class="text-center">Venue</th>
+                                    <th class="text-center">Interested Status</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                                                <tr className="table-heading-line">
+                    <th colSpan="6"></th> {/* Empty cell for the line */}
+                </tr>
+                            </thead>
+                            <tbody>
+                                {events.map(event => (
+                                    <tr key={event.event.id}>
+                                        <td class="text-center">{event.event.name}</td>
+                                        <td class="text-center">{event.event.start_date}</td>
+                                        <td class="text-center">{event.event.start_time} - {event.event.end_time}</td>
+                                        <td class="text-center">{event.event.venue}</td>
+                                        <td class="text-center">
+                                            <Button variant="danger" onClick={() => handleRemoveClick(event.event.id)}>Remove</Button>
+                                        </td>
+                                        <td class="text-center">
+                                            <Button variant="secondary" onClick={() => handleEventClick(event.event.id)}>View Details</Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        </div>
+                    ) : (
+                        <p>No interested events available</p>
+                    )}
+                </Col>
             </Row>
+                            
         </Container>
     );
 };
+
 export default InterestedEvents;

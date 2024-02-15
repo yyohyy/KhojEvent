@@ -1,27 +1,28 @@
+/* ProfileSidebar.css */
 .profile-sidebar {
-    width: 200px;
-    background-color: #fff;
-  }
-  
-  .list-group {
-    margin: 0;
-    padding: 0;
-    padding-left: 10px; /* Add padding to the right of the entire group */
-  }
-  
-  .list-group-item {
-    border: 1px solid #c41111; /* Pink border */
-    border-radius: 10px; /* Rounded border */
-    color: #c41111; /* Pink text */
-    background-color: #fff; /* White background */
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease; /* Transition for background and text color */
-    margin-bottom: 5px; /* Add margin between list items */
-    padding: 10px; /* Add padding to the right */
-  }
-  
-  .list-group-item:hover {
-    background-color: #f64b4b; /* Pink background on hover */
-    color: #fff; /* White text on hover */
-  }
-  
+  width: 200px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  left: 0;
+}
+
+.list-group {
+  margin-top: 20px;
+}
+
+.sidebar-btn {
+  width: 100%;
+  margin-bottom: 10px;
+  text-align: center; /* Center the text */
+  background-color: #ffffff; /* Set background color */
+  border: 1px solid #f64b4b; /* Add red border */
+  color: #f64b4b; /* Set text color */
+}
+
+.sidebar-btn:hover {
+  background-color: #f64b4b; /* Change background color on hover */
+  color: #ffffff; /* Change text color on hover */
+}
