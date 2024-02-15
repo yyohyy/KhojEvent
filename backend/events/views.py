@@ -392,8 +392,7 @@ class ReviewDetailView(APIView):
             raise Http404
         review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-    
+     
 
 class EventReviewListView(APIView):
     def get(self, request, event_id):
@@ -404,4 +403,48 @@ class EventReviewListView(APIView):
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data) 
 
+
+class AttendeeReviewedEventsAPIView(APIView):
+    def get(self, request, attendee_id):
+        #try:
+            # Retrieve all reviews given by the specified attendee
+            reviews = Review.objects.filter(attendee_id=attendee_id)
+
+            # Serialize the reviews data
+            review_serializer = ReviewSerializer(reviews, many=True)
+            
+            # Extract the events associated with these reviews
+            #reviewed_events = [review.event for review in reviews]
+
+            # Serialize the reviewed events data
+            #event_serializer = EventSerializer(reviewed_events, many=True)
+            
+            return Response({
+                #'success': True,
+                #'reviewed_events': event_serializer.data,
+                'reviews': review_serializer.data
+            }, status=status.HTTP_200_OK)
+        
+        #except Exception as e:
+            #return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            
+
+class OrganizerReviewListView(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+    
+    def get_queryset(self):
+        # Get the organizer associated with the current user
+        organiser = self.request.user.organiser
+        
+        # Get the event id from the URL parameters
+        event_id = self.kwargs.get('event_id')
+        
+        # Check if the organizer owns the event
+        event = get_object_or_404(Event, id=event_id, organiser=organiser)
+        
+        # Get reviews for the specified event
+        reviews = Review.objects.filter(event=event).select_related('attendee')
+        
+        # Return reviews along with attendee information
+        return reviews
 
