@@ -39,7 +39,7 @@ import Feedback from './components/Feedback';
 function App() {
   return (
    <Provider store={store}>
-      <div className="App">
+      <div className="App" >
       <BrowserRouter basename='/'>
         <header id="header">
           <AppHeader />
@@ -69,7 +69,6 @@ function App() {
           <Route path="/profile/:id/interested" element={<InterestedEvents/>} />
           <Route path="/profile/:oganiser_id/events" element={<UpdateEvent/>} />
           <Route path="/profile/:organiser_id/events/update/:event_id" element={<Update />} />
-
           <Route path="/profile/:id/booked" element={<BookedTickets/>} />
           <Route path="/profile/:id/purchases" element={<PurchasedTickets/>} />
           <Route path="/profile/:id/attended-events" element={<AttendedEvents/>} />

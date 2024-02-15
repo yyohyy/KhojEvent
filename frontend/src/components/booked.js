@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Table, Button, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Button, Table } from 'react-bootstrap';
 import axios from 'axios';
 import ProfileSidebar from './ProfileSidebar';
 
@@ -41,40 +41,48 @@ const BookedTickets = () => {
     };
 
     return (
-        <div className="container">
-        <div className="row">
-          <div className="col-md-3">
-            <ProfileSidebar />
-          </div>
-          <div className="col-md-9">
-            <h1 className="my-4">Booked Tickets</h1>
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th>Ticket Name</th>
-                        <th>Status</th>
-                        <th>Quantity</th>
-                        <th>Amount</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {bookedTickets.map(ticket => (
-                        <tr key={ticket.id}>
-                            <td>{ticket.ticket.name}</td>
-                            <td>{ticket.status}</td>
-                            <td>{ticket.quantity}</td>
-                            <td>{ticket.amount}</td>
-                            <td>
-                                <Button variant="danger" onClick={() => handleDelete(ticket.id)}>Delete</Button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </Table>
-        </div>
-        </div>
-        </div>
+        <Container fluid style={{ minHeight: "calc(100vh - 56px)", background: "#ffffff" }}>
+            <Row>
+                <Col sm={3}>
+                    <ProfileSidebar />
+                </Col>
+                <Col sm={9}>
+                    <div style={{ padding: '20px' }}>
+                        <h1 className="my-4" style={{ fontFamily: "Comfortaa, cursive", color: "#8B0000" }}>Booked Tickets</h1>
+                    </div>
+                  
+                    <div className="shadow-box">
+                     <table class="table table-borderless table-hover">
+                        <thead>
+                            <tr>
+                                <th className="text-center">Ticket Name</th>
+                                <th className="text-center">Status</th>
+                                <th className="text-center">Quantity</th>
+                                <th className="text-center">Amount</th>
+                                <th className="text-center">Action</th>
+                            </tr>
+                            <tr className="table-heading-line">
+                            <th colSpan="6"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {bookedTickets.map(ticket => (
+                                <tr key={ticket.id}>
+                                    <td className="text-center">{ticket.ticket.name}</td>
+                                    <td className="text-center">{ticket.status}</td>
+                                    <td className="text-center">{ticket.quantity}</td>
+                                    <td className="text-center">{ticket.amount}</td>
+                                    <td className="text-center">
+                                        <Button variant="danger" onClick={() => handleDelete(ticket.id)}>Delete</Button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                        </table>
+                    </div>
+                </Col>
+            </Row>
+        </Container>
     );
 };
 
