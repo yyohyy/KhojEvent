@@ -16,5 +16,7 @@ urlpatterns = [
     path('<int:attendee_id>/tickets/', UserSelectedTicketsDetails.as_view(), name='alltickets'),
     path('<int:attendee_id>/tickets/selected/', BookedTicketsDetails.as_view(), name='booked-tickets'),
     path('<int:attendee_id>/tickets/purchased/', PurchasedTicketsDetails.as_view(), name='confirmed-tickets'),
-    
+    # path('event/<int:event_id>/orders/', EventOrders.as_view(), name='event_attendee_orders'),
+    path('events/', AttendedEvents.as_view(), name='attendee_event_orders'),
 ]
+    

@@ -40,7 +40,7 @@ class CreateTicketSerializer(serializers.ModelSerializer):
             TicketType.objects.create(**ticket_type_data)
 
         ticket.total_quantity += sum(ticket_type_data['quantity'] for ticket_type_data in ticket_types_data)
-        ticket.quantity_available += sum(ticket_type_data['quantity_available'] for ticket_type_data in ticket_types_data)
+        ticket.quantity_available += ticket.total_quantity
         ticket.max_limit = validated_data.get('max_limit', ticket.max_limit)
         ticket.save() 
 

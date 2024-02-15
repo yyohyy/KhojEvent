@@ -44,7 +44,7 @@ const CreateEvent = () => {
       });
   }, []);
 
-  const category = ['Art and Entertainment', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Music and Concert','Festival','Others'];
+  const category = ['Choose any one', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Music and Concert','Festival','Others'];
   const availableTags = ['Fun', 'Dance', 'Music', 'Seminar', 'Night', 'Games', 'Food', 'Crafts', 'Zen', 'Comedy', 'Film', 'Photography', 'Tech', 'Thrift', 'Donation', 'Marathon', 'Cycling', 'Nature', 'Health', 'Pottery', 'Book', 'Meet & Greet'];
 
   const handleInputChange = (e) => {
@@ -65,7 +65,7 @@ const CreateEvent = () => {
   const handleTicketTypeChange = (index, e) => {
     const { name, value } = e.target;
     const updatedTicketTypes = [...formData.ticketTypes];
-    updatedTicketTypes[index][name] = value;
+    updatedTicketTypes[index][name] = value||'1';
     setFormData({ ...formData, ticketTypes: updatedTicketTypes });
   };
 
@@ -85,6 +85,9 @@ const CreateEvent = () => {
       const formDataForImage = new FormData();
       formDataForImage.append('image', formData.image);
   
+      const totalQuantity = formData.ticketTypes.reduce((acc, ticket) => acc + Number(ticket.quantity), 0);
+      console.log(totalQuantity)
+
       const formattedData = {
         ...formDataWithoutImage,
         category: { name: formData.category },
@@ -92,7 +95,8 @@ const CreateEvent = () => {
         organiser: localStorage.getItem('id'),
         ticket_types: formData.ticketTypes.map((ticket) => ({
           ...ticket,
-          quantity_available: ticket.quantity,
+          quantity_available: ticket.quantity
+          
         })),
       };
   
@@ -100,7 +104,7 @@ const CreateEvent = () => {
   
       if (formData.is_paid === 'True') {
         const eventId = response.data.id;
-        const ticketResponse = await AxiosInstance.post(`tickets/${eventId}/create/`, { ticket_types: formData.ticketTypes });
+        const ticketResponse = await AxiosInstance.post(`tickets/${eventId}/create/`, {max_limit:formData.max_limit,quantity_available:totalQuantity,ticket_types: formData.ticketTypes });
         console.log('Ticket creation response:', ticketResponse);
       }
   
@@ -285,6 +289,7 @@ const CreateEvent = () => {
                     name="price"
                     value={ticket.price}
                     onChange={(e) => handleTicketTypeChange(index, e)}
+                    min={0}
                   />
                 </label>
                 <label>
@@ -294,6 +299,7 @@ const CreateEvent = () => {
                     name="quantity"
                     value={ticket.quantity}
                     onChange={(e) => handleTicketTypeChange(index, e)}
+                    min={1}
                   />
                 </label>
               </div>

@@ -5,6 +5,8 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import ProfileSidebar from './ProfileSidebar';
 
+
+
 const Ratings = () => {
     const [events, setEvents] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
@@ -75,7 +77,8 @@ const Ratings = () => {
                 <Col sm={9}>
                     <Container fluid>
                         <h1 className="my-4" style={{ fontFamily: "Comfortaa, cursive", color: "#8B0000" }}>Ratings</h1>
-                        <Table responsive hover>
+                        <div className="shadow-box">
+                        <table className="table table-borderless table-hover">
                             <thead>
                                 <tr>
                                     <th className="text-center">Event Name</th>
@@ -85,6 +88,9 @@ const Ratings = () => {
                                         <th className="text-center">Cancel</th>
                                     )}
                                 </tr>
+                                <tr className="table-heading-line">
+                                        <th colSpan="5"></th> {/* Empty cell for the line */}
+                                    </tr>
                             </thead>
                             <tbody>
                                 {events.map(event => (
@@ -135,7 +141,8 @@ const Ratings = () => {
                                     </tr>
                                 ))}
                             </tbody>
-                        </Table>
+                        </table>
+                        </div>
                     </Container>
                 </Col>
             </Row>

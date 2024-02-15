@@ -19,8 +19,7 @@ function AppEventDetails() {
   const [loading, setLoading] = useState(true);
   const { event_id } = useParams();
   const [rating, setRating] = useState(0);
-  const [ratings, setRatings] = useState([]);
-  const [reviews, setReviews] = useState([]);
+  const [ratingsAndReviewsData, setRatingsAndReviewsData] = useState([]);
   const [interested, setInterested] = useState(false);
   const [rated, setRated] = useState(false);
   const [eventWebsiteUrl, setEventWebsiteUrl] = useState("");
@@ -34,18 +33,22 @@ function AppEventDetails() {
         const eventResponse = await axiosInstance.get(`/events/${event_id}/`);
         setActiveEventData(eventResponse.data);
         setLoading(false);
-        //setRated(eventResponse.data.rated);
+        // setRated(eventResponse.data.rated);
         setEventWebsiteUrl(eventResponse.data.website_url);
 
         const ratingResponse = await axiosInstance.get(`/events/${event_id}/ratings`);
         setRating(ratingResponse.data.average_rating);
 
-        const ratingsResponse = await axiosInstance.get(`/rated-events/${event_id}/`);
-        setRatings(ratingsResponse.data.event_ratings);
-
-        // Fetch reviews
-       // const reviewsResponse = await axiosInstance.get(`/reviews/${event_id}/`);
-        //setReviews(reviewsResponse.data);
+        const fetchRatingsAndReviews = async () => {
+          try {
+            const response = await axios.get(`http://127.0.0.1:8000/events/${event_id}/ratings-and-reviews/`);
+            setRatingsAndReviewsData(response.data);
+          } catch (error) {
+            console.error('Error fetching ratings and reviews:', error);
+          }
+        };
+    
+        fetchRatingsAndReviews();
 
         const userResponse = await axiosInstance.get(`/users/me/`);
         setIsOrganiser(userResponse.data.is_organiser);
@@ -61,12 +64,12 @@ function AppEventDetails() {
           setInterested(interestedResponse.data.success);
         }
 
-        const attendeeIds = [...new Set(ratingsResponse.data.event_ratings.map(rating => rating.attendee))];
-        const attendeesData = await Promise.all(attendeeIds.map(async attendeeId => {
-          const attendeeResponse = await axiosInstance.get(`/users/details/${attendeeId}/`);
-          return attendeeResponse.data;
-        }));
-        setAttendeeData(attendeesData);
+        // const attendeeIds = [...new Set(ratingsResponse.data.event_ratings.map(rating => rating.attendee))];
+        // const attendeesData = await Promise.all(attendeeIds.map(async attendeeId => {
+        //   const attendeeResponse = await axiosInstance.get(`/users/details/${attendeeId}/`);
+        //   return attendeeResponse.data;
+        // }));
+        // setAttendeeData(attendeesData);
 
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -207,20 +210,18 @@ function AppEventDetails() {
     </div>
   </div>
 </div>
-
-
-
 )}
 
+
 <div style={{ paddingTop: '20px' }}>
-  <h2 style={{ marginBottom: '30px',marginTop: '50px' }}>Ratings and Reviews:</h2>
-  {ratings.length > 0 ? (
-    ratings.map((rating, index) => (
+  <h2 style={{ marginBottom: '30px', marginTop: '50px' }}>Ratings and Reviews:</h2>
+  {ratingsAndReviewsData.length > 0 ? (
+    ratingsAndReviewsData.map((data, index) => (
       <div key={index} style={{ marginBottom: '10px' }}>
         <div className="d-flex align-items-center">
           <div>
             <StarRatings
-              rating={rating.stars}
+              rating={data.details.rating}
               starRatedColor="orange"
               starDimension="20px"
               starSpacing="2px"
@@ -228,18 +229,26 @@ function AppEventDetails() {
             />
           </div>
           <div className="ms-2" style={{ paddingLeft: '10px', marginTop: '5px' }}>
-            {attendeeData && attendeeData.length > 0 && attendeeData[index] && (
-              <p style={{ margin: '0', color: 'gray' }}>{`${attendeeData[index].attendee_details.first_name} ${attendeeData[index].attendee_details.last_name}`}</p>
-            )}
+          <p style={{ margin: '0', color: '#DEDEDE', fontSize: "15px" }}>
+       - {data.details.user_details.attendee_details.first_name} {data.details.user_details.attendee_details.last_name}
+    </p>
           </div>
         </div>
-        {index !== ratings.length - 1 && <hr />}
+        {data.details.review !== null && (
+          <p style={{ margin: '10px 0 0', color: 'gray' ,fontSize: "15px", textAlign: 'justify' }}>"{data.details.review}"</p>
+        )}
+                {data.details.review == null && (
+          <p style={{ margin: '10px 0 0', color: 'gray' }}></p>
+        )}
+      <hr /> 
       </div>
     ))
   ) : (
     <p>No ratings available.</p>
   )}
 </div>
+
+
           </div>
         </div>
       </div>
@@ -258,96 +267,5 @@ function renderStars(stars) {
   return starIcons;
 }
 
-
 export default AppEventDetails;
 
-
-
-  // const handleRatingChange = (newRating) => {
-  //   if (!rated) {
-  //     setRating(newRating);
-  //     const eventData = {
-  //       rating: newRating,
-  //       event_id: event_id,
-  //       stars: newRating,
-  //     };
-
-  //     axiosInstance.post(`/rate/`, eventData)
-  //       .then(response => {
-  //         console.log("Rating added successfully:", response.data);
-  //         setRated(true);
-  //       })
-  //       .catch(error => {
-  //         console.error('Error adding rating:', error);
-  //       });
-  //   }
-  // };
-
-
-// const handleReviewChange = (e) => {
-//   setReview(e.target.value);
-// }
-
-// const handleSubmitReview = async () => {
-//   const reviewData = {
-//     body: review,
-//     attendee: attendee_id,
-//     event: event_id 
-//   };
-
-//   try {
-//     const token = localStorage.getItem('Bearer');
-//     const headers = {
-//       Authorization: `Bearer ${token}`,
-//       'Content-Type': 'application/json',
-//     };
-    
-//     const response = await axios.post(`http://127.0.0.1:8000/reviews/`, reviewData, { headers });
-//     console.log("Review submitted successfully:", response.data);
-//   } catch (error) {
-//     console.error('Error submitting review:', error);
-//   }
-// }
-
-    {/* <div className="col-md-6 d-flex align-items-center justify-content-end">
-      <button
-        style={{
-          ...styles.wishlistButton,
-          width: '140px',
-          height: '40px',
-        }}
-        onClick={handleToggleInterest}
-      >
-        {interested ? (
-          <FaHeart style={{ ...styles.wishlistIcon, fontSize: '15px' }} />
-        ) : (
-          <FaRegHeart style={{ ...styles.wishlistIcon, fontSize: '15px' }} />
-        )}
-        <span style={styles.wishlistLabel}>{interested ? "Interested" : "Interested?"}</span>
-      </button>
-    </div> */}
-// <textarea
-// value={review}
-// onChange={handleReviewChange}
-// className="w-full h-24 mt-4 px-3 py-2 border border-gray-300 rounded-md"
-// placeholder="Write your review here..."
-// ></textarea>
-// <div className="flex justify-end mt-4">
-// <button
-//   className="px-4 py-2 bg-blue-500 text-white rounded-md"
-//   onClick={handleSubmitReview}
-// >
-//   Submit Review
-// </button>
-// </div>
-// <div className="mt-5">
-// <FaExternalLinkAlt className="mr-2" />
-// <a
-//   href={eventWebsiteUrl}
-//   target="_blank"
-//   rel="noopener noreferrer"
-//   className="text-blue-500 hover:underline"
-// >
-//   For more details, visit the event website
-// </a>
-// </div>
