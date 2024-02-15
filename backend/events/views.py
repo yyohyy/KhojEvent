@@ -1,6 +1,6 @@
 from django.db.models import Q
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework import generics
 from django.db.models import Avg
@@ -10,8 +10,8 @@ from rest_framework.generics import get_object_or_404
 from rest_framework import serializers
 from tickets.models import SelectedTicket
 from django.http import Http404
-from .serializers import EventSerializer, CategorySerializer, TagSerializer, InterestedSerializer, InterestedDetailSerializer, ReviewSerializer, RatingSerializer, EventImageSerializer
-from events.models import Event, Tag, Category, Review, Rating, Interested, Attendee, Organiser
+from .serializers import *
+from events.models import *
 from .permissions import OrganiserCanUpdate, IsOrganiser, IsAttendee#, AttendeeCanMark, AttendeeCanRate, AttendeeCanReview
 from users.serializers import UserDetailsSerializer
 from users.models import User
@@ -268,7 +268,7 @@ class RateUpdateView(generics.RetrieveUpdateAPIView):
         return Response(serializer.data)
     
     
-    
+'''
 class GetEventRatingsAPIView(APIView):
     #permission_classes = [IsAttendee]
 
@@ -287,7 +287,7 @@ class GetEventRatingsAPIView(APIView):
         except Exception as e:
             return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
   
-  
+ ''' 
   
   
 class GetAvgRatingsAPIView(APIView):
@@ -365,36 +365,28 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
 '''
 
 
-class ReviewDetailView(APIView):
+class ReviewRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
 
-    def get(self, request, event_id=None):
-        if event_id is not None:
-            reviews = Review.objects.filter(event_id=event_id)
-        else:
-            reviews = Review.objects.all()
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        # Filter reviews by the logged-in attendee
+        return Review.objects.filter(attendee=self.request.user.attendee)
 
-    def put(self, request, event_id):
-        try:
-            review = Review.objects.get(event_id=event_id)
-        except Review.DoesNotExist:
-            raise Http404
-        serializer = ReviewSerializer(review, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get_object(self):
+        queryset = self.get_queryset()
+        # Get the review based on the event_id
+        obj = generics.get_object_or_404(queryset, event_id=self.kwargs["event_id"])
+        self.check_object_permissions(self.request, obj)
+        return obj
 
-    def delete(self, request, event_id):
-        try:
-            review = Review.objects.get(event_id=event_id)
-        except Review.DoesNotExist:
-            raise Http404
-        review.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def perform_update(self, serializer):
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        instance.delete()
      
-
+'''
 class EventReviewListView(APIView):
     def get(self, request, event_id):
         # Retrieve reviews for the specified event
@@ -403,7 +395,7 @@ class EventReviewListView(APIView):
         # Serialize the reviews and return the response
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data) 
-
+'''
 
 class AttendeeReviewedEventsAPIView(APIView):
     def get(self, request, attendee_id):
@@ -449,39 +441,22 @@ class OrganizerReviewListView(generics.ListAPIView):
         # Return reviews along with attendee information
         return reviews
 
+
 class EventRatingsAndReviewsAPIView(APIView):
     def get(self, request, event_id, **kwargs):
-        # Retrieve all ratings for the specified event
-        event_ratings = Rating.objects.filter(event_id=event_id)
-        # Retrieve all reviews for the specified event
-        reviews = Review.objects.filter(event_id=event_id)
+            # Retrieve all ratings for the specified event
+            event_ratings = Rating.objects.filter(event_id=event_id)
+            # Retrieve reviews for the specified event
+            reviews = Review.objects.filter(event_id=event_id)
+            
+            # Serialize the event ratings data
+            rating_serializer = RatingSerializer(event_ratings, many=True)
+            # Serialize the reviews
+            review_serializer = ReviewSerializer(reviews, many=True)
+            
+            return Response({
 
-        # Retrieve distinct attendees who have rated or reviewed the event
-        distinct_attendees = set(event_ratings.values_list('attendee', flat=True)) | set(reviews.values_list('attendee', flat=True))
-
-        # Create a list to store data for each attendee
-        attendee_data = []
-        for attendee_id in distinct_attendees:
-            attendee_details = {'id': attendee_id, 'details': {'rating': None, 'review': None,'user_details':None}}
-            attendee_data.append(attendee_details)
-
-        # Populate the list with ratings and reviews for each attendee
-        for rating in event_ratings:
-            for attendee_details in attendee_data:
-                if attendee_details['id'] == rating.attendee.user.id:
-                    attendee_details['details']['rating'] = rating.stars
-                    break
-        for review in reviews:
-            for attendee_details in attendee_data:
-                 if attendee_details['id'] == review.attendee.user.id:
-                    attendee_details['details']['review'] = review.body
-                    break
-        # Serialize the user details
-        for attendee_details in attendee_data:
-            user_id = attendee_details['id']
-            user = User.objects.get(pk=user_id)  # Retrieve user object using user ID
-            user_serializer = UserDetailsSerializer(user)
-            attendee_details['details']['user_details'] = user_serializer.data
-
-        return Response(attendee_data, status=status.HTTP_200_OK)
-
+                'event_ratings': rating_serializer.data,
+                'event_reviews': review_serializer.data
+            }, status=status.HTTP_200_OK)
+        
