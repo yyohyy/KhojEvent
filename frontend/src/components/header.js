@@ -107,7 +107,7 @@ function AppHeader() {
             <Nav.Link href="/create-event">Create Events</Nav.Link>
             <Nav.Link href="/events">Events</Nav.Link>
             <Nav.Link href="/testimonials">Testimonials</Nav.Link>
-            <Nav.Link href="/contact">Contact</Nav.Link>
+            {/* <Nav.Link href="/contact">Contact</Nav.Link> */}
 
             {isLoggedIn ? (
               <>
@@ -120,7 +120,7 @@ function AppHeader() {
                   <NavDropdown.Item href={`/profile/${localStorage.getItem("id")}`}>
                     View Profile
                   </NavDropdown.Item>
-                  <NavDropdown.Item href="/settings">Settings</NavDropdown.Item>
+                  {/* <NavDropdown.Item href="/settings">Settings</NavDropdown.Item> */}
                   <NavDropdown.Divider />
                   <NavDropdown.Item onClick={logout}>Logout</NavDropdown.Item>
                 </NavDropdown>
