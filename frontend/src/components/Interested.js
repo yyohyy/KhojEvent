@@ -38,7 +38,7 @@ const InterestedEvents = () => {
     const handleRemoveClick = async (eventId) => {
         try {
             const authToken = localStorage.getItem("Bearer");
-            await axios.delete(`http://127.0.0.1:8000/remove-event/${eventId}/`, {
+            await axios.post(`http://127.0.0.1:8000/events/${eventId}/interested/`, {
                 headers: {
                     Authorization: `Bearer ${authToken}`,
                 },
@@ -76,7 +76,6 @@ const InterestedEvents = () => {
                                     <th class="text-center">Date</th>
                                     <th class="text-center">Time</th>
                                     <th class="text-center">Venue</th>
-                                    <th class="text-center">Interested Status</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                                                 <tr className="table-heading-line">
@@ -90,9 +89,6 @@ const InterestedEvents = () => {
                                         <td class="text-center">{event.event.start_date}</td>
                                         <td class="text-center">{event.event.start_time} - {event.event.end_time}</td>
                                         <td class="text-center">{event.event.venue}</td>
-                                        <td class="text-center">
-                                            <Button variant="danger" onClick={() => handleRemoveClick(event.event.id)}>Remove</Button>
-                                        </td>
                                         <td class="text-center">
                                             <Button variant="secondary" onClick={() => handleEventClick(event.event.id)}>View Details</Button>
                                         </td>

@@ -25,6 +25,7 @@ function AppEventDetails() {
   const [eventWebsiteUrl, setEventWebsiteUrl] = useState("");
   const [attendeeData, setAttendeeData] = useState([]);
   const [isOrganiser, setIsOrganiser] = useState(false);
+  const [isAttendee, setIsAttendee] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,6 +53,7 @@ function AppEventDetails() {
 
         const userResponse = await axiosInstance.get(`/users/me/`);
         setIsOrganiser(userResponse.data.is_organiser);
+        setIsAttendee(userResponse.data.is_attendee);
 
         if (eventResponse.data.organiser) {
           const organiserId = eventResponse.data.organiser;
@@ -59,7 +61,7 @@ function AppEventDetails() {
           setOrganiserData(organiserResponse.data);
         }
 
-        if (!userResponse.data.is_organiser) {
+        if (userResponse.data.is_attendee) {
           const interestedResponse = await axiosInstance.get(`/interested-event/${event_id}/`);
           setInterested(interestedResponse.data.success);
         }
@@ -104,7 +106,7 @@ function AppEventDetails() {
   };
 
   const handleUpdate = () => {
-    navigate(`/update-event/${event_id}`);
+    navigate(`/profile/${localStorage.getItem("id")}/events/update/${event_id}`);
   };
 
   return (
@@ -121,7 +123,7 @@ function AppEventDetails() {
         </div>
         <div className="col-md-8 mx-auto">
           <div className="card p-5">
-            {isOrganiser && activeEventData.organiser === parseInt(localStorage.getItem("id"), 10) ? (
+            {activeEventData.organiser === parseInt(localStorage.getItem("id"), 10) ? (
               <div className="text-end mb-3">
                 <button
                   className={`btn btn-primary btn-lg`}
@@ -132,7 +134,7 @@ function AppEventDetails() {
               </div>
             ) : (
               <div className="text-end mb-3">
-                {!isOrganiser && (
+                {isAttendee && (
                   <button
                     className={`btn btn-primary btn-lg`}
                     onClick={handleToggleInterest}
@@ -173,7 +175,7 @@ function AppEventDetails() {
               </span>
             </div>
             <p className="card-text mt-3" style={{ textAlign: 'justify' }}>{activeEventData.description}</p>
-            {!isOrganiser && (
+            {isAttendee && (
               <div className="text-center mt-4">
                 <button
                   type="button"
@@ -191,7 +193,7 @@ function AppEventDetails() {
                       <img src={organiserData.profile_picture} className="rounded-circle" alt="Organiser Profile" style={{ width: '200px', height: '200px' }} />
                     </div>
                     <div style={{ flex: '1', paddingLeft: '20px' }}>
-                      <h4>Brought to you by:</h4>
+                      <h4>Know The Organiser:</h4>
                       <p style={{ fontFamily: "Comfortaa, cursive", color: "#f64b4b", fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '5px' }}>{organiserData.organiser_details.name}</p>
                       <div className="mt-3">
                         <span className="me-2"><BiPhone style={{ color: 'red' }} /></span>
