@@ -44,9 +44,9 @@ const CreateEvent = () => {
       });
   }, []);
 
-  const category = ['Choose Any Category', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Music and Concert','Festival','Others'];
-  const availableTags = ['Fun', 'Dance', 'Music', 'Seminar', 'Night', 'Games', 'Food', 'Crafts', 'Zen', 'Comedy', 'Film', 'Photography', 'Tech', 'Thrift', 'Donation', 'Marathon', 'Cycling', 'Nature', 'Health', 'Pottery', 'Book', 'Meet & Greet'];
-
+  const category = ['Choose category','Art and Entertainment', 'Business and Profession', 'Fashion', 'Education', 'Theatre', 'Standup', 'Market', 'Music and Concert','Festival','Food & Drink','Others'];
+  const [availableTags, setAvailableTags] = useState(['Fun', 'Dance', 'Music', 'Seminar', 'Night', 'Games', 'Food', 'Crafts', 'Zen', 'Comedy', 'Film', 'Photography', 'Tech', 'Thrift', 'Donation', 'Marathon', 'Cycling', 'Nature', 'Health', 'Pottery', 'Book','Indoor', 'Outdoor','Meet & Greet' ]);  
+  const [newTag, setNewTag] = useState('');
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -125,6 +125,24 @@ const CreateEvent = () => {
     setFormData({ ...formData, is_paid: value });
     setPaidSelected(value === 'True');
   };
+  const handleNewTagInputChange = (e) => {
+    setNewTag(e.target.value);
+  };
+
+  const addNewTag = () => {
+    if (newTag.trim() !== '') {
+      setAvailableTags([...availableTags, newTag.trim()]);
+      setFormData({ ...formData, tags: [...formData.tags, newTag.trim()] });
+      setNewTag('');
+    }
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') { // Check if the pressed key is Enter
+      e.preventDefault(); // Prevent default behavior of Enter key
+      addNewTag(); // Call the function to add the new tag
+    }
+  };
+  
 
   return (
     <div>
@@ -200,15 +218,38 @@ const CreateEvent = () => {
       </label>
 
       <label>
-        Tags:
-        <div className="tags-container">
-          {availableTags.map((tag) => (
-            <div key={tag} className={`tag ${formData.tags.includes(tag) ? 'selected' : ''}`} onClick={() => toggleTag(tag)}>
-              {tag}
-            </div>
-          ))}
-        </div>
-      </label>
+  Tags:
+  <div className="tags-container">
+    {availableTags.map((tag) => (
+      <div key={tag} className={`tag ${formData.tags.includes(tag) ? 'selected' : ''}`} onClick={() => toggleTag(tag)}>
+        {tag}
+      </div>
+    ))}
+    <div style={{ display: 'flex', alignItems: 'center' }}>
+      <input 
+        type="text" 
+        value={newTag} 
+        onChange={handleNewTagInputChange} 
+        onKeyDown={handleKeyDown}
+        style={{
+          padding: '6px',
+          margin: '4px',
+          backgroundColor: '#f2f5f8',
+          color: '#060000',
+
+          borderRadius: '20px',
+          cursor: 'pointer',
+          transition: 'background-color 0.3s',
+
+          width: '100px', // Adjusted width
+        }} 
+        placeholder="+ Add Tag"
+      />
+    </div>
+  </div>
+</label>
+
+
 
       <div className="ticket-type-container">
         <label className="ticket-type-label">Paid Event?</label>

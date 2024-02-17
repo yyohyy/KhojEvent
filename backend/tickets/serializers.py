@@ -17,6 +17,7 @@ class CreateTicketSerializer(serializers.ModelSerializer):
         model = Ticket
         fields = ['event', 'max_limit', 'total_quantity', 'quantity_available', 'ticket_types']
         read_only_fields=['event']
+
     def create(self, validated_data):
         event=validated_data.get('event')
         event_id = self.context.get('event_id')
@@ -113,6 +114,7 @@ class SelectTicketSerializer(serializers.ModelSerializer):
             attendee = self.context['request'].user.attendee
             print(attendee)
             cart, created = Cart.objects.get_or_create(attendee=attendee)
+            cart.set_expiration_time()
             print(cart)
             # Ensure that 'issued_to' is an instance of Attendee
             if not isinstance(attendee, Attendee):
@@ -145,10 +147,11 @@ class SelectedTicketSerializer(serializers.ModelSerializer):
 
 class CartDetailsSerializer(serializers.ModelSerializer):
     tickets = SelectedTicketSerializer(many=True, partial=True)
+    expiration_time = serializers.DateTimeField
 
     class Meta:
         model = Cart
-        fields = ['id', 'tickets', 'total_amount', 'created_at', 'updated_at', 'attendee']
+        fields = ['id', 'tickets', 'total_amount', 'created_at', 'updated_at', 'attendee','expiration_time']
 
     def validate_tickets(self, tickets_data):
         total_selected_tickets = self.instance.tickets.aggregate(total=Sum('quantity'))['total'] or 0
@@ -217,6 +220,7 @@ class CartDetailsSerializer(serializers.ModelSerializer):
             instance.save()
 
         return instance
+    
 
 class OrderItemSerializer(serializers.ModelSerializer):
     event = EventSerializer(source='ticket.ticket.ticket.event')

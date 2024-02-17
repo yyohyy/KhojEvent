@@ -19,7 +19,7 @@ class TicketAdmin(admin.ModelAdmin):
 
 @admin.register(TicketType)
 class TicketTypeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price','quantity','quantity_available',]
+    list_display = ['ticket','name', 'price','quantity','quantity_available',]
     def get_fields(self, request, obj=None):
         if obj:  # Change form
             return ('ticket', 'name', 'description', 'price', 'quantity','quantity_available')
@@ -55,6 +55,7 @@ class SelectedTicketInline(admin.TabularInline):
         formset = super().get_formset(request, obj, **kwargs)
         formset.request = request
         return formset
+    
 class CartAdmin(admin.ModelAdmin):
     model = Cart
     list_display = ['attendee','total_amount', 'created_at', 'updated_at']

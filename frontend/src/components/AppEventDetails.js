@@ -22,8 +22,6 @@ function AppEventDetails() {
   const [ratingsAndReviewsData, setRatingsAndReviewsData] = useState([]);
   const [interested, setInterested] = useState(false);
   const [rated, setRated] = useState(false);
-  const [eventWebsiteUrl, setEventWebsiteUrl] = useState("");
-  const [attendeeData, setAttendeeData] = useState([]);
   const [isOrganiser, setIsOrganiser] = useState(false);
   const [isAttendee, setIsAttendee] = useState(false);
   const navigate = useNavigate();
@@ -34,8 +32,12 @@ function AppEventDetails() {
         const eventResponse = await axiosInstance.get(`/events/${event_id}/`);
         setActiveEventData(eventResponse.data);
         setLoading(false);
-        // setRated(eventResponse.data.rated);
-        setEventWebsiteUrl(eventResponse.data.website_url);
+
+        const userResponse = await axiosInstance.get(`/users/me/`);
+        setIsOrganiser(userResponse.data.is_organiser);
+        setIsAttendee(userResponse.data.is_attendee);
+        console.log('isOrganiser:', userResponse.data.is_organiser);
+        console.log('isAttendee:', userResponse.data.is_attendee);
 
         const ratingResponse = await axiosInstance.get(`/events/${event_id}/ratings`);
         setRating(ratingResponse.data.average_rating);
@@ -51,10 +53,6 @@ function AppEventDetails() {
     
         fetchRatingsAndReviews();
 
-        const userResponse = await axiosInstance.get(`/users/me/`);
-        setIsOrganiser(userResponse.data.is_organiser);
-        setIsAttendee(userResponse.data.is_attendee);
-
         if (eventResponse.data.organiser) {
           const organiserId = eventResponse.data.organiser;
           const organiserResponse = await axiosInstance.get(`/users/details/${organiserId}/`);
@@ -64,15 +62,10 @@ function AppEventDetails() {
         if (userResponse.data.is_attendee) {
           const interestedResponse = await axiosInstance.get(`/interested-event/${event_id}/`);
           setInterested(interestedResponse.data.success);
-        }
-
-        // const attendeeIds = [...new Set(ratingsResponse.data.event_ratings.map(rating => rating.attendee))];
-        // const attendeesData = await Promise.all(attendeeIds.map(async attendeeId => {
-        //   const attendeeResponse = await axiosInstance.get(`/users/details/${attendeeId}/`);
-        //   return attendeeResponse.data;
-        // }));
-        // setAttendeeData(attendeesData);
-
+          }
+         const user=localStorage.getItem("id")
+         console.log(user)
+         console.log(eventResponse.data.organiser)
       } catch (error) {
         console.error('Error fetching data:', error);
         setLoading(false);
@@ -82,11 +75,8 @@ function AppEventDetails() {
     fetchData();
   }, [event_id]);
 
- 
-  // function findReviewByAttendee(attendeeId) {
-  //   const review = reviews.find(review => review.attendee === attendeeId);
-  //   return review ? review.comment : "No review available";
-  // }
+
+
   const handleToggleInterest = async () => {
     try {
       const response = await axiosInstance.post(`/events/${event_id}/interested/`, {});
@@ -123,7 +113,7 @@ function AppEventDetails() {
         </div>
         <div className="col-md-8 mx-auto">
           <div className="card p-5">
-            {activeEventData.organiser === parseInt(localStorage.getItem("id"), 10) ? (
+            {isOrganiser && parseInt(activeEventData.organiser) === parseInt(localStorage.getItem("id")) ? (
               <div className="text-end mb-3">
                 <button
                   className={`btn btn-primary btn-lg`}
@@ -175,7 +165,7 @@ function AppEventDetails() {
               </span>
             </div>
             <p className="card-text mt-3" style={{ textAlign: 'justify' }}>{activeEventData.description}</p>
-            {isAttendee && (
+            {!isOrganiser && isAttendee && (
               <div className="text-center mt-4">
                 <button
                   type="button"

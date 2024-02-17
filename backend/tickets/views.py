@@ -135,7 +135,20 @@ class CartDetails(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         attendee = self.kwargs.get(self.lookup_field)
         return Cart.objects.filter(attendee_id=attendee)
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
+    def perform_destroy(self, instance):
+        # Update quantity available for each ticket type
+        for selected_ticket in instance.tickets.all():
+            ticket = selected_ticket.ticket
+            ticket.quantity_available += selected_ticket.quantity
+            ticket.save()
+        
+        # Delete the cart
+        instance.delete()
 class CheckoutView(generics.CreateAPIView):
     serializer_class = OrderSerializer
     permission_classes=[IsAuthenticated]
