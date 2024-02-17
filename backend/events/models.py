@@ -1,13 +1,12 @@
 from django.db import models
 from users.models import Organiser
 from users.models import Attendee, User
-# from django.utils import timezone
-# import uuid
+
 
 
 class Category(models.Model):
    name = models.CharField(max_length=200)
-   created = models.DateTimeField(auto_now_add=True) #to know about the time and date of adding data to the db and and automatically create a time for each added model 
+   #created = models.DateTimeField(auto_now_add=True) #to know about the time and date of adding data to the db and and automatically create a time for each added model 
    
    def __str__(self):
         return self.name 
@@ -15,7 +14,7 @@ class Category(models.Model):
     
 class Event(models.Model):
     name = models.CharField(max_length=100, null=True)
-    organiser = models.ForeignKey(Organiser, on_delete=models.CASCADE, null=True)#, blank=True)
+    organiser = models.ForeignKey(Organiser, on_delete=models.CASCADE, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     venue = models.CharField(max_length=100, null=True)
     description = models.TextField(null=True)  #in a databases but may not contain info and blank is for we are allowed to submit the form with the value being empty
@@ -68,8 +67,7 @@ class Interested(models.Model):
     
 class Tag(models.Model):
     name= models.CharField(max_length=200)
-    created = models.DateTimeField(auto_now_add=True) #to know about the time and date of adding data to the db and and automatically create a time for each added model 
-    #id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False) 
+    #created = models.DateTimeField(auto_now_add=True) #to know about the time and date of adding data to the db and and automatically create a time for each added model 
     
     
     def __str__(self):

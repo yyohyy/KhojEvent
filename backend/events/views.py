@@ -1,20 +1,15 @@
-from django.db.models import Q
+from django.db.models import Q, Avg
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404
 from rest_framework.response import Response
-from rest_framework import generics
-from django.db.models import Avg
-from .permissions import IsAuthenticated
-from rest_framework import status
-from rest_framework.generics import get_object_or_404
-from rest_framework import serializers
+from rest_framework import status, serializers, generics
 from tickets.models import SelectedTicket
 from django.http import Http404
 from .serializers import *
 from events.models import *
-from .permissions import OrganiserCanUpdate, IsOrganiser, IsAttendee#, AttendeeCanMark, AttendeeCanRate, AttendeeCanReview
-from users.serializers import UserDetailsSerializer
+from .permissions import *
 from users.models import User
+from users.serializers import UserDetailsSerializer
 
 
 class AllEventsView(ListAPIView):
@@ -56,24 +51,17 @@ class EventImageView(generics.RetrieveUpdateAPIView):
 
 
 class EventDetailsView(generics.RetrieveAPIView):
-    # http_method_names=['get','patch','delete']
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    #permission_classes = [IsAttendee]
-    # lookup_field='pk'
+
    
    
    
 class EventUpdateView(generics.RetrieveUpdateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    #permission_classes = [OrganiserCanUpdate]
 
 
-    #def delete(self, request, *args, **kwargs):
-        #instance = self.get_object()
-        #self.perform_destroy(instance)
-        #return Response("Item is successfully deleted!", status=status.HTTP_204_NO_CONTENT)
 '''      
 class RateEventAPIView(generics.CreateAPIView):
     queryset = Event.objects.all()  # Specify the queryset for the view
@@ -112,7 +100,7 @@ class SearchView(APIView):
             Q(name__icontains=query) |
             Q(category__name__icontains=query) |
             Q(tags__name__icontains=query)
-        ).distinct()
+        ).filter(is_approved=True).distinct()
 
 
         event_serializer = EventSerializer(event_results, many=True)
@@ -125,7 +113,7 @@ class SearchView(APIView):
         
         
 class PaidEventView(ListAPIView):
-    queryset = Event.objects.filter(is_paid=True)
+    queryset = Event.objects.filter(is_paid=True, is_approved=True)
     serializer_class = EventSerializer
 
 
@@ -206,7 +194,6 @@ class GetInterestedEventView(APIView):
           
 class InterestedListView(generics.ListAPIView):
     serializer_class = InterestedDetailSerializer
-    # permission_classes = [IsAuthenticated] # You can add permissions here if needed
 
     def get_queryset(self):
         """
@@ -493,3 +480,24 @@ class EventRatingsAndReviewsAPIView(APIView):
             attendee_details['details']['user_details'] = user_serializer.data
 
         return Response(attendee_data, status=status.HTTP_200_OK)
+    
+    
+
+class InterestedCountView(APIView):
+    #permission_classes = [IsAuthenticated]
+
+    def get(self, request, event_id, **kwargs):
+        try:
+            # Get the specific event
+            #event = get_object_or_404(Event, id=event_id)
+            
+            # Count the number of attendees interested in this event
+            interested_count = Interested.objects.filter(event_id=event_id).count()
+
+            # Serialize the event data
+            #serializer = EventSerializer(event)
+
+            return Response({'success': True, 'interested_count': interested_count}, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

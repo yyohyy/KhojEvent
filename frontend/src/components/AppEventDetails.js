@@ -252,4 +252,3 @@ function AppEventDetails() {
 }
 
 export default AppEventDetails;
-
