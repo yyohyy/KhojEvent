@@ -35,6 +35,15 @@ const UpdateEvent = () => {
         navigate(`/profile/${localStorage.getItem("id")}/events/update/${event_id}`);
     };
 
+        // Define handleEditTicketType function
+    const handleEditTicketType = (eventId) => {
+        // Implement your logic to handle editing ticket type for the given event id
+        console.log(`Editing ticket type for event with id ${eventId}`);
+        // For example, you can navigate to a page to edit the ticket type
+        navigate(`/profile/${localStorage.getItem("id")}/events/update/tickets/${eventId}`);
+    };
+
+
     return (
         <Container fluid style={{ minHeight: "calc(100vh - 56px)", background: "#ffffff" }}>
             <div class="custom-container"></div>
@@ -48,33 +57,44 @@ const UpdateEvent = () => {
                     </div>
                     {events.length > 0 ? (
                         <div className="shadow-box">
-                         <table class="table table-borderless table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Event Name</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Venue</th>
-                                    <th>Actions</th>
-                                </tr>
-                                <tr className="table-heading-line">
-                    <th colSpan="6"></th> {/* Empty cell for the line */}
-                </tr>
-                            </thead>
-                            <tbody>
-                                {events.map(event => (
-                                    <tr key={event.id}>
-                                        <td>{event.name}</td>
-                                        <td>{event.start_date}</td>
-                                        <td>{event.start_time} - {event.end_time}</td>
-                                        <td>{event.venue}</td>
-                                        <td>
-                                            <Button variant="danger" onClick={() => handleEventUpdate(event.id)}>Update</Button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                            </table>
+  <table className="table table-borderless table-hover">
+    <thead>
+        <tr>
+            <th>Event Name</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Venue</th>
+            <th>Status</th>
+            <th>Entry</th>
+            <th>Tickets</th> {/* Add heading for the "Edit Tickets" column */}
+            <th>Actions</th>
+        </tr>
+        <tr className="table-heading-line">
+            <th colSpan="8"></th> {/* Empty cell for the line */}
+        </tr>
+    </thead>
+    <tbody>
+        {events.map(event => (
+            <tr key={event.id}>
+                <td>{event.name}</td>
+                <td>{event.start_date}</td>
+                <td>{event.start_time} - {event.end_time}</td>
+                <td>{event.venue}</td>
+                <td>{event.is_approved ? "Approved" : "Not Approved"}</td>
+                <td>{event.is_paid ? "Paid" : "Free"}</td>
+                <td style={{ padding: "10px", textAlign: "center" }}> {/* Add inline style to adjust padding */}
+                    {event.is_paid && (
+                        <Button variant="secondary" size="sm" onClick={() => handleEditTicketType(event.id)}>Edit</Button> 
+                    )}
+                </td>
+                <td>
+                    <Button variant="danger" onClick={() => handleEventUpdate(event.id)}>Update</Button>
+                </td>
+            </tr>
+        ))}
+    </tbody>
+</table>
+
                         </div>
                     ) : (
                         <p>No organized events available</p>

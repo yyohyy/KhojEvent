@@ -5,13 +5,17 @@ import { Link,useNavigate } from 'react-router-dom';
 
 const Cart = () => {
   const navigate = useNavigate();
+  const [timer,setTimer]=useState();
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
-
+  const [remainingTime, setRemainingTime] = useState(null); // State to hold remaining time
+  
   useEffect(() => {
     fetchAttendeeId();
   }, []);
+
+
 
   const fetchAttendeeId = async () => {
     try {
@@ -34,6 +38,7 @@ const Cart = () => {
       console.error('Error fetching user data:', error);
     }
   };
+
   const fetchCartItems = async (attendeeId) => {
     try {
       const token = localStorage.getItem('Bearer');
@@ -45,7 +50,7 @@ const Cart = () => {
   
       const fetchedCartData = response.data;
       const fetchedCartItems = fetchedCartData.tickets;
-  
+      setTimer(response.data.expiration_time);
       // Update the local state with the fetched cart items
       setCartItems(fetchedCartItems);
   
@@ -53,6 +58,42 @@ const Cart = () => {
       setTotal(totalPrice);
     } catch (error) {
       console.error('Error fetching cart items:', error);
+    }
+  };
+
+  useEffect(() => {
+    // Start the timer when cart is loaded
+    if (cartItems.length > 0) {
+      console.log(timer)
+      const expirationTime = Date.parse(timer);
+      console.log(expirationTime); 
+      const interval = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = expirationTime - now;
+        setRemainingTime(distance);
+        if (distance <= 0) {
+          clearInterval(interval);
+          handleCartExpiration();
+        }
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [cartItems]);
+  
+  const handleCartExpiration = async () => {
+    try {
+      // Delete cart when timer ends
+      const token = localStorage.getItem('Bearer');
+      await axios.delete(`http://127.0.0.1:8000/tickets/cart/${localStorage.getItem("id")}/`,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });// Change the endpoint as per your backend
+      window.location.reload()
+      navigate('/events'); // Redirect to events page after deleting cart
+      
+    } catch (error) {
+      console.error('Error deleting cart:', error);
     }
   };
 
@@ -98,6 +139,18 @@ const Cart = () => {
  
    return (
     <section className="min-vh-100 d-flex flex-column justify-content-center" style={{ backgroundColor: "#fcedf0" }}>
+      {/* Timer display */}
+      {remainingTime !== null && (
+        <div className="text-center mb-4">
+          <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '18px', color: '#6c757d' }}>
+            Cart Expiration: {formatTime(remainingTime)}
+          </p>
+          <p style={{ fontFamily: 'Montserrat, sans-serif', fontSize: '14px', color: '#6c757d' }}>
+          -checkout now to secure your tickets-</p>
+        </div>
+      )}
+
+
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-md-10 text-center">
@@ -123,9 +176,9 @@ const Cart = () => {
                       <img src={item.event.image} className="rounded-3" alt={item.event.image} />
                     </div>
                     <div className="col-md-3 col-lg-3 col-xl-3">
-                      <p className="lead fw-normal mb-1 text-dark" style={{ fontFamily: "Dancing Script, cursive", color: "#f0a5b5 !important", margin: "0.2", lineHeight: "2", fontSize: "26px" }}>{item.event.name}</p>
-                      <p className="lead fw-normal mb-1 text-dark" style={{ fontFamily: "Comfortaa, cursive", color: "#6c757d !important", margin: "0.2", lineHeight: "1.5", fontSize: "14px" }}>Type: {item.ticket.name}</p>
-                      <p className="text-muted mb-0" style={{ fontFamily: "Comfortaa, cursive", color: "#6c757d !important", margin: "0", lineHeight: "1.2", fontSize: "14px" }}>Price: Rs.{item.ticket.price}</p>
+                      <p className="lead fw-normal mb-1 text-dark" style={{ fontFamily:  "Comfortaa, cursive", color: "#f0a5b5 ", margin: "0.2", lineHeight: "2", fontSize: "26px" }}>{item.event.name}</p>
+                      <p className="lead fw-normal mb-1 text-dark" style={{ fontFamily: "Comfortaa, cursive", color: "#6c757d", margin: "0.2", lineHeight: "1.5", fontSize: "14px" }}>Type: {item.ticket.name}</p>
+                      <p className="text-muted mb-0" style={{ fontFamily: "Comfortaa, cursive", color: "#6c757d ", margin: "0", lineHeight: "1.2", fontSize: "14px" }}>Price: Rs.{item.ticket.price}</p>
                     </div>
 
                     <div className="col-md-3 col-lg-3 col-xl-2 d-flex align-items-center justify-content-around">
@@ -171,5 +224,14 @@ const Cart = () => {
     </section>
   );
 };
+
+// Function to format remaining time as HH:MM:SS
+const formatTime = (remainingTime) => {
+  const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+};
+
 
 export default Cart;

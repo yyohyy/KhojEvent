@@ -4,6 +4,10 @@ from users.models import Attendee
 from events.models import Event
 from decimal import Decimal
 import uuid
+from django.utils import timezone
+from datetime import timedelta
+
+
 
 class TicketType(models.Model):
     ticket = models.ForeignKey('Ticket', on_delete=models.CASCADE, related_name='ticket_types')
@@ -36,6 +40,7 @@ class Cart(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    expiration_time = models.DateTimeField(null=True, blank=True) 
     
     def update_total_amount(self):
         total_amount = self.tickets.aggregate(total=Sum(F('quantity') * F('ticket__price'), output_field=DecimalField()))['total'] or Decimal('0.0')
@@ -46,10 +51,16 @@ class Cart(models.Model):
 
         if not update_fields or 'total_amount' in update_fields:
             self.update_total_amount()
-
+        if not self.pk:  # Check if the cart is being created for the first time
+            self.set_expiration_time()
         super().save(*args, **kwargs)
     def __str__(self):
             return f"Cart for {self.attendee.first_name} {self.attendee.last_name} {self.id}"
+    def set_expiration_time(self):
+        # Set expiration time to 30 minutes from now
+        self.expiration_time = timezone.now() + timedelta(minutes=1)
+        self.save(update_fields=['expiration_time'])
+
           
 class SelectedTicket(models.Model):
     TICKET_STATUS = [
