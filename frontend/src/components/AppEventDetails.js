@@ -175,6 +175,7 @@ function AppEventDetails() {
               </span>
             </div>
             <p className="card-text mt-3" style={{ textAlign: 'justify' }}>{activeEventData.description}</p>
+            
             {isAttendee && (
               <div className="text-center mt-4">
                 <button
@@ -257,4 +258,3 @@ function AppEventDetails() {
 }
 
 export default AppEventDetails;
-

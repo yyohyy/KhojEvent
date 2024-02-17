@@ -112,7 +112,7 @@ class SearchView(APIView):
             Q(name__icontains=query) |
             Q(category__name__icontains=query) |
             Q(tags__name__icontains=query)
-        ).distinct()
+        ).filter(is_approved=True).distinct()
 
 
         event_serializer = EventSerializer(event_results, many=True)
@@ -125,7 +125,7 @@ class SearchView(APIView):
         
         
 class PaidEventView(ListAPIView):
-    queryset = Event.objects.filter(is_paid=True)
+    queryset = Event.objects.filter(is_paid=True, is_approved=True)
     serializer_class = EventSerializer
 
 
@@ -493,3 +493,24 @@ class EventRatingsAndReviewsAPIView(APIView):
             attendee_details['details']['user_details'] = user_serializer.data
 
         return Response(attendee_data, status=status.HTTP_200_OK)
+    
+    
+
+class InterestedCountView(APIView):
+    #permission_classes = [IsAuthenticated]
+
+    def get(self, request, event_id, **kwargs):
+        try:
+            # Get the specific event
+            event = get_object_or_404(Event, id=event_id)
+            
+            # Count the number of attendees interested in this event
+            interested_count = event.interested.count()
+
+            # Serialize the event data
+            serializer = EventSerializer(event)
+
+            return Response({'success': True, 'interested_count': interested_count, 'event': serializer.data}, status=status.HTTP_200_OK)
+        
+        except Exception as e:
+            return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
