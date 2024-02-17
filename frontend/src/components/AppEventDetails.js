@@ -33,11 +33,25 @@ function AppEventDetails() {
         setActiveEventData(eventResponse.data);
         setLoading(false);
 
+        if (eventResponse.data.organiser) {
+          const organiserId = eventResponse.data.organiser;
+          const organiserResponse = await axiosInstance.get(`/users/details/${organiserId}/`);
+          setOrganiserData(organiserResponse.data);
+        }
+
+
         const userResponse = await axiosInstance.get(`/users/me/`);
         setIsOrganiser(userResponse.data.is_organiser);
         setIsAttendee(userResponse.data.is_attendee);
         console.log('isOrganiser:', userResponse.data.is_organiser);
         console.log('isAttendee:', userResponse.data.is_attendee);
+
+        if (userResponse.data.is_attendee) {
+          const interestedResponse = await axiosInstance.get(`/interested-event/${event_id}/`);
+          setInterested(interestedResponse.data.success);
+          console.log(interested)
+          }
+        
 
         const ratingResponse = await axiosInstance.get(`/events/${event_id}/ratings`);
         setRating(ratingResponse.data.average_rating);
@@ -53,16 +67,7 @@ function AppEventDetails() {
     
         fetchRatingsAndReviews();
 
-        if (eventResponse.data.organiser) {
-          const organiserId = eventResponse.data.organiser;
-          const organiserResponse = await axiosInstance.get(`/users/details/${organiserId}/`);
-          setOrganiserData(organiserResponse.data);
-        }
 
-        if (userResponse.data.is_attendee) {
-          const interestedResponse = await axiosInstance.get(`/interested-event/${event_id}/`);
-          setInterested(interestedResponse.data.success);
-          }
          const user=localStorage.getItem("id")
          console.log(user)
          console.log(eventResponse.data.organiser)
