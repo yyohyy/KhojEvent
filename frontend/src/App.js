@@ -26,7 +26,7 @@ import Payment from './components/Payment';
 import Order from './components/Order';
 import InterestedEvents from './components/Interested';
 import SearchResults from './components/SearchResults';
-// import InterestedEvents from './components/Interested';
+import PerformanceAnalytics from './components/analyticsinterested';
 import BookedTickets from './components/booked';
 import UpdateEvent from './components/UpdateEvents';
 import Update from './components/update';
@@ -35,6 +35,8 @@ import AttendedEvents from './components/AttendedEvents';
 import Ratings from './components/Ratings';
 import Reviews from './components/Reviews';
 import Feedback from './components/Feedback';
+import Trending from './components/trending';
+import UpdateTicket from './components/updateticket';
 
 function App() {
   return (
@@ -69,12 +71,15 @@ function App() {
           <Route path="/profile/:id/interested" element={<InterestedEvents/>} />
           <Route path="/profile/:oganiser_id/events" element={<UpdateEvent/>} />
           <Route path="/profile/:organiser_id/events/update/:event_id" element={<Update />} />
+          <Route path="/profile/:organiser_id/events/update/tickets/:event_id" element={<UpdateTicket/>} />
           <Route path="/profile/:id/booked" element={<BookedTickets/>} />
           <Route path="/profile/:id/purchases" element={<PurchasedTickets/>} />
           <Route path="/profile/:id/attended-events" element={<AttendedEvents/>} />
           <Route path="/profile/:id/leave-feedback/:eventId" element={<Feedback/>} />
           <Route path="/profile/:id/ratings-left" element={<Ratings/>} />
           <Route path="/profile/:id/reviews-left" element={<Ratings/>} />
+          <Route path="/profile/:oganiser_id/analyticsinterested" element={<PerformanceAnalytics/>} />
+          <Route path="/profile/:oganiser_id/trending" element={<Trending/>} />
           </Routes>
          </div>
         </BrowserRouter>

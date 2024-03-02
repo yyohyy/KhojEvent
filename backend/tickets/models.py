@@ -24,7 +24,7 @@ class Ticket(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     total_quantity = models.PositiveIntegerField(default=0, editable=False)
     quantity_available = models.PositiveIntegerField(default=1) 
-    max_limit = models.PositiveIntegerField(default=None, null=True, blank=True) 
+    max_limit = models.PositiveIntegerField(default=0) 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='AVAILABLE') 
      
     def __str__(self):

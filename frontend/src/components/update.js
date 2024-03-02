@@ -86,6 +86,11 @@ const Update = () => {
     setFormData({ ...formData, tags: updatedTags });
   };
   
+  
+  const handleTicketUpdate = () => {
+    navigate(`/profile/${localStorage.getItem("id")}/events/update/tickets/${event_id}`);
+};
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -198,6 +203,7 @@ const Update = () => {
             <div className="form-footer">
               <Button type="submit">Submit</Button>
             </div>
+            <Button variant="danger" onClick={() => handleTicketUpdate()}>Update</Button>
           </form>
         </div>
       )}
