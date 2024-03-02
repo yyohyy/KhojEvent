@@ -140,9 +140,20 @@ class SelectTicketSerializer(serializers.ModelSerializer):
 class SelectedTicketSerializer(serializers.ModelSerializer):
     ticket = TicketTypeSerializer()
     issued_to= AttendeeSerializer()
+    order_id = serializers.SerializerMethodField()
+
+    def get_order_id(self, obj):
+        try:
+            order_item = OrderItem.objects.filter(ticket=obj).first()
+            if order_item:
+                return order_item.order.id
+            return None
+        except OrderItem.DoesNotExist:
+            return None
+
     class Meta:
         model= SelectedTicket
-        fields=['id','ticket','status','quantity','amount','issued_to']
+        fields=['id','ticket','status','quantity','amount','issued_to','order_id']
         
 
 class CartDetailsSerializer(serializers.ModelSerializer):

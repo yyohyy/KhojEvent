@@ -22,10 +22,56 @@ const Order = () => {
       });
   }, [orderId]);
 
-  const handleDownloadReceipt = () => {
-    // Logic to download receipt
-    console.log("Receipt downloaded");
+  const handleViewReceipt = () => {
+    // Make a request to fetch the PDF receipt
+    axios.get(`http://127.0.0.1:8000/tickets/orders/${orderId}/view_receipt/`, {
+      responseType: 'blob', // Specify response type as blob to handle binary data
+    })
+    .then(response => {
+      // Create a Blob object from the response data
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+  
+      // Create a URL for the Blob data
+      const url = window.URL.createObjectURL(blob);
+  
+      // Open the PDF in a new window
+      window.open(url, '_blank');
+    })
+    .catch(error => {
+      console.error('Error viewing receipt:', error);
+    });
   };
+  
+  
+  
+  
+  const handleDownloadReceipt = () => {
+    // Make a request to download the PDF receipt
+    axios.get(`http://127.0.0.1:8000/tickets/orders/${orderId}/download_receipt/`, {
+      responseType: 'blob', // Specify response type as blob to handle binary data
+    })
+    .then(response => {
+      // Create a URL for the blob data
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Create a temporary link element to trigger the download
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `order_${orderId}_receipt.pdf`);
+      document.body.appendChild(link);
+
+      // Click the link to trigger the download
+      link.click();
+
+      // Clean up
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+      console.error('Error downloading receipt:', error);
+    });
+  };
+
 
   if (loading) {
     return <div>Loading...</div>;
@@ -46,7 +92,8 @@ const Order = () => {
             <div style={{ backgroundColor: '#f9f9f9', borderRadius: '5px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', padding: '20px', marginBottom: '20px' }}>
               <div className="row justify-content-between align-items-start">
                 <div className="col-md-12 text-end mb-4">
-                  <button className="btn btn-sm btn-primary mb-0" onClick={handleDownloadReceipt}>Download Receipt</button>
+                <button className="btn btn-sm btn-outline mb-0 me-2 " onClick={handleViewReceipt}>View Receipt</button>
+                <button className="btn btn-sm btn-outline mb-0" onClick={handleDownloadReceipt}>Download Receipt</button>
                 </div>
               </div>
               <table className="table table-borderless" style={{ backgroundColor: '#f8f7ff' }}>

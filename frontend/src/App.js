@@ -36,7 +36,8 @@ import AttendedEvents from './components/AttendedEvents';
 import Ratings from './components/Ratings';
 import Reviews from './components/Reviews';
 import Feedback from './components/Feedback';
-
+import EventAnalytics from './components/EventAnalytics';
+import EventOrders from './components/EventOrders';
 function App() {
   return (
    <Provider store={store}>
@@ -77,6 +78,8 @@ function App() {
           <Route path="/profile/:id/leave-feedback/:eventId" element={<Feedback/>} />
           <Route path="/profile/:id/ratings-left" element={<Ratings/>} />
           <Route path="/profile/:id/reviews-left" element={<Reviews/>} />
+          <Route path="/profile/:oganiser_id/events/:eventId/analytics" element={<EventAnalytics/>} />
+          <Route path="/profile/:id/events/:event_id/orders" element={<EventOrders/>}/>
           </Routes>
          </div>
         </BrowserRouter>

@@ -35,7 +35,7 @@ const AttendedEvents = () => {
     };
 
     const handleOrderClick = (eventId) => {
-        navigate(`/orders/${eventId}`);
+        navigate(`/profile/${localStorage.getItem("id")}/events/${eventId}/orders`);
     };
 
     const handleLeaveFeedbackClick = (eventId) => {

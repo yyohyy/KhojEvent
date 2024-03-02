@@ -12,5 +12,7 @@ urlpatterns = [
     path('checkout/', CheckoutView.as_view(), name='checkout'),
     path('payment/<int:pk>/', PaymentView.as_view(), name='payment'),
     path('orders/<int:pk>/',OrderDetails.as_view(),name='order'),
-
+    path('<int:event_id>/orders/<int:attendee_id>/', AttendeeEventOrders.as_view(), name='attendee_event_orders'),
+    path('orders/<int:order_id>/download_receipt/', DownloadReceipt.as_view(), name='download_receipt'),
+    path('orders/<int:order_id>/view_receipt/', ViewReceipt.as_view(), name='view_receipt'),
 ]

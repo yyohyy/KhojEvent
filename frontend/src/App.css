@@ -158,6 +158,32 @@ ul,
   font-size: 15px;
 }
 
+.btn.btn-outline {
+  background: #fff;
+  border-color: #f64b4b;
+  color: #f64b4b;
+
+}
+
+.btn.btn-outline:focus,
+.btn.btn-outline:hover {
+  background: #f64b4b;
+  color: #fff;
+  /* border-color: #f64b4b; */
+  /* padding: 13px 35px;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: background 0.3s linear, color 0.3s linear;
+  -webkit-transition: background 0.3s linear, color 0.3s linear; */
+}
+
+.btn.btn-outline .fas {
+  margin: 0 0 0 6px;
+  font-size: 15px;
+}
+
 input[type=text],
 input[type=email],
 input[type=tel],
@@ -1175,6 +1201,8 @@ textarea {
     font-size: 26px;
     margin: 0;
   }
+
+  
 }
 
 .bg-lightpink {

@@ -69,14 +69,15 @@ const Reviews = () => {
     return (
         <Container fluid style={{ minHeight: "calc(100vh - 56px)", background: "#ffffff" }}>
             <Row>
-                <Col sm={3}>
+                <Col xs={12} md={3}>
                     <ProfileSidebar />
                 </Col>
-                <Col sm={9}>
+                <Col xs={12} md={9}>
                     <Container fluid>
                         <h1 className="my-4" style={{ fontFamily: "Comfortaa, cursive", color: "#8B0000" }}>Reviews</h1>
                         <div className="shadow-box">
-                            <Table className="table table-borderless table-hover">
+                        <div className="table-responsive">
+                        <table className="table table-borderless table-hover">
                                 <thead>
                                     <tr>
                                         <th className="text-center" style={{ minWidth: "200px" }}>Event Name</th>
@@ -128,7 +129,8 @@ const Reviews = () => {
                                         </tr>
                                     ))}
                                 </tbody>
-                            </Table>
+                            </table>
+                        </div>
                         </div>
                     </Container>
                 </Col>

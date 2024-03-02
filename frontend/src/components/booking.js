@@ -9,6 +9,7 @@ function BookingPage() {
   const [ticketTypes, setTicketTypes] = useState([]);
   const [selectedTickets, setSelectedTickets] = useState({});
   const [quantity, setQuantity] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const fetchTicketTypesForBooking = async () => {
@@ -75,8 +76,15 @@ function BookingPage() {
         });
       }));
       navigate('/cart');
-    } catch (error) {
-      console.error('Error selecting tickets:', error);
+    }  catch (error) {
+      if (error.response && error.response.status === 400) {
+        // Handle 400 Bad Request error
+        setErrorMessage("Max ticket limit for the event exceeded.");
+        console.log("Max limit exceeded")
+      } else {
+        // Handle other errors
+        console.error('Error selecting tickets:', error);
+      }
     }
   };
    
@@ -92,6 +100,11 @@ function BookingPage() {
         <div className="col-md-8">
           <div className="card p-4">
             <h1 className="text-center mb-4">Booking Page</h1>
+            {errorMessage && (
+          <div className="alert alert-danger" role="alert">
+            {errorMessage}
+          </div>
+        )}
             <div className="row">
               {ticketTypes.map((ticket) => (
                 <div key={ticket.id} className="col-md-4 mb-4">

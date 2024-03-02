@@ -17,6 +17,7 @@ const Feedback = () => {
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -46,7 +47,7 @@ const Feedback = () => {
                 setExistingReview(reviewResponse.data.body);
             } catch (error) {
                 console.error('Error fetching data:', error);
-                setError("Error fetching data. Please try again later.");
+                setErrorMessage("Error fetching data. Please try again later.");
             }
         };
         fetchData();
@@ -100,7 +101,7 @@ const Feedback = () => {
             setSubmitted(true);
         } catch (error) {
             console.error('Error submitting feedback:', error);
-            setError("Error submitting feedback. Please try again later.");
+            setErrorMessage("Error submitting feedback. Please try again later.");
         } finally {
             setLoading(false);
         }
@@ -143,6 +144,11 @@ const Feedback = () => {
 
 
                     </div>
+                    {errorMessage && (
+          <div className="alert alert-danger" role="alert">
+            {errorMessage}
+          </div>
+        )}
                     <Form onSubmit={handleSubmit}>
                         <Form.Group controlId="formRating"style={{ paddingLeft: '50px', paddingRight: '50px' }}>
                             <h3>Rating:</h3>
