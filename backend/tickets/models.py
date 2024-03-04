@@ -1,5 +1,6 @@
 from django.db import models
-from django.db.models import Sum, F, DecimalField
+from django.db.models import Sum, F
+from django.db import transaction
 from users.models import Attendee
 from events.models import Event
 from decimal import Decimal
@@ -43,22 +44,34 @@ class Cart(models.Model):
     expiration_time = models.DateTimeField(null=True, blank=True) 
     
     def update_total_amount(self):
-        total_amount = self.tickets.aggregate(total=Sum(F('quantity') * F('ticket__price'), output_field=DecimalField()))['total'] or Decimal('0.0')
-        self.total_amount = total_amount
+        with transaction.atomic():
+            selected_tickets = SelectedTicket.objects.filter(cart=self)
+            total_amount = selected_tickets.aggregate(total=Sum('amount'))['total'] or Decimal('0.0')
+            self.total_amount = total_amount
+
 
     def save(self, *args, **kwargs):
-        update_fields = kwargs.pop('update_fields', None)
+        # update_fields = kwargs.pop('update_fields', None)
 
-        if not update_fields or 'total_amount' in update_fields:
-            self.update_total_amount()
+
+
+        # if not update_fields or 'total_amount' in update_fields:
+        #     self.update_total_amount()
+
+        # if not update_fields or 'total_amount' not in update_fields:
+        #     # Only call update_total_amount if total_amount is not being explicitly updated
+        #     self.update_total_amount()
+        
         if not self.pk:  # Check if the cart is being created for the first time
             self.set_expiration_time()
         super().save(*args, **kwargs)
+
     def __str__(self):
             return f"Cart for {self.attendee.first_name} {self.attendee.last_name} {self.id}"
     def set_expiration_time(self):
+
         # Set expiration time to 30 minutes from now
-        self.expiration_time = timezone.now() + timedelta(minutes=1)
+        self.expiration_time = timezone.now() + timedelta(minutes=10)
         self.save(update_fields=['expiration_time'])
 
           

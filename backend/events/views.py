@@ -3,8 +3,6 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework import status, serializers, generics
-from tickets.models import SelectedTicket
-from django.http import Http404
 from .serializers import *
 from events.models import *
 from .permissions import *
@@ -61,34 +59,6 @@ class EventUpdateView(generics.RetrieveUpdateAPIView):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
 
-
-'''      
-class RateEventAPIView(generics.CreateAPIView):
-    queryset = Event.objects.all()  # Specify the queryset for the view
-    serializer_class = RatingSerializer  # Specify the serializer class for the view
-
-    def create(self, request, *args, **kwargs):
-        event_id = kwargs.get('event_id')
-        rating = request.data.get('rating')
-        
-        if rating is not None:
-            try:
-                rating_value = float(rating)
-                if 0 <= rating_value <= 5:  # Assuming ratings are between 0 and 5
-                    event = self.get_object()
-                    event.rating = rating_value 
-                    event.save()
-
-                    serializer = self.get_serializer(event)
-                    return Response({'event': serializer.data})
-                else:
-                    return Response({'error': 'Rating value must be between 0 and 5'}, status=status.HTTP_400_BAD_REQUEST)
-            except ValueError:
-                return Response({'error': 'Invalid rating value'}, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response({'error': 'Rating value is missing'}, status=status.HTTP_400_BAD_REQUEST)
-'''
-    
 
 class SearchView(APIView):
     def get(self, request, *args, **kwargs):
@@ -254,29 +224,7 @@ class RateUpdateView(generics.RetrieveUpdateAPIView):
         self.perform_update(serializer)
         return Response(serializer.data)
     
-    
-'''
-class GetEventRatingsAPIView(APIView):
-    #permission_classes = [IsAttendee]
-
-    def get(self, request, event_id, **kwargs):
-        try:
-            # Retrieve all ratings for the specified event
-            event_ratings = Rating.objects.filter(event_id=event_id)
-
-            if event_ratings.exists():
-                # Serialize the event ratings data
-                serializer = RatingSerializer(event_ratings, many=True)
-                return Response({'success': True, 'event_ratings': serializer.data}, status=status.HTTP_200_OK)
-            else:
-                return Response({'success': False, 'error': 'No ratings found for the specified event'}, status=status.HTTP_404_NOT_FOUND)
-        
-        except Exception as e:
-            return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-  
- ''' 
-  
-  
+     
 class GetAvgRatingsAPIView(APIView):
     #permission_classes = [IsOrganiser]
 
@@ -339,18 +287,6 @@ class ReviewView(generics.CreateAPIView):
             raise serializers.ValidationError("You have already rated this event.")
         serializer.save(attendee=self.request.user.attendee)
         
-'''
-class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = ReviewSerializer
-    lookup_url_kwarg = 'event_id'  # Specify the lookup URL keyword argument
-    
-    def get_queryset(self):
-        # Get the event ID from the URL parameter
-        event_id = self.kwargs['event_id']
-        # Filter reviews by the event ID
-        return Review.objects.filter(event_id=event_id)
-'''
-
 
 class ReviewRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ReviewSerializer
@@ -501,3 +437,15 @@ class InterestedCountView(APIView):
         
         except Exception as e:
             return Response({'success': False, 'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class CreateTestimonial(generics.CreateAPIView):
+    queryset = Testimonial.objects.all()
+    serializer_class = TestimonialSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(organiser=self.request.user.organiser)
+
+class ViewTestimonial(generics.ListAPIView):
+    queryset = Testimonial.objects.filter(is_approved=True)
+    serializer_class = TestimonialSerializer

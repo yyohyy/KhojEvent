@@ -1,7 +1,5 @@
 from django.contrib import admin
-
-# Register your models here.
-from .models import Event, Category, Review, Tag , Rating, Interested
+from .models import *
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
@@ -23,4 +21,9 @@ class RatingAdmin(admin.ModelAdmin):
 @admin.register(Interested)
 class InterestedAdmin(admin.ModelAdmin):
     list_display = ("event", "attendee")
+
+@admin.register(Testimonial)
+class TestimonialAdmin(admin.ModelAdmin):
+    list_display = ("content", "organiser","is_approved")    
+    readonly_fields=("content","organiser")
     

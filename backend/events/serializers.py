@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from events.models import Event, Category, Tag, Organiser, Rating, Review, Interested
-from users.models import Attendee
-
+from events.models import *
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -114,3 +112,9 @@ class InterestedDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Interested
         fields = '__all__'
+
+class TestimonialSerializer(serializers.ModelSerializer):
+    organiser=OrganiserSerializer(many=False)
+    class Meta:
+        model = Testimonial
+        fields = ['content','organiser']      

@@ -30,4 +30,8 @@ urlpatterns = [
     #path('event/<int:event_id>/reviews/', EventReviewListView.as_view(), name='event_reviews'),
     path('organizer/reviews/<int:event_id>/', OrganizerReviewListView.as_view(), name='organizer_reviews'),
     path('events/<int:event_id>/ratings-and-reviews/', EventRatingsAndReviewsAPIView.as_view(), name='event_ratings_and_reviews'),
+
+    path('testimonial/create/', CreateTestimonial.as_view(), name='create-testimonial'),
+    path('testimonials/', ViewTestimonial.as_view(), name='testimonials'),
+
 ] 
