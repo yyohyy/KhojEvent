@@ -36,7 +36,7 @@ function AppEvents() {
                 {/* Use Link to navigate to the specific event page */}
                 <Link to={`/events/${event.id}`} className="card-link">
                   <Card >
-                    <Card.Img variant="top" src={event.image} />
+                    <Card.Img variant="top" src={event.image} style={{ height: '200px', objectFit: 'cover' }} />
                     <Card.Body>
                       <div className='label text-center'>
                       <h3 style={{ fontFamily: 'Montserrat', color: '#8f0000', fontSize:'30px' }}>{event.name}</h3>

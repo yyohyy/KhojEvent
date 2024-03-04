@@ -48,34 +48,32 @@ const OrgansierTestimonial = () => {
     };
 
     // Event handler for form submission
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            setLoading(true);
-            // Fetch JWT token from local storage for authentication
-            const authToken = localStorage.getItem("Bearer");
-            const headers = {
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-            };
-            // Determine whether to update or create a testimonial based on existing data
-            if (existingTestimonial !== null) {
-                await axios.patch(`http://127.0.0.1:8000/testimonials`, { body: testimonial, attendee: localStorage.getItem("id") }, headers);
-            } else {
-                await axios.post(`http://127.0.0.1:8000/testimonials/`, { body: testimonial, attendee: localStorage.getItem("id") }, headers);
-            }
-            console.log('Testimonial submitted successfully');
-            // Set the submission status to true
-            setSubmitted(true);
-        } catch (error) {
-            // Handle any errors that occur during submission
-            console.error('Error submitting testimonial:', error);
-            setErrorMessage("Error submitting testimonial. Please try again later.");
-        } finally {
-            setLoading(false);
-        }
-    };
+// Event handler for form submission
+// Event handler for form submission
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        setLoading(true);
+        // Fetch JWT token from local storage for authentication
+        const authToken = localStorage.getItem("Bearer");
+        const headers = {
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+            },
+        };
+        // Send only the testimonial data
+        await axios.post(`http://127.0.0.1:8000/testimonial/create/`, { body: testimonial }, headers);
+        console.log('Testimonial submitted successfully');
+        // Set the submission status to true
+        setSubmitted(true);
+    } catch (error) {
+        // Handle any errors that occur during submission
+        console.error('Error submitting testimonial:', error);
+        setErrorMessage("Error submitting testimonial. Please try again later.");
+    } finally {
+        setLoading(false);
+    }
+};
 
     // JSX structure for the Testimonial component
     return (

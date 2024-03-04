@@ -95,6 +95,7 @@ const AppHero = () => {
           <h2>Coming Soon</h2>
           <div className="subtitle">Stay Tuned</div>
         </div>
+        <div className='carouselbg' style={{backgroundColor: 'white'}}>
         <Carousel
           interval={null}
           indicators={false}
@@ -109,7 +110,7 @@ const AppHero = () => {
                   <Col key={event.id} xs={12} sm={6} md={4}>
                     <div className='portfolio-wrapper'>
                       <Card>
-                        <Card.Img variant="top" src={event.image} />
+                        <Card.Img variant="top" src={event.image}  style={{ height: '200px', objectFit: 'cover'}}/>
                         <Card.Body>
                           <h3 style={{ fontFamily: 'Montserrat', color: '#8f0000', fontSize:'30px' }}>{event.name}</h3>
                           <p style={{ color: 'grey' }}>
@@ -131,6 +132,7 @@ const AppHero = () => {
             </Carousel.Item>
           ))}
         </Carousel>
+        </div>
       </Container>
     </section>
   );

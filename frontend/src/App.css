@@ -507,6 +507,10 @@ textarea {
   left: 0;
   right: 0;
 }
+.hero-block .carouselbg {
+  background:white ;
+
+}
 
 .hero-block .carousel-item img {
   width: 100%;
