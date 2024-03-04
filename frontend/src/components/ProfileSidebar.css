@@ -1,4 +1,5 @@
 /* ProfileSidebar.css */
+/* ProfileSidebar.css */
 .profile-sidebar {
   width: 200px;
   background-color: #ffffff;
@@ -7,7 +8,53 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: absolute;
   left: 0;
+  transition: width 0.3s ease; /* Add transition for smooth animation */
 }
+
+/* Add a class to style the toggle button */
+.toggle-btn {
+  position: absolute;
+  top: 10px;
+  right: -15px;
+  cursor: pointer;
+  padding: 5px;
+  background-color: #f64b4b;
+  border-radius: 0 5px 5px 0;
+  color: #fff;
+  transition: right 0.3s ease; /* Add transition for smooth animation */
+}
+
+/* Rotate the arrow icon based on sidebar visibility */
+.profile-sidebar.open .toggle-btn {
+  right: calc(200px - 15px);
+}
+
+/* Media query for responsiveness */
+@media screen and (max-width: 768px) {
+  .profile-sidebar {
+    width: 50px; /* Set a smaller width for the collapsed sidebar */
+  }
+
+  /* Adjust the position of the toggle button */
+  .profile-sidebar.open .toggle-btn {
+    right: calc(50px - 15px);
+  }
+
+  /* Hide text in the toggle button */
+  .toggle-btn span {
+    display: none;
+  }
+}
+
+/* .profile-sidebar {
+  width: 200px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  left: 0;
+} */
 
 .list-group {
   margin-top: 20px;
@@ -25,4 +72,23 @@
 .sidebar-btn:hover {
   background-color: #f64b4b; /* Change background color on hover */
   color: #ffffff; /* Change text color on hover */
+}
+
+/* Media query for responsiveness */
+@media screen and (max-width: 768px) {
+  .profile-sidebar {
+    width: 100%; /* Set width to 100% for smaller screens */
+    position: static; /* Remove absolute positioning */
+    box-shadow: none; /* Remove box shadow */
+    border-radius: 0; /* Remove border radius */
+    padding: 0; /* Remove padding */
+  }
+
+  .list-group {
+    margin-top: 0; /* Remove top margin for list group */
+  }
+
+  .sidebar-btn {
+    margin-bottom: 5px; /* Adjust margin for buttons */
+  }
 }

@@ -42,6 +42,8 @@ const OrganizerSignup = () => {
 
       // Navigate to the home page
       navigate('/');
+      
+      window.location.reload()
     } catch (error) {
       // Handle attendee signup failure
       console.error('Organiser signup error:', error.response?.data || error.message);

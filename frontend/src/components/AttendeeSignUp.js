@@ -43,6 +43,8 @@ const AttendeeSignup = () => {
 
       // Navigate to the home page
       navigate('/');
+      
+      window.location.reload()
     } catch (error) {
       // Handle attendee signup failure
       console.error('Attendee signup error:', error.response?.data || error.message);

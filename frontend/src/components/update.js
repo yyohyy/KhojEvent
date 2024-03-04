@@ -120,7 +120,7 @@ const Update = () => {
       }
 
       console.log('Event updated successfully');
-      navigate('/');
+      navigate(`/events/${event_id}`);
     } catch (error) {
       console.error('Error updating event:', error);
     }

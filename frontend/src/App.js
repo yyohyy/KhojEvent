@@ -5,6 +5,7 @@ import { Route, Routes, BrowserRouter, useLocation } from 'react-router-dom'; //
 import AppHeader from './components/header';
 import AppHero from './components/hero';
 import AppEvents from './components/events';
+import PaidEvents from './components/PaidEvents';
 import AppTestimonials from './components/testimonials';
 import AppEventDetails from './components/AppEventDetails';
 import AppContact from './components/contact';
@@ -35,9 +36,10 @@ import AttendedEvents from './components/AttendedEvents';
 import Ratings from './components/Ratings';
 import Reviews from './components/Reviews';
 import Feedback from './components/Feedback';
-import Trending from './components/trending';
+import EventAnalytics from './components/EventAnalytics';
+import EventOrders from './components/EventOrders';import Trending from './components/trending';
 import UpdateTicket from './components/updateticket';
-
+import OrganiserTestimonial from './components/givetestimonial';
 function App() {
   return (
    <Provider store={store}>
@@ -51,6 +53,7 @@ function App() {
             <Route path="/" element={<AppHero />} />
           <Route path="/home" element={<AppHero />} />
           <Route path="/events" element={<AppEvents />} />
+          <Route path="/events/paid" element={<PaidEvents />} />
           <Route path="/testimonials" element={<AppTestimonials />} />
           <Route path="/create-event" element={<CreateEvent />} />
           <Route path="/contact" element={<AppContact />} />
@@ -77,9 +80,12 @@ function App() {
           <Route path="/profile/:id/attended-events" element={<AttendedEvents/>} />
           <Route path="/profile/:id/leave-feedback/:eventId" element={<Feedback/>} />
           <Route path="/profile/:id/ratings-left" element={<Ratings/>} />
-          <Route path="/profile/:id/reviews-left" element={<Ratings/>} />
+          <Route path="/profile/:id/reviews-left" element={<Reviews/>} />
+          <Route path="/profile/:oganiser_id/events/:eventId/analytics" element={<EventAnalytics/>} />
+          <Route path="/profile/:id/events/:event_id/orders" element={<EventOrders/>}/>
           <Route path="/profile/:oganiser_id/analyticsinterested" element={<PerformanceAnalytics/>} />
           <Route path="/profile/:oganiser_id/trending" element={<Trending/>} />
+          <Route path="/profile/:oganiser_id/givetestimonial/" element={<OrganiserTestimonial/>} />
           </Routes>
          </div>
         </BrowserRouter>

@@ -37,7 +37,7 @@ class EventSerializer(serializers.ModelSerializer):
    # organizer = OrganiserSerializer(many=False)
     class Meta:
         model = Event
-        fields = ["id","name", "category", "description", "venue", "start_date", "end_date", "start_time", "end_time","tags", "is_paid", "organiser","image"]
+        fields = ["id","name", "category", "description", "venue", "start_date", "end_date", "start_time", "end_time","tags", "is_paid","is_approved", "organiser","image"]
 
 
     def create(self, validated_data):

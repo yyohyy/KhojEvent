@@ -1,0 +1,76 @@
+{/* <tbody>
+                                    {reviews.map(review => (
+                                        <tr key={review.id}>
+                                            <td className="text-center">
+                                                {/* Wrap event name in Link component */}
+                                                <Link to={`/events/${review.event.id}`}>
+                                                    {review.event.name}
+                                                </Link>
+                                            </td>
+                                            <td className="text-center">
+                                                {/* Display input field when editing */}
+                                                {isEditing && editingReviewId === review.id ? (
+                                                    <input
+                                                        type="text"
+                                                        value={newReview}
+                                                        onChange={(e) => setNewReview(e.target.value)}
+                                                    />
+                                                ) : (
+                                                    <div>{review.body}</div>
+                                                )}
+                                            </td>
+                                            <td className="text-center">
+                                                {/* Display "Edit" button when not editing */}
+                                                {!isEditing && (
+                                                    <Button variant="secondary" onClick={() => handleEditClick(review.id)}>Edit</Button>
+                                                )}
+                                                {isEditing && editingReviewId === review.id && (
+                                                    <Button variant="success" onClick={() => handleSubmit(review.id)}>Submit</Button>
+                                                )}
+                                            </td>
+                                            {isEditing && (
+                                                <td className="text-center">
+                                                    <Button variant="danger" onClick={() => handleCancel()}>Cancel</Button>
+                                                </td>
+                                            )}
+                                        </tr>
+                                    ))}
+                                </tbody> */}
+
+       
+class EventRatingsAndReviewsAPIView(APIView):
+    def get(self, request, event_id, **kwargs):
+        # Retrieve all ratings for the specified event
+        event_ratings = Rating.objects.filter(event_id=event_id)
+        # Retrieve all reviews for the specified event
+        reviews = Review.objects.filter(event_id=event_id)
+
+        # Retrieve distinct attendees who have rated or reviewed the event
+        distinct_attendees = set(event_ratings.values_list('attendee', flat=True)) | set(reviews.values_list('attendee', flat=True))
+
+        # Create a list to store data for each attendee
+        attendee_data = []
+        for attendee_id in distinct_attendees:
+            attendee_details = {'id': attendee_id, 'details': {'rating': None, 'review': None}}
+            attendee_data.append(attendee_details)
+
+        # Populate the list with ratings and reviews for each attendee
+        for rating in event_ratings:
+            for attendee_details in attendee_data:
+                if attendee_details['id'] == rating.attendee.user.id:
+                    attendee_details['details']['rating'] = rating.stars
+                    break
+        for review in reviews:
+            for attendee_details in attendee_data:
+                if attendee_details['id'] == review.attendee.user.id:
+                    attendee_details['details']['review'] = review.body
+                    break
+
+        # Serialize the user details
+        for attendee_details in attendee_data:
+            user_id = attendee_details['id']
+            user = User.objects.get(pk=user_id)  # Retrieve user object using user ID
+            user_serializer = UserDetailsSerializer(user)
+            attendee_details['details']['user_details'] = user_serializer.data
+
+        return Response(attendee_data, status=status.HTTP_200_OK)

@@ -22,9 +22,8 @@ function AppEventDetails() {
   const [ratingsAndReviewsData, setRatingsAndReviewsData] = useState([]);
   const [interested, setInterested] = useState(false);
   const [rated, setRated] = useState(false);
-  const [eventWebsiteUrl, setEventWebsiteUrl] = useState("");
-  const [attendeeData, setAttendeeData] = useState([]);
   const [isOrganiser, setIsOrganiser] = useState(false);
+  const [isAttendee, setIsAttendee] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,8 +32,26 @@ function AppEventDetails() {
         const eventResponse = await axiosInstance.get(`/events/${event_id}/`);
         setActiveEventData(eventResponse.data);
         setLoading(false);
-        // setRated(eventResponse.data.rated);
-        setEventWebsiteUrl(eventResponse.data.website_url);
+
+        if (eventResponse.data.organiser) {
+          const organiserId = eventResponse.data.organiser;
+          const organiserResponse = await axiosInstance.get(`/users/details/${organiserId}/`);
+          setOrganiserData(organiserResponse.data);
+        }
+
+
+        const userResponse = await axiosInstance.get(`/users/me/`);
+        setIsOrganiser(userResponse.data.is_organiser);
+        setIsAttendee(userResponse.data.is_attendee);
+        console.log('isOrganiser:', userResponse.data.is_organiser);
+        console.log('isAttendee:', userResponse.data.is_attendee);
+
+        if (userResponse.data.is_attendee) {
+          const interestedResponse = await axiosInstance.get(`/interested-event/${event_id}/`);
+          setInterested(interestedResponse.data.success);
+          console.log(interested)
+          }
+        
 
         const ratingResponse = await axiosInstance.get(`/events/${event_id}/ratings`);
         setRating(ratingResponse.data.average_rating);
@@ -50,27 +67,10 @@ function AppEventDetails() {
     
         fetchRatingsAndReviews();
 
-        const userResponse = await axiosInstance.get(`/users/me/`);
-        setIsOrganiser(userResponse.data.is_organiser);
 
-        if (eventResponse.data.organiser) {
-          const organiserId = eventResponse.data.organiser;
-          const organiserResponse = await axiosInstance.get(`/users/details/${organiserId}/`);
-          setOrganiserData(organiserResponse.data);
-        }
-
-        if (!userResponse.data.is_organiser) {
-          const interestedResponse = await axiosInstance.get(`/interested-event/${event_id}/`);
-          setInterested(interestedResponse.data.success);
-        }
-
-        // const attendeeIds = [...new Set(ratingsResponse.data.event_ratings.map(rating => rating.attendee))];
-        // const attendeesData = await Promise.all(attendeeIds.map(async attendeeId => {
-        //   const attendeeResponse = await axiosInstance.get(`/users/details/${attendeeId}/`);
-        //   return attendeeResponse.data;
-        // }));
-        // setAttendeeData(attendeesData);
-
+         const user=localStorage.getItem("id")
+         console.log(user)
+         console.log(eventResponse.data.organiser)
       } catch (error) {
         console.error('Error fetching data:', error);
         setLoading(false);
@@ -80,11 +80,8 @@ function AppEventDetails() {
     fetchData();
   }, [event_id]);
 
- 
-  // function findReviewByAttendee(attendeeId) {
-  //   const review = reviews.find(review => review.attendee === attendeeId);
-  //   return review ? review.comment : "No review available";
-  // }
+
+
   const handleToggleInterest = async () => {
     try {
       const response = await axiosInstance.post(`/events/${event_id}/interested/`, {});
@@ -104,7 +101,7 @@ function AppEventDetails() {
   };
 
   const handleUpdate = () => {
-    navigate(`/update-event/${event_id}`);
+    navigate(`/profile/${localStorage.getItem("id")}/events/update/${event_id}`);
   };
 
   return (
@@ -121,7 +118,7 @@ function AppEventDetails() {
         </div>
         <div className="col-md-8 mx-auto">
           <div className="card p-5">
-            {isOrganiser && activeEventData.organiser === parseInt(localStorage.getItem("id"), 10) ? (
+            {isOrganiser && parseInt(activeEventData.organiser) === parseInt(localStorage.getItem("id")) ? (
               <div className="text-end mb-3">
                 <button
                   className={`btn btn-primary btn-lg`}
@@ -132,7 +129,7 @@ function AppEventDetails() {
               </div>
             ) : (
               <div className="text-end mb-3">
-                {!isOrganiser && (
+                {isAttendee && (
                   <button
                     className={`btn btn-primary btn-lg`}
                     onClick={handleToggleInterest}
@@ -173,7 +170,7 @@ function AppEventDetails() {
               </span>
             </div>
             <p className="card-text mt-3" style={{ textAlign: 'justify' }}>{activeEventData.description}</p>
-            {!isOrganiser && (
+            {!isOrganiser && isAttendee && (
               <div className="text-center mt-4">
                 <button
                   type="button"
@@ -183,36 +180,33 @@ function AppEventDetails() {
                   Book Now
                 </button>
               </div>
+            )}{organiserData && organiserData.organiser_details && (
+              <div className="mt-5 shadow p-3 rounded mx-auto" style={{ maxWidth: '600px' }}>
+                <div>
+                  <div className="d-flex flex-column flex-lg-row align-items-lg-center">
+                    <div className="me-lg-3 mb-3 mb-lg-0" style={{ flex: '0 0 auto' }}>
+                      <img src={organiserData.profile_picture} className="rounded-circle" alt="Organiser Profile" style={{ width: '200px', height: '200px' }} />
+                    </div>
+                    <div style={{ flex: '1', paddingLeft: '20px' }}>
+                      <h4>Know The Organiser:</h4>
+                      <p style={{ fontFamily: "Comfortaa, cursive", color: "#f64b4b", fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '5px' }}>{organiserData.organiser_details.name}</p>
+                      <div className="mt-3">
+                        <span className="me-2"><BiPhone style={{ color: 'red' }} /></span>
+                        <span>{organiserData.phone_number}</span>
+                      </div>
+                      <div>
+                        <span className="me-2"><BiEnvelope style={{ color: 'red' }} /></span>
+                        <span>{organiserData.email}</span>
+                      </div>
+                      <div className="me-2">
+                        <span className="me-2"><BiMap style={{ color: 'red' }} /></span>
+                        <span>{organiserData.organiser_details.address}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
-{organiserData && organiserData.organiser_details && (
-  <div className="mt-5 shadow p-3 rounded mx-auto" style={{ width: '600px' }}>
-  <div>
-    <div className="d-flex align-items-center">
-      <div className="me-3" style={{ flex: '0 0 auto' }}>
-        <img src={organiserData.profile_picture} className="rounded-circle" alt="Organiser Profile" style={{ width: '200px', height: '200px' }} />
-      </div>
-      <div style={{ flex: '1', paddingLeft: '20px' }}>
-      <h4>Brought to you by:</h4>
-        <p style={{ fontFamily: "Comfortaa, cursive", color: "#f64b4b", fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '5px' }}>{organiserData.organiser_details.name}</p>
-        <div className="mt-3">
-          <span className="me-2"><BiPhone style={{ color: 'red' }} /></span>
-          <span>{organiserData.phone_number}</span>
-        </div>
-        <div>
-          <span className="me-2"><BiEnvelope style={{ color: 'red' }} /></span>
-          <span>{organiserData.email}</span>
-        </div>
-        <div className="me-2">
-          <span className="me-2"><BiMap style={{ color: 'red' }} /></span>
-          <span>{organiserData.organiser_details.address}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-)}
-
-
 <div style={{ paddingTop: '20px' }}>
   <h2 style={{ marginBottom: '30px', marginTop: '50px' }}>Ratings and Reviews:</h2>
   {ratingsAndReviewsData.length > 0 ? (
@@ -257,15 +251,4 @@ function AppEventDetails() {
   );
 }
 
-function renderStars(stars) {
-  const starIcons = [];
-
-  for (let i = 0; i < stars; i++) {
-    starIcons.push(<FaStar key={i} />);
-  }
-
-  return starIcons;
-}
-
 export default AppEventDetails;
-

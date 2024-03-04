@@ -1,7 +1,6 @@
 from django.urls import path
 from .views import *
 
-
 urlpatterns = [
     #path('routes/', GetRoutesView.as_view(), name='get_routes'),
     path('events/', AllEventsView.as_view(), name='get_events'),
@@ -16,7 +15,8 @@ urlpatterns = [
     path('interested-events/', GetInterestedEventsView.as_view(), name='interested_events'),
     path('interested-event/<int:event_id>/', GetInterestedEventView.as_view(), name='interested_event'),
     path('interested-detail/<int:attendee_id>/', InterestedListView.as_view(), name='interested-detail'),
-   
+    path('events/<int:event_id>/count/', InterestedCountView.as_view(), name='interested_event'),
+
     path('rate-event/', CreateRateView.as_view(), name='rate-event'),
     path('attendee-ratings/', AttendeeRatingsView.as_view(), name='attendee-ratings'),
     path('events/<int:event_id>/ratings/', GetAvgRatingsAPIView.as_view(), name='event_ratings'),

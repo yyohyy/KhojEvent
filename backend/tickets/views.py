@@ -1,11 +1,21 @@
+import pdfkit
+from django.template.loader import render_to_string
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from django.http import HttpResponse
 from django.db import transaction
+from django.shortcuts import get_object_or_404
+from jinja2 import Environment, FileSystemLoader
 from rest_framework import generics,status
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from .models import *
 from .permissions import *
 from .serializers import *
+from .utils import generate_order_receipt_pdf
 
 
 class CreateTicketView(generics.ListCreateAPIView):
@@ -135,7 +145,20 @@ class CartDetails(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         attendee = self.kwargs.get(self.lookup_field)
         return Cart.objects.filter(attendee_id=attendee)
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
+    def perform_destroy(self, instance):
+        # Update quantity available for each ticket type
+        for selected_ticket in instance.tickets.all():
+            ticket = selected_ticket.ticket
+            ticket.quantity_available += selected_ticket.quantity
+            ticket.save()
+        
+        # Delete the cart
+        instance.delete()
 class CheckoutView(generics.CreateAPIView):
     serializer_class = OrderSerializer
     permission_classes=[IsAuthenticated]
@@ -194,3 +217,97 @@ class PaymentView(generics.UpdateAPIView,generics.ListAPIView):
 class OrderDetails(generics.RetrieveAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer    
+
+class AttendeeEventOrders(generics.ListAPIView):
+    serializer_class = OrderItemSerializer
+
+    def get_queryset(self):
+        # Get the attendee ID and event ID from the URL parameters
+        attendee_id = self.kwargs['attendee_id']
+        event_id = self.kwargs['event_id']
+
+        # Filter OrderItem objects based on attendee and event
+        order_items = OrderItem.objects.filter(ticket__ticket__ticket__event_id=event_id, ticket__issued_to_id=attendee_id)
+        print(order_items)
+        # Get the orders associated with the filtered OrderItem objects
+        #orders = Order.objects.filter(orderitem__in=order_items)
+        return order_items 
+
+# def DownloadReceipt(request, order_id):
+#     # Fetch the order and related ticket information
+#     order = get_object_or_404(Order, pk=order_id)
+#     order_items = OrderItem.objects.filter(order=order)
+
+#     # Set up response
+#     response = HttpResponse(content_type='application/pdf')
+#     response['Content-Disposition'] = f'attachment; filename="order_{order_id}.pdf"'
+
+#     # Create a ReportLab PDF document
+#     pdf = SimpleDocTemplate(response, pagesize=letter)
+    
+#     # Define styles
+#     style = TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+#                         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+#                         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+#                         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+#                         ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+#                         ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+#                         ('GRID', (0, 0), (-1, -1), 1, colors.black)])
+
+#     # Create a table for the order details
+#     order_data = [
+#         ["Order ID", "Total Amount", "Status", "Created At"],
+#         [order.id, order.total_amount, order.status, order.created_at],
+#     ]
+
+#     order_table = Table(order_data)
+#     order_table.setStyle(style)
+
+#     # Create a table for the order items
+#     order_item_data = [
+#         ["Event Name", "Ticket Name", "Quantity", "Price"]
+#     ]
+#     for order_item in order_items:
+#         order_item_data.append([
+#             order_item.ticket.ticket.ticket.event.name,
+#             order_item.ticket.ticket.name,
+#             order_item.quantity,
+#             order_item.ticket.ticket.price
+#         ])
+
+#     order_item_table = Table(order_item_data)
+#     order_item_table.setStyle(style)
+
+#     # Build the PDF document
+#     pdf_content = []
+#     pdf_content.append(order_table)
+#     pdf_content.append(order_item_table)
+
+#     # Build PDF
+#     pdf.build(pdf_content)
+
+#     return response
+    
+class ViewReceipt(APIView):
+    def get(self, request, *args, **kwargs):
+        order = get_object_or_404(Order, pk=self.kwargs['order_id'])
+        order_items = OrderItem.objects.filter(order=order)
+
+        # Generate PDF content
+        pdf = generate_order_receipt_pdf(order, order_items)
+
+        # Return the PDF file as response
+        return HttpResponse(open("order_receipt.pdf", "rb"), content_type='application/pdf')
+
+class DownloadReceipt(ViewReceipt):
+    def get(self, request, *args, **kwargs):
+        order = get_object_or_404(Order, pk=self.kwargs['order_id'])
+        order_items = OrderItem.objects.filter(order=order)
+
+        # Generate PDF content
+        pdf = generate_order_receipt_pdf(order, order_items)
+
+        # Create a response with PDF file as attachment
+        response = HttpResponse(open("order_receipt.pdf", "rb"), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="order_{order.id}_receipt.pdf"'
+        return response    

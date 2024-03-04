@@ -24,8 +24,9 @@ var testimonialsData = [
 
 function AppTestimonials() {
   return (
-    <section id="testimonials" className="testimonials-block">
-      <Container fluid>
+    <section id="testimonials" className="testimonials-block mb-">
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <Container fluid style={{ flexGrow: 1 }}>
         <div className="title-holder">
           <h2>Client testimonials</h2>
           <div className="subtitle">what client says about us</div>
@@ -48,6 +49,7 @@ function AppTestimonials() {
           }
         </Carousel>
       </Container>
+      </div>
     </section>
   );
 }

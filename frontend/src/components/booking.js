@@ -9,6 +9,7 @@ function BookingPage() {
   const [ticketTypes, setTicketTypes] = useState([]);
   const [selectedTickets, setSelectedTickets] = useState({});
   const [quantity, setQuantity] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const fetchTicketTypesForBooking = async () => {
@@ -42,47 +43,51 @@ function BookingPage() {
       [ticketId]: newQuantity,
     });
   };
+
   const handleAddToCart = async () => {
     try {
-      // Filter out the selected tickets with quantity greater than 0
-      const selectedTicketsWithQuantity = Object.keys(selectedTickets).reduce((obj, ticketId) => {
-        if (quantity[ticketId] > 0) {
-          obj[ticketId] = quantity[ticketId];
+      // Initialize an array to store the selected tickets with quantities
+      const selectedTicketsWithQuantity = [];
+  
+      // Iterate over each selected ticket
+      Object.entries(selectedTickets).forEach(([ticketId, ticket]) => {
+        const qty = quantity[ticketId];
+
+        if (qty > 0) {
+          selectedTicketsWithQuantity.push({ ticketId: parseInt(ticketId), quantity: qty });
         }
-        return obj;
-      }, {});
-    
-      // Check if there are any selected tickets with quantity greater than 0
-      if (Object.keys(selectedTicketsWithQuantity).length === 0) {
+      });
+      if (selectedTicketsWithQuantity.length === 0) {
         alert('Please select a quantity greater than 0 for at least one ticket type.');
         return;
       }
-    
-      // Get the first ticket ID and quantity to create the payload
-      const [ticketId, qty] = Object.entries(selectedTicketsWithQuantity)[0];
-    
-      // Format the selected ticket with quantity into the required format
-      const payload = {
-        "ticket": parseInt(ticketId),
-        "quantity": qty,
-      };
+  
       const authToken = localStorage.getItem('Bearer');
-    
-      // Post the formatted selected ticket to the endpoint
-      const response = await AxiosInstance.post(`http://127.0.0.1:8000/tickets/select/${event_id}/`, payload, {
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json', // Set content type as multipart/form-data
-        },
-      });
-      console.log('Tickets selected:', response.data);
-      // Optionally, you can navigate to a confirmation page or display a success message
-      navigate('/cart')
-    } catch (error) {
-      console.error('Error selecting tickets:', error);
+      await Promise.all(selectedTicketsWithQuantity.map(async (ticket) => {
+        const payload = {
+          ticket: ticket.ticketId,
+          quantity: ticket.quantity,
+        };
+        await AxiosInstance.post(`http://127.0.0.1:8000/tickets/select/${event_id}/`, payload, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+      }));
+      navigate('/cart');
+    }  catch (error) {
+      if (error.response && error.response.status === 400) {
+        // Handle 400 Bad Request error
+        setErrorMessage("Max ticket limit for the event exceeded.");
+        console.log("Max limit exceeded")
+      } else {
+        // Handle other errors
+        console.error('Error selecting tickets:', error);
+      }
     }
   };
-  
+   
     
   return (
     <div className="container booking-container mt-5 mb-5 p-4 shadow">
@@ -95,6 +100,11 @@ function BookingPage() {
         <div className="col-md-8">
           <div className="card p-4">
             <h1 className="text-center mb-4">Booking Page</h1>
+            {errorMessage && (
+          <div className="alert alert-danger" role="alert">
+            {errorMessage}
+          </div>
+        )}
             <div className="row">
               {ticketTypes.map((ticket) => (
                 <div key={ticket.id} className="col-md-4 mb-4">

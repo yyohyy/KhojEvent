@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Bar } from 'react-chartjs-2';
+import { LinearScale } from 'chart.js'; // Import LinearScale from Chart.js
 
 const PerformanceAnalytics = () => {
-  const { id } = useParams(); // Get the id from the route parameter
+  const { id } = useParams();
   const [eventData, setEventData] = useState([]);
 
   useEffect(() => {
@@ -24,15 +25,12 @@ const PerformanceAnalytics = () => {
     fetchEventData();
   }, [id]);
 
-  // Function to calculate the highest interested events based on attendees or revenue
   const calculateTopEvents = (criteria) => {
     return eventData.sort((a, b) => b[criteria] - a[criteria]).slice(0, 5);
   };
 
-  // Default criteria is attendees
   const topEvents = calculateTopEvents('attendees');
 
-  // Chart data
   const chartData = {
     labels: topEvents.map(event => event.name),
     datasets: [
@@ -48,15 +46,19 @@ const PerformanceAnalytics = () => {
     ]
   };
 
+  LinearScale.id = 'linear'; // Register LinearScale as 'linear'
+
   return (
     <div>
       <h2>Highest Interested Events</h2>
       <Bar
         data={chartData}
-        width={100}
-        height={50}
         options={{
-          maintainAspectRatio: false
+          scales: {
+            y: {
+              type: 'linear' // Use 'linear' scale for y-axis
+            }
+          }
         }}
       />
     </div>

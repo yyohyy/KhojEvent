@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col , Button } from 'react-bootstrap';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ProfileSidebar from './ProfileSidebar';
 
@@ -35,6 +35,12 @@ const UpdateEvent = () => {
         navigate(`/profile/${localStorage.getItem("id")}/events/update/${event_id}`);
     };
 
+        // Define handleEditTicketType function
+    const handleViewAnalytics = (eventId) => {
+        navigate(`/profile/${localStorage.getItem("id")}/events/${eventId}/analytics`);
+    };
+
+
     return (
         <Container fluid style={{ minHeight: "calc(100vh - 56px)", background: "#ffffff" }}>
             <div class="custom-container"></div>
@@ -44,41 +50,57 @@ const UpdateEvent = () => {
                 </Col>
                 <Col sm={9}>
                 <div style={{ padding: '20px' }}>
-                    <h1 className="my-4"style={{ fontFamily: "Comfortaa, cursive", color: "#8B0000"}}>Organizer Events</h1>
+                    <h1 className="my-4"style={{ fontFamily: "Comfortaa, cursive", color: "#8B0000"}}>Organized Events:</h1>
                     </div>
                     {events.length > 0 ? (
                         <div className="shadow-box">
-                         <table class="table table-borderless table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Event Name</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Venue</th>
-                                    <th>Actions</th>
-                                </tr>
-                                <tr className="table-heading-line">
-                    <th colSpan="6"></th> {/* Empty cell for the line */}
-                </tr>
-                            </thead>
-                            <tbody>
-                                {events.map(event => (
-                                    <tr key={event.id}>
-                                        <td>{event.name}</td>
-                                        <td>{event.start_date}</td>
-                                        <td>{event.start_time} - {event.end_time}</td>
-                                        <td>{event.venue}</td>
+                            <div className="table-responsive">
+  <table className="table table-borderless table-hover">
+    <thead>
+        <tr>
+            <th>Event Name</th>
+            <th>Date</th>
+            {/* <th>Time</th> */}
+            <th>Venue</th>
+            <th>Status</th>
+            <th>Entry</th>
+            <th className="text-center" >Tickets</th> {/* Add heading for the "Edit Tickets" column */}
+            <th>Actions</th>
+        </tr>
+        <tr className="table-heading-line">
+            <th colSpan="8"></th> {/* Empty cell for the line */}
+        </tr>
+    </thead>
+    <tbody>
+        {events.map(event => (
+            <tr key={event.id}>
                                         <td>
-                                            <Button variant="danger" onClick={() => handleEventUpdate(event.id)}>Update</Button>
+                                            {/* Wrap event name in Link component */}
+                                            <Link to={`/events/${event.id}`}>
+                                                {event.name}
+                                            </Link>
                                         </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                            </table>
+                <td>{event.start_date}</td>
+                {/* <td>{event.start_time} - {event.end_time}</td> */}
+                <td>{event.venue}</td>
+                <td>{event.is_approved ? "Approved" : "Not Approved"}</td>
+                <td>{event.is_paid ? "Paid" : "Free"}</td>
+                <td style={{ padding: "10px", textAlign: "center" }}> {/* Add inline style to adjust padding */}
+                    <Button variant="success" onClick={() => handleViewAnalytics(event.id)}>View Analytics</Button>
+                </td>
+                <td>
+                    <Button variant="danger" onClick={() => handleEventUpdate(event.id)}>Update</Button>
+                </td>
+            </tr>
+        ))}
+    </tbody>
+</table>
+</div>
                         </div>
                     ) : (
                         <p>No organized events available</p>
                     )}
+                
                 </Col>
             </Row>
                             
