@@ -1,9 +1,7 @@
-# utils.py
-
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Spacer, Image, Paragraph
 from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.styles import ParagraphStyle
 
 def generate_order_receipt_pdf(order, order_items):
     order_item_data = [

@@ -25,6 +25,12 @@ function AppEventDetails() {
   const [isOrganiser, setIsOrganiser] = useState(false);
   const [isAttendee, setIsAttendee] = useState(false);
   const navigate = useNavigate();
+  const currentDate = new Date();
+  const startDate = new Date(activeEventData.start_date);
+  const isDisabled = currentDate >= startDate;
+  console.log(currentDate)
+  
+  console.log(startDate)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,6 +38,7 @@ function AppEventDetails() {
         const eventResponse = await axiosInstance.get(`/events/${event_id}/`);
         setActiveEventData(eventResponse.data);
         setLoading(false);
+        
 
         if (eventResponse.data.organiser) {
           const organiserId = eventResponse.data.organiser;
@@ -176,6 +183,7 @@ function AppEventDetails() {
                   type="button"
                   className="btn btn-primary btn-lg"
                   onClick={handleBooking}
+                  disabled={isDisabled}
                 >
                   Book Now
                 </button>

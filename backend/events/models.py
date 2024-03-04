@@ -73,3 +73,13 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
     
+
+class Testimonial(models.Model):
+    organiser = models.ForeignKey(Organiser, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_approved = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Testimonial by {self.organiser.name}"
+
