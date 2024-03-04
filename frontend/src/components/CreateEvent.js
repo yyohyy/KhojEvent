@@ -6,6 +6,9 @@ import Button from 'react-bootstrap/Button';
 
 const CreateEvent = () => {
   const navigate = useNavigate();
+  const [multiDayEvent, setMultiDayEvent] = useState(false);
+  const [endTimeError, setEndTimeError] = useState('');
+  const [error, setError] = useState(null);
 
   const defaultValues = {
     name: '',
@@ -80,6 +83,12 @@ const CreateEvent = () => {
     e.preventDefault();
     try {
       const formDataWithoutImage = { ...formData };
+      if (!formDataWithoutImage.end_date) {
+        delete formDataWithoutImage.end_date;
+      }
+      if (!formDataWithoutImage.end_time) {
+        delete formDataWithoutImage.end_time;
+      }
       delete formDataWithoutImage.image;
   
       const formDataForImage = new FormData();
@@ -95,6 +104,7 @@ const CreateEvent = () => {
           ...ticket,
           quantity_available: ticket.quantity,
         })),
+        
       };
   
       const response = await AxiosInstance.post('create-event/', formattedData);
@@ -117,6 +127,7 @@ const CreateEvent = () => {
       navigate('/');
     } catch (error) {
       console.error('Error submitting data:', error);
+      setError('An error occurred while submitting the form. Please try again later.');
     }
   };
 
@@ -142,7 +153,9 @@ const CreateEvent = () => {
       addNewTag(); // Call the function to add the new tag
     }
   };
-  
+  const handleMultiDayEvent = () => {
+    setMultiDayEvent(!multiDayEvent);
+  }; 
 
   return (
     <div>
@@ -192,26 +205,84 @@ const CreateEvent = () => {
         <textarea name="description" value={formData.description} onChange={handleInputChange} />
       </label>
 
-      <label>
-        Start Date:
-        <input type="date" name="start_date" value={formData.start_date} onChange={handleInputChange} />
-      </label>
+  <div className="date-time-container">
+  {/* Start Date */}
+  <div className="date-container">
+    <label>Start Date:</label>
+    <input type="date" name="start_date" value={formData.start_date} onChange={handleInputChange} />
+  </div>
 
-      <label>
-        End Date:
-        <input type="date" name="end_date" value={formData.end_date} onChange={handleInputChange} />
-      </label>
+  {/* Start Time */}
+  <div className="time-container">
+    <label>Start Time:</label>
+    <input type="time" name="start_time" value={formData.start_time} onChange={handleInputChange} />
+  </div>
 
-      <label>
-        Start Time:
-        <input type="time" name="start_time" value={formData.start_time} onChange={handleInputChange} />
-      </label>
+  {/* End Time (Only for single-day events) */}
+  {!multiDayEvent && (
+    <div className="time-container">
+      <label>End Time:</label>
+      <input type="time" name="end_time" value={formData.end_time} onChange={handleInputChange} min={formData.start_time} />
+    </div>
+  )}
+          
+</div>
+{formData.end_time && formData.end_time < formData.start_time && (
+        <span style={{ color: "red" }}>End time cannot be before start time.</span>
+      )}
 
-      <label>
-        End Time:
-        <input type="time" name="end_time" value={formData.end_time} onChange={handleInputChange} />
-      </label>
+          {/* Button for multi-day event */}
+          <div className="button-container mt-4" >
+          <button type="button" onClick={handleMultiDayEvent}>
+  {multiDayEvent ? "Single Day Event" : "Multi Day Event"}
+</button>
+          </div>
+          {multiDayEvent && (
+  <div className="date-time-container">
+  <>
+  <div className="time-container">
+    <label>
+      End Date:
+      <input
+        type="date"
+        name="end_date"
+        value={formData.end_date}
+        onChange={handleInputChange}
+        min={formData.start_date}
+      />
+    </label>
+    </div>
+    <div className="time-container">
+    <label>
+      End Time:
+      <input
+        type="time"
+        name="end_time"
+        value={formData.end_time}
+        onChange={(e) => {
+          const { value } = e.target;
+          let errorMessage = '';
+          if (formData.start_date === formData.end_date && formData.start_time > value) {
+            // If end_time is less than start_time, set end_time to start_time
+            setFormData({ ...formData, end_time: formData.start_time });
+            errorMessage = 'End time cannot be before start time';
+          } else {
+            // Otherwise, update end_time normally
+            handleInputChange(e);
+          }
+          setEndTimeError(errorMessage);
+        }}
+      />
+    </label>
+    {/* Display error message if end time is before start time */}
+    {endTimeError && (
+      <span style={{ color: 'red' }}>{endTimeError}</span>
+    )}
+    </div>
 
+  </>
+  </div>
+)}
       <label>
         Event Image:
         <input type="file" name="image" accept="image/*" onChange={handleImageChange} />
@@ -346,7 +417,7 @@ const CreateEvent = () => {
           </button>
         </div>
       )}
-
+{error && <div style={{ color: 'red' }}>{error}</div>}
       <div className="form-footer">
         <Button type="submit">Submit</Button>
       </div>
