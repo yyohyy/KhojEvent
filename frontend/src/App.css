@@ -479,6 +479,7 @@ textarea {
   padding: 10px 0;
   color: #fff;
   text-align: center;
+  margin-top:50px;
 }
 
 #footer .copyright {
@@ -506,6 +507,10 @@ textarea {
   bottom: 0;
   left: 0;
   right: 0;
+}
+.hero-block .carouselbg {
+  background:white ;
+
 }
 
 .hero-block .carousel-item img {

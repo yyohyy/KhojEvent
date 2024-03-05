@@ -86,6 +86,11 @@ const Update = () => {
     setFormData({ ...formData, tags: updatedTags });
   };
   
+  
+  const handleTicketUpdate = () => {
+    navigate(`/profile/${localStorage.getItem("id")}/events/update/tickets/${event_id}`);
+};
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -195,6 +200,8 @@ const Update = () => {
               <input type="file" accept="image/*" onChange={handleImageChange} style={{ marginTop: '10px' }} />
             </div>
             </label>
+           
+            <Button variant="danger" onClick={() => handleTicketUpdate()}>Update Ticket</Button>
             <div className="form-footer">
               <Button type="submit">Submit</Button>
             </div>

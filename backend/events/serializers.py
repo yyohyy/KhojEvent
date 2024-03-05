@@ -116,7 +116,7 @@ class InterestedDetailSerializer(serializers.ModelSerializer):
 class CreateTestimonialSerializer(serializers.ModelSerializer):
     class Meta:
         model = Testimonial
-        fields = ['content']
+        fields = ['content','organiser']     
 
 class TestimonialSerializer(serializers.ModelSerializer):
     organiser=OrganiserSerializer(many=False)

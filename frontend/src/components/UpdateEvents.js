@@ -89,7 +89,7 @@ const UpdateEvent = () => {
                     <Button variant="success" onClick={() => handleViewAnalytics(event.id)}>View Analytics</Button>
                 </td>
                 <td>
-                    <Button variant="danger" onClick={() => handleEventUpdate(event.id)}>Update</Button>
+                    <Button variant="danger" onClick={() => handleEventUpdate(event.id)}>Update </Button>
                 </td>
             </tr>
         ))}

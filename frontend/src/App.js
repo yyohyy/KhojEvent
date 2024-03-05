@@ -27,7 +27,7 @@ import Payment from './components/Payment';
 import Order from './components/Order';
 import InterestedEvents from './components/Interested';
 import SearchResults from './components/SearchResults';
-// import InterestedEvents from './components/Interested';
+import PerformanceAnalytics from './components/analyticsinterested';
 import BookedTickets from './components/booked';
 import UpdateEvent from './components/UpdateEvents';
 import Update from './components/update';
@@ -37,7 +37,9 @@ import Ratings from './components/Ratings';
 import Reviews from './components/Reviews';
 import Feedback from './components/Feedback';
 import EventAnalytics from './components/EventAnalytics';
-import EventOrders from './components/EventOrders';
+import EventOrders from './components/EventOrders';import Trending from './components/trending';
+import UpdateTicket from './components/updateticket';
+import OrganiserTestimonial from './components/givetestimonial';
 function App() {
   return (
    <Provider store={store}>
@@ -72,6 +74,7 @@ function App() {
           <Route path="/profile/:id/interested" element={<InterestedEvents/>} />
           <Route path="/profile/:oganiser_id/events" element={<UpdateEvent/>} />
           <Route path="/profile/:organiser_id/events/update/:event_id" element={<Update />} />
+          <Route path="/profile/:organiser_id/events/update/tickets/:event_id" element={<UpdateTicket/>} />
           <Route path="/profile/:id/booked" element={<BookedTickets/>} />
           <Route path="/profile/:id/purchases" element={<PurchasedTickets/>} />
           <Route path="/profile/:id/attended-events" element={<AttendedEvents/>} />
@@ -80,6 +83,9 @@ function App() {
           <Route path="/profile/:id/reviews-left" element={<Reviews/>} />
           <Route path="/profile/:oganiser_id/events/:eventId/analytics" element={<EventAnalytics/>} />
           <Route path="/profile/:id/events/:event_id/orders" element={<EventOrders/>}/>
+          <Route path="/profile/:oganiser_id/analyticsinterested" element={<PerformanceAnalytics/>} />
+          <Route path="/profile/:oganiser_id/trending" element={<Trending/>} />
+          <Route path="/profile/:oganiser_id/givetestimonial/" element={<OrganiserTestimonial/>} />
           </Routes>
          </div>
         </BrowserRouter>

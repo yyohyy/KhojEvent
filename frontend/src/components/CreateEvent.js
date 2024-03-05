@@ -90,6 +90,14 @@ const CreateEvent = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const isValidTicketTypes = formData.ticketTypes.every(ticket => (
+        ticket.name && ticket.description && ticket.price && ticket.quantity
+      ));
+  
+      if (!isValidTicketTypes) {
+        console.error('Each ticket type must have name, description, price, and quantity.');
+        return;
+      }
       const formDataWithoutImage = { ...formData };
       if (!formDataWithoutImage.end_date) {
         delete formDataWithoutImage.end_date;
