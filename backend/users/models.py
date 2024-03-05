@@ -47,12 +47,22 @@ class Organiser(models.Model):
     user= models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True,unique=True)
     name=models.CharField(max_length=255)
     description=models.TextField()
-    address=models.CharField(max_length=255)
-    # zip_code = models.CharField(max_length=20, blank=True)
+    street = models.CharField(max_length=255, blank=True,null=True)
+    area = models.CharField(max_length=255)
+    city= models.CharField(max_length=255)
+    district= models.CharField(max_length=255)
+    province = models.CharField(max_length=255)
+    country = models.CharField(max_length=255)
+    pan_no = models.CharField(max_length=255, blank=True, null=True)  # Optional
+    citizenship_no = models.CharField(max_length=255, blank=True, null=True)  # Optional
+    document_front = models.ImageField(upload_to='images/identification', blank=True, null=True)  # Optional
+    document_back = models.ImageField(upload_to='images/identification', blank=True, null=True)  # Optional
+    business_registration_no = models.CharField(max_length=255, blank=True, null=True)  # Optional for individuals
     facebook=models.URLField(blank=True)
     instagram=models.URLField(blank=True)
     twitter=models.URLField(blank=True)
     website=models.URLField(blank=True)
+    is_verified=models.BooleanField(default=False)
 
     def __str__(self):
         return self.name   

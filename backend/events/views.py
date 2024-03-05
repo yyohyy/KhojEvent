@@ -440,11 +440,12 @@ class InterestedCountView(APIView):
 
 class CreateTestimonial(generics.CreateAPIView):
     queryset = Testimonial.objects.all()
-    serializer_class = TestimonialSerializer
+    serializer_class = CreateTestimonialSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(organiser=self.request.user.organiser)
+   
 
 class ViewTestimonial(generics.ListAPIView):
     queryset = Testimonial.objects.filter(is_approved=True)

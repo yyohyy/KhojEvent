@@ -1248,4 +1248,7 @@ textarea {
   border-bottom: 2px solid #dee2e6; /* Add line below headings */
   padding-bottom: 10px; /* Add padding after the line */
 }
+.auth-form-container {
+  min-height: 100vh; /* Set a minimum height of 100% of the viewport height */
+}
 

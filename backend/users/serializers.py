@@ -38,7 +38,7 @@ class AttendeeSignUpSerializer(serializers.ModelSerializer):
 class OrganiserSignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organiser
-        fields = ['name', 'address','description','website','facebook','instagram','twitter']  
+        fields = ['name', 'description','street','area','city','district','province','country','pan_no','citizenship_no','document_front','document_back','business_registration_no','website','facebook','instagram','twitter']  
 
     def create(self, validated_data):
    
@@ -62,7 +62,7 @@ class AttendeeSerializer(serializers.ModelSerializer):
 class OrganiserSerializer(serializers.ModelSerializer):
     class Meta:
         model=Organiser
-        fields=['name','description','address']
+        fields='__all__'
 
 class AllUserDetails(serializers.ModelSerializer):
     class Meta:

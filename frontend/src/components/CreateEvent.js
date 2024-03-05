@@ -30,6 +30,7 @@ const CreateEvent = () => {
   const [formData, setFormData] = useState(defaultValues);
   const [paidSelected, setPaidSelected] = useState(false);
   const [isOrganiser, setIsOrganiser] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('Bearer');
@@ -41,7 +42,14 @@ const CreateEvent = () => {
     AxiosInstance.get(`http://127.0.0.1:8000/users/me/`)
       .then(response => {
         setIsOrganiser(response.data.is_organiser); // Assuming the is_organiser field is a boolean
-      })
+        })
+      .catch(error => {
+        console.error('Error fetching user data:', error);
+      });
+      AxiosInstance.get(`http://127.0.0.1:8000/users/details/${localStorage.getItem("id")}`)
+      .then(response => {
+        setIsVerified(response.data.organiser_details.is_verified); 
+        })
       .catch(error => {
         console.error('Error fetching user data:', error);
       });
@@ -177,7 +185,20 @@ const CreateEvent = () => {
    
 
     )}
-    {isOrganiser && (
+        {isOrganiser && !isVerified && (
+     <section className="min-vh-100 d-flex flex-column justify-content-center" style={{ backgroundColor: "#ffffff" }}>
+     <div className="organiser-message">
+       <div className="organiser-message-text">
+         <p>
+         We want to inform you that your account details are currently undergoing verification. This process ensures the security and integrity of our platform.
+         </p>
+       </div>
+     </div>
+   </section>
+   
+
+    )}
+    {isOrganiser && isVerified && (
     <form onSubmit={handleSubmit} className="event-form">
       <label>
         Name:
@@ -351,16 +372,18 @@ const CreateEvent = () => {
 
       {/* Max Limit (if Paid is chosen) */}
       {paidSelected && (
-  <label>
-    Max Limit:
-    <input
-      type="number"
-      name="max_limit"
-      value={formData.max_limit}
-      onChange={handleInputChange}
-      min={1} // Set the minimum value allowed
-    />
-  </label>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+  <label style={{ marginRight: "10px", fontSize: "18px" }}>Max Limit:</label>
+  <input
+    type="number"
+    name="max_limit"
+    value={formData.max_limit}
+    onChange={handleInputChange}
+    style={{ width: "60px", padding: "5px", textAlign: "center" }}
+    min={1}
+  />
+</div>
+
 )}
 
       {/* Ticket Types (if Paid is chosen) */}
@@ -391,24 +414,30 @@ const CreateEvent = () => {
                     onChange={(e) => handleTicketTypeChange(index, e)}
                   />
                 </label>
-                <label>
-                  Price:
-                  <input
-                    type="number"
-                    name="price"
-                    value={ticket.price}
-                    onChange={(e) => handleTicketTypeChange(index, e)}
-                  />
-                </label>
-                <label>
-                  Quantity:
-                  <input
-                    type="number"
-                    name="quantity"
-                    value={ticket.quantity}
-                    onChange={(e) => handleTicketTypeChange(index, e)}
-                  />
-                </label>
+                <div style={{ display: "flex", alignItems: "center" }}>
+  <label style={{ marginRight: "10px" }}>
+    Price:
+    <input
+      type="number"
+      name="price"
+      value={ticket.price}
+      min="0"
+      onChange={(e) => handleTicketTypeChange(index, e)}
+
+    />
+  </label>
+  <label>
+    Quantity:
+    <input
+      type="number"
+      name="quantity"
+      value={ticket.quantity}
+      min="0"
+      onChange={(e) => handleTicketTypeChange(index, e)}
+    />
+  </label>
+</div>
+
               </div>
             </div>
           ))}

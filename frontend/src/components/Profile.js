@@ -79,10 +79,9 @@ const ProfileDashboard = () => {
       } else if (userData.organiser_details) {
         requestData = {
           organiser_details: {
-            email:newEmail,
-            name: newName,
+
             description: newDescription,
-            address: newAddress,
+
             // facebook: newFacebook,
             // instagram: newInstagram,
             // twitter: newTwitter,
@@ -292,41 +291,35 @@ const ProfileDashboard = () => {
                   )}
                   {userData.organiser_details && (
                     <>
-                    <div className="row mb-3" style={{ marginLeft: '50px' }}>
-                        <label className="col-sm-2 col-form-label">Email:</label>
-                        <div className="col-sm-10">
-                          {editing ? (
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={newEmail}
-                              onChange={(e) => setNewEmail(e.target.value)}
-                            />
-                          ) : (
-                            userData.email
-                          )}
-                        </div>
-                      </div>
+    <div className="row mb-3" style={{ marginLeft: '50px' }}>
+      <label className="col-sm-2 col-form-label">
+        Email:
+      </label>
+      <div className="col-sm-10 mt-2">
+        {userData.email}
+      </div>
+    </div>
+    <div className="row mb-3" style={{ marginLeft: '50px' }}>
+      <label className="col-sm-2 col-form-label">
+        Phone Number
+      </label>
+      <div className="col-sm-10 mt-2">
+        {userData.phone_number}
+      </div>
+    </div>
                       <div className="row mb-3" style={{ marginLeft: '50px' }}>
-                        <label className="col-sm-2 col-form-label">Name:</label>
-                        <div className="col-sm-10">
-                          {editing ? (
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={newName}
-                              onChange={(e) => setNewName(e.target.value)}
-                            />
-                          ) : (
-                            userData.organiser_details.name
-                          )}
-                        </div>
-                      </div>
+      <label className="col-sm-2 col-form-label">
+        Name:
+      </label>
+      <div className="col-sm-10 mt-2">
+        {userData.organiser_details.name}
+      </div>
+    </div>
                       <div className="row mb-3" style={{ marginLeft: '50px' }}>
                         <label className="col-sm-2 col-form-label">
                           Description:
                         </label>
-                        <div className="col-sm-10">
+                        <div className="col-sm-10 mt-2">
                           {editing ? (
                             <textarea
                               className="form-control"
@@ -341,22 +334,13 @@ const ProfileDashboard = () => {
                         </div>
                       </div>
                       <div className="row mb-3" style={{ marginLeft: '50px' }}>
-                        <label className="col-sm-2 col-form-label">
-                          Address:
-                        </label>
-                        <div className="col-sm-10">
-                          {editing ? (
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={newAddress}
-                              onChange={(e) => setNewAddress(e.target.value)}
-                            />
-                          ) : (
-                            userData.organiser_details.address
-                          )}
-                        </div>
-                      </div>
+      <label className="col-sm-2 col-form-label">
+        Address:
+      </label>
+      <div className="col-sm-10 mt-2">
+        {`${userData.organiser_details.street}, ${userData.organiser_details.area}, ${userData.organiser_details.city}, ${userData.organiser_details.district}, ${userData.organiser_details.province}, ${userData.organiser_details.country}`}
+      </div>
+    </div>
                     </>
                   )}
                 </>

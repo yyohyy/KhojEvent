@@ -1,3 +1,4 @@
+//header.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { CgProfile } from "react-icons/cg";
@@ -7,16 +8,10 @@ import { useNavigate } from "react-router-dom";
 
 function Cart() {
   const [remainingTime, setRemainingTime] = useState(null);
-  const [timerExpired, setTimerExpired] = useState(false);
 
   useEffect(() => {
-    const intervalId = setInterval(fetchCartData, 1000); // Refresh cart data every second
-    return () => clearInterval(intervalId); // Cleanup the interval
-  }, []);
-
-  const fetchCartData = async () => {
-    try {
-      if (!timerExpired) { // Check if the timer has not expired
+    const fetchCartData = async () => {
+      try {
         const token = localStorage.getItem('Bearer');
         const response = await axios.get(`http://127.0.0.1:8000/tickets/cart/${localStorage.getItem("id")}`, {
           headers: {
@@ -26,15 +21,20 @@ function Cart() {
         const cartData = response.data;
         const cartExpirationTime = new Date(cartData.expiration_time).getTime();
         const remainingMilliseconds = cartExpirationTime - Date.now();
-        setRemainingTime(remainingMilliseconds);
         if (remainingMilliseconds <= 0) {
-          setTimerExpired(true); // Set timerExpired flag to true when the timer reaches 00:00:00
+          clearInterval(intervalId); // Stop fetching data once the timer has expired
+          intervalId=setInterval(fetchCartData,0);
+          console.log("hey")
         }
+        setRemainingTime(remainingMilliseconds);
+      } catch (error) {
+        console.error('Error fetching cart data:', error);
       }
-    } catch (error) {
-      console.error('Error fetching cart data:', error);
-    }
-  };
+    };
+
+    const intervalId = setInterval(fetchCartData, 1000); // Refresh cart data every second
+    return () => clearInterval(intervalId); // Cleanup the interval
+  }, []);
 
   const formatTime = (remainingMilliseconds) => {
     if (remainingMilliseconds <= 0) return "00:00:00";
@@ -68,7 +68,7 @@ function AppHeader() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAttendee, setIsAttendee] = useState(false);
-  const [intervalId, setIntervalId] = useState(null); // State variable to hold the interval ID
+  const [showTimer, setShowTimer] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -90,33 +90,31 @@ function AppHeader() {
 
   useEffect(() => {
     if (isAttendee && isLoggedIn) {
-      const id = setInterval(fetchCartData, 1000); // Refresh cart data every second
-      setIntervalId(id);
-    }
-    return () => {
-      clearInterval(intervalId); // Cleanup the interval
-    };
-  }, [isAttendee]);
-
-  const fetchCartData = async () => {
-    try {
-      const token = localStorage.getItem('Bearer');
-      const response = await axios.get(`http://127.0.0.1:8000/tickets/cart/${localStorage.getItem("id")}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const fetchCartData = async () => {
+        try {
+          const token = localStorage.getItem('Bearer');
+          const response = await axios.get(`http://127.0.0.1:8000/tickets/cart/${localStorage.getItem("id")}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          const cartData = response.data;
+          const cartExpirationTime = new Date(cartData.expiration_time).getTime();
+          const remainingMilliseconds = cartExpirationTime - Date.now();
+          if (remainingMilliseconds <= 0) {
+            setShowTimer(false); // Stop displaying the timer
+            clearInterval(intervalId);
+            console.log("HEllo")
+          }
+        } catch (error) {
+          console.error('Error fetching cart data:', error);
         }
-      });
-      const cartData = response.data;
-      const cartExpirationTime = new Date(cartData.expiration_time).getTime();
-      const remainingMilliseconds = cartExpirationTime - Date.now();
-      if (remainingMilliseconds <= 0) {
-        
-        clearInterval(intervalId); // Stop fetching data once the timer has expired
-      }
-    } catch (error) {
-      console.error('Error fetching cart data:', error);
+      };
+
+      const intervalId = setInterval(fetchCartData, 1000); // Refresh cart data every second
+      return () => clearInterval(intervalId); // Cleanup the interval
     }
-  };
+  }, [isAttendee, isLoggedIn]);
 
   const logout = () => {
     localStorage.removeItem("Bearer");
@@ -161,7 +159,7 @@ function AppHeader() {
 
             {isLoggedIn ? (
               <>
-                {isAttendee && <Cart />}
+                {isAttendee && showTimer && <Cart />}
                 <NavDropdown title={<CgProfile size={20} />} id="basic-nav-dropdown">
                   <NavDropdown.Item href={`/profile/${localStorage.getItem("id")}`}>
                     View Profile

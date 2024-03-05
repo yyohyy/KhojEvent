@@ -47,7 +47,6 @@ const Feedback = () => {
                 setExistingReview(reviewResponse.data.body);
             } catch (error) {
                 console.error('Error fetching data:', error);
-                setErrorMessage("Error fetching data. Please try again later.");
             }
         };
         fetchData();

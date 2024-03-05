@@ -45,6 +45,11 @@ const Checkout = () => {
       // Fetch the order ID and redirect to the payment page
       navigate(`/payment/${orderId}`);
       console.log('Checkout successful');
+            // Stop displaying the timer in the header by updating cart expiration time to 00:00:00
+            setCartDetails(prevCartDetails => ({
+              ...prevCartDetails,
+              expiration_time: '1970-01-01T00:00:00Z' // Update expiration time to 00:00:00
+            }));
     } catch (error) {
       setError('Error during checkout');
       console.error('Error during checkout:', error);

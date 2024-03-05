@@ -113,8 +113,13 @@ class InterestedDetailSerializer(serializers.ModelSerializer):
         model = Interested
         fields = '__all__'
 
+class CreateTestimonialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Testimonial
+        fields = ['content']
+
 class TestimonialSerializer(serializers.ModelSerializer):
     organiser=OrganiserSerializer(many=False)
     class Meta:
         model = Testimonial
-        fields = ['content','organiser']      
+        fields = ['id','content','organiser']      
