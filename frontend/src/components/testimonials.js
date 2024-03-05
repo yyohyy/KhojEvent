@@ -32,10 +32,11 @@ function AppTestimonials() {
             {testimonialsData.map(testimonial => (
               <Carousel.Item key={testimonial.id}>
                 <blockquote>
-                  <p>{testimonial.description}</p>
+                  <p>{testimonial.content}</p>
                   <cite>
-                    <span className='name'>{testimonial.name}</span>
-                    <span className='designation'>{testimonial.designation}</span>
+                    <span className='name'>{testimonial.organiser.name}</span>
+                    <span className='name'>{testimonial.organiser.address}</span>
+                    
                   </cite>
                 </blockquote>             
               </Carousel.Item>

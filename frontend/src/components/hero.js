@@ -104,12 +104,12 @@ const AppHero = () => {
           bg="light" style={{backgroundColor: 'white'}}
         >
           {events.map((event, index) => (
-            <Carousel.Item key={event.id} active={index >= currentIndex && index < currentIndex + 3}>
-              <Row>
+            <Carousel.Item key={event.id} active={index >= currentIndex && index < currentIndex + 3} >
+             <Row className="bg-white" style={{ backgroundColor: 'white' }}> 
                 {events.slice(index, index + 3).map(event => (
                   <Col key={event.id} xs={12} sm={6} md={4}>
                     <div className='portfolio-wrapper'>
-                      <Card>
+                      <Card >
                         <Card.Img variant="top" src={event.image}  style={{ height: '200px', objectFit: 'cover'}}/>
                         <Card.Body>
                           <h3 style={{ fontFamily: 'Montserrat', color: '#8f0000', fontSize:'30px' }}>{event.name}</h3>
@@ -126,7 +126,9 @@ const AppHero = () => {
                         </Card.Body>
                       </Card>
                     </div>
+                    
                   </Col>
+                  
                 ))}
               </Row>
             </Carousel.Item>

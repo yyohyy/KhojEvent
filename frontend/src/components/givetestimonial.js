@@ -12,40 +12,40 @@ const OrgansierTestimonial = () => {
     const [submitted, setSubmitted] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
-    // Fetch testimonial data when the component mounts
-    useEffect(() => {
-        const fetchTestimonial = async () => {
-            try {
-                // Fetch testimonial data from the backend API
-                const authToken = localStorage.getItem("Bearer");
-                const testimonialResponse = await axios.get(`http://127.0.0.1:8000/testimonials`, {
-                    headers: {
-                        Authorization: `Bearer ${authToken}`,
-                    },
-                });
+    // // Fetch testimonial data when the component mounts
+    // useEffect(() => {
+    //     const fetchTestimonial = async () => {
+    //         try {
+    //             // Fetch testimonial data from the backend API
+    //             const authToken = localStorage.getItem("Bearer");
+    //             const testimonialResponse = await axios.get(`http://127.0.0.1:8000/testimonials`, {
+    //                 headers: {
+    //                     Authorization: `Bearer ${authToken}`,
+    //                 },
+    //             });
 
-                // Set the existing testimonial data in the state
-                setExistingTestimonial(testimonialResponse.data.body);
-            } catch (error) {
-                // Handle any errors that occur during fetching
-                console.error('Error fetching testimonial:', error);
-                setErrorMessage("Error fetching testimonial. Please try again later.");
-            }
-        };
-        fetchTestimonial();
-    }, []);
+    //             // Set the existing testimonial data in the state
+    //             setExistingTestimonial(testimonialResponse.data.body);
+    //         } catch (error) {
+    //             // Handle any errors that occur during fetching
+    //             console.error('Error fetching testimonial:', error);
+    //             setErrorMessage("Error fetching testimonial. Please try again later.");
+    //         }
+    //     };
+    //     fetchTestimonial();
+    // }, []);
 
     // Update the testimonial state when existing testimonial data changes
-    useEffect(() => {
-        if (existingTestimonial !== null) {
-            setTestimonial(existingTestimonial);
-        }
-    }, [existingTestimonial]);
+    // useEffect(() => {
+    //     if (existingTestimonial !== null) {
+    //         setTestimonial(existingTestimonial);
+    //     }
+    // }, [existingTestimonial]);
 
     // Event handler for updating testimonial state
-    const handleTestimonialChange = (e) => {
-        setTestimonial(e.target.value);
-    };
+    // const handleTestimonialChange = (e) => {
+    //     setTestimonial(e.target.value);
+    // };
 
     // Event handler for form submission
 // Event handler for form submission
@@ -56,13 +56,14 @@ const handleSubmit = async (e) => {
         setLoading(true);
         // Fetch JWT token from local storage for authentication
         const authToken = localStorage.getItem("Bearer");
+        const organiser=localStorage.getItem("id")
         const headers = {
             headers: {
                 Authorization: `Bearer ${authToken}`,
             },
         };
         // Send only the testimonial data
-        await axios.post(`http://127.0.0.1:8000/testimonial/create/`, { body: testimonial }, headers);
+        await axios.post(`http://127.0.0.1:8000/testimonial/create/`, { content: testimonial,organiser: organiser }, headers);
         console.log('Testimonial submitted successfully');
         // Set the submission status to true
         setSubmitted(true);
@@ -95,7 +96,7 @@ const handleSubmit = async (e) => {
                     <Form onSubmit={handleSubmit}>
                         <Form.Group controlId="formTestimonial" style={{ paddingLeft: '50px', paddingRight: '50px' }}>
                             <h3>Testimonial:</h3>
-                            <Form.Control as="textarea" rows={6} value={testimonial} onChange={handleTestimonialChange} />
+                            <Form.Control as="textarea" rows={6} value={testimonial} onChange={(e) => setTestimonial(e.target.value)} />
                         </Form.Group>
                         {/* Submit button */}
                         <Button variant="primary" type="submit" disabled={loading || submitted} style={{ marginTop: '10px', marginBottom: '20px', marginLeft: 'auto', marginRight: 'auto', display: 'block' }}>

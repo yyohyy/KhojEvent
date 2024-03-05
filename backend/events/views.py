@@ -440,7 +440,7 @@ class InterestedCountView(APIView):
 
 class CreateTestimonial(generics.CreateAPIView):
     queryset = Testimonial.objects.all()
-    serializer_class = TestimonialSerializer
+    serializer_class = CreateTestimonialSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
