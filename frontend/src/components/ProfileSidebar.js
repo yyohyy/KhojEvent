@@ -35,7 +35,7 @@ function ProfileSidebar() {
             <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}`)}>Profile</Button>
             <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/events`)}>Events</Button>
             <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/create-event`)}>Create Event</Button>
-            <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/trending`)}>Performance Analytics</Button> 
+            {/* <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/trending`)}>Performance Analytics</Button>  */}
             <Button className="sidebar-btn" variant="secondary" onClick={() => navigate(`/profile/${localStorage.getItem('id')}/givetestimonial`)}>Testimonials</Button>
           </>
         ) : (
