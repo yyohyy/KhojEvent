@@ -82,20 +82,40 @@ const Cart = () => {
   
   const handleCartExpiration = async () => {
     try {
-      // Delete cart when timer ends
       const token = localStorage.getItem('Bearer');
-      await axios.delete(`http://127.0.0.1:8000/tickets/cart/${localStorage.getItem("id")}/`,{
+      const cartItems = []; // Array to store IDs of cart items
+      
+      // Retrieve cart items from backend
+      const response = await axios.get(`http://127.0.0.1:8000/tickets/cart/${localStorage.getItem("id")}/`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
-      });// Change the endpoint as per your backend
-      window.location.reload()
-      navigate('/events'); // Redirect to events page after deleting cart
+      });
+      const items = response.data.tickets;
+      
+      // Extract IDs of cart items
+      items.forEach(item => {
+        cartItems.push(item.id);
+      });
+  
+      // Delete each cart item
+      await Promise.all(cartItems.map(async itemId => {
+        await axios.delete(`http://127.0.0.1:8000/tickets/cart/${itemId}/update/`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+      }));
+      
+      // Reload the page and redirect to events page
+      window.location.reload();
+      navigate('/events');
       
     } catch (error) {
-      console.error('Error deleting cart:', error);
+      console.error('Error deleting cart items:', error);
     }
   };
+  
 
   const removeItemFromCart = async (itemId) => {
     try {

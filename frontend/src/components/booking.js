@@ -90,7 +90,7 @@ function BookingPage() {
    
     
   return (
-    <div className="container booking-container mt-5 mb-5 p-4 shadow">
+    <div className="container booking-container mt-5 mb-5 p-4 shadow " style={{ minHeight: "700px" }}>
       <div className="row justify-content-end">
         <div className="col-auto">
           <FaTimes className="close-icon" onClick={() => navigate(`/events/${event_id}`)} />

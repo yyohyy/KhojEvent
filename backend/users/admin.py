@@ -12,7 +12,7 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ("email", "is_staff", "is_active",)
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        ("Permissions", {"fields": ("profile_picture","phone_number","is_staff", "is_active","is_attendee","is_organiser", "groups", "user_permissions")}),
+        ("Permissions", {"fields": ("is_staff", "is_active","is_attendee","is_organiser", "groups", "user_permissions")}),
     )
     add_fieldsets = (
         (None, {
