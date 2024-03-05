@@ -71,7 +71,7 @@ class Cart(models.Model):
     def set_expiration_time(self):
 
         # Set expiration time to 30 minutes from now
-        self.expiration_time = timezone.now() + timedelta(minutes=1)
+        self.expiration_time = timezone.now() + timedelta(minutes=30)
         self.save(update_fields=['expiration_time'])
 
           

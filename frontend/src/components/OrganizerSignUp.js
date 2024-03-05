@@ -404,7 +404,7 @@ const OrganizerSignup = () => {
               </>
             )}
 
-<p className="text-muted mb-4">
+<p className="text-muted mb-4 mt-4">
           Please enter your details carefully and review it as they cannot be edited later.
         </p>
             <div className="d-grid mt-4">

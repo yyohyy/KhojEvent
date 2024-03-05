@@ -101,14 +101,14 @@ const AppHero = () => {
           indicators={false}
           nextIcon={<span className="carousel-control-next-icon" />}
           prevIcon={<span className="carousel-control-prev-icon" />}
-          bg="light" style={{backgroundColor: 'white'}}
+
         >
           {events.map((event, index) => (
             <Carousel.Item key={event.id} active={index >= currentIndex && index < currentIndex + 3} >
-             <Row className="bg-white" style={{ backgroundColor: 'white' }}> 
+             <Row> 
                 {events.slice(index, index + 3).map(event => (
                   <Col key={event.id} xs={12} sm={6} md={4}>
-                    <div className='portfolio-wrapper'>
+                    <div className='portfolio-wrapper label text-center '>
                       <Card >
                         <Card.Img variant="top" src={event.image}  style={{ height: '200px', objectFit: 'cover'}}/>
                         <Card.Body>
@@ -121,7 +121,7 @@ const AppHero = () => {
                             <span style={{ paddingLeft: '10px' }}><FaClock style={{ fill: 'pink' }} /> {event.start_time}</span>
                           </p>
                           <div className="text-center">
-                            <a href={`/events/${event.id}`} className="btn btn-primary">Read More <FaChevronRight style={{ fill: '#888' }} /></a>
+                            <a href={`/events/${event.id}`} className="btn btn-primary">Read More <FaChevronRight style={{ fill: '#ffffff' }} /></a>
                           </div>
                         </Card.Body>
                       </Card>

@@ -90,7 +90,7 @@ const Feedback = () => {
                 await axios.post(`http://127.0.0.1:8000/rate-event/`, { event: eventId, rating: rating,attendee:localStorage.getItem("id")  },headers);
             }
             // Update or create review
-            if (existingReview !== null) {
+            if (existingReview !== "") {
                 await axios.patch(`http://127.0.0.1:8000/reviews/${eventId}/`, {event: eventId,  body: review, attendee:localStorage.getItem("id")  },headers);
             } else {
                 await axios.post(`http://127.0.0.1:8000/reviews/`, { event: eventId, body: review ,attendee:localStorage.getItem("id") },headers);

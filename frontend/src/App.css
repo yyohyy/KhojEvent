@@ -501,7 +501,7 @@ textarea {
 
 .hero-block .carousel-item:before {
   content: '';
-  background: rgba(0, 0, 0, 0.7);
+  /* background: rgba(0, 0, 0, 0.7); */
   position: absolute;
   top: 0;
   bottom: 0;
@@ -509,8 +509,11 @@ textarea {
   right: 0;
 }
 .hero-block .carouselbg {
-  background:white ;
+  background:rgb(61, 15, 15) ;
 
+}
+.carousel-control-prev-icon, .carousel-control-next-icon {
+  color: rgb(177, 59, 59); 
 }
 
 .hero-block .carousel-item img {

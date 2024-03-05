@@ -5,13 +5,13 @@ import StarRatings from 'react-star-ratings';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const axiosInstance = axios.create({
-  baseURL: 'http://127.0.0.1:8000',
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${localStorage.getItem('Bearer')}`,
-  },
-});
+// const axiosInstance = axios.create({
+//   baseURL: 'http://127.0.0.1:8000',
+//   headers: {
+//     'Content-Type': 'application/json',
+//     Authorization: `Bearer ${localStorage.getItem('Bearer')}`,
+//   },
+// });
 
 function AppEventDetails() {
   const [activeEventData, setActiveEventData] = useState({});
@@ -35,33 +35,21 @@ function AppEventDetails() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const eventResponse = await axiosInstance.get(`/events/${event_id}/`);
+        const eventResponse = await axios.get(`http://127.0.0.1:8000/events/${event_id}/`);
         setActiveEventData(eventResponse.data);
         setLoading(false);
         
 
         if (eventResponse.data.organiser) {
           const organiserId = eventResponse.data.organiser;
-          const organiserResponse = await axiosInstance.get(`/users/details/${organiserId}/`);
+          const organiserResponse = await axios.get(`http://127.0.0.1:8000/users/details/${organiserId}/`);
           setOrganiserData(organiserResponse.data);
         }
 
 
-        const userResponse = await axiosInstance.get(`/users/me/`);
-        setIsOrganiser(userResponse.data.is_organiser);
-        setIsAttendee(userResponse.data.is_attendee);
-        console.log('isOrganiser:', userResponse.data.is_organiser);
-        console.log('isAttendee:', userResponse.data.is_attendee);
-
-        if (userResponse.data.is_attendee) {
-          const interestedResponse = await axiosInstance.get(`/interested-event/${event_id}/`);
-          setInterested(interestedResponse.data.success);
-          console.log(interested)
-          }
-        
-
-        const ratingResponse = await axiosInstance.get(`/events/${event_id}/ratings`);
+        const ratingResponse = await axios.get(`http://127.0.0.1:8000/events/${event_id}/ratings`);
         setRating(ratingResponse.data.average_rating);
+        console.log(rating)
 
         const fetchRatingsAndReviews = async () => {
           try {
@@ -73,6 +61,27 @@ function AppEventDetails() {
         };
     
         fetchRatingsAndReviews();
+        const userResponse = await axios.get(`http://127.0.0.1:8000/users/me/`,{
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('Bearer')}`,
+          }});
+        setIsOrganiser(userResponse.data.is_organiser);
+        setIsAttendee(userResponse.data.is_attendee);
+        console.log('isOrganiser:', userResponse.data.is_organiser);
+        console.log('isAttendee:', userResponse.data.is_attendee);
+
+        if (userResponse.data.is_attendee) {
+          const interestedResponse = await axios.get(`http://127.0.0.1:8000/interested-event/${event_id}/`,{
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('Bearer')}`,
+            }});
+          setInterested(interestedResponse.data.success);
+          console.log(interested)
+          }
+        
+
 
 
          const user=localStorage.getItem("id")
@@ -91,7 +100,11 @@ function AppEventDetails() {
 
   const handleToggleInterest = async () => {
     try {
-      const response = await axiosInstance.post(`/events/${event_id}/interested/`, {});
+      const response = await axios.post(`http://127.0.0.1:8000/events/${event_id}/interested/`, {},{
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('Bearer')}`,
+        }});
   
       if (response.data.success) {
         setInterested(prevInterested => !prevInterested);
@@ -208,7 +221,7 @@ function AppEventDetails() {
                       </div>
                       <div className="me-2">
                         <span className="me-2"><BiMap style={{ color: 'red' }} /></span>
-                        <span>{organiserData.organiser_details.address}</span>
+                        <span>{organiserData.organiser_details.area}</span>
                       </div>
                     </div>
                   </div>

@@ -29,9 +29,9 @@ function AppEvents() {
           <h2>EVENTS</h2>
           <div className="subtitle">browse and be there</div>
         </div>
-        <Row className='portfoliolist'>
+        <Row className='portfoliolist md-4'>
           {eventsData.map(event => (
-            <Col sm={4} key={event.id}>
+            <Col xs={12} sm={6} md={4} key={event.id} className="mb-4">
               <div className='portfolio-wrapper'>
                 {/* Use Link to navigate to the specific event page */}
                 <Link to={`/events/${event.id}`} className="card-link">
