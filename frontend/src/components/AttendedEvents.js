@@ -34,9 +34,6 @@ const AttendedEvents = () => {
         navigate(`/events/${eventId}`);
     };
 
-    const handleOrderClick = (eventId) => {
-        navigate(`/profile/${localStorage.getItem("id")}/events/${eventId}/orders`);
-    };
 
     const handleLeaveFeedbackClick = (eventId) => {
         navigate(`/profile/${localStorage.getItem("id")}/leave-feedback/${eventId}`);
@@ -60,7 +57,7 @@ const AttendedEvents = () => {
                                 <thead>
                                     <tr>
                                         <th className="text-center">Event Name</th>
-                                        <th className="text-center">Orders</th>
+                                   
                                         <th className="text-center">Feedback</th>
                                     </tr>
                                     <tr className="table-heading-line">
@@ -71,9 +68,9 @@ const AttendedEvents = () => {
                                     {events.map(event => (
                                         <tr key={event.id}>
 <td className="text-center" onClick={() => handleEventClick(event.id)} style={{ cursor: 'pointer' }}>{event.name}</td>
-                                            <td className="text-center">
+                                            {/* <td className="text-center">
                                                 <Button variant="success" onClick={() => handleOrderClick(event.id)}>View Orders</Button>
-                                            </td>
+                                            </td> */}
                                             <td className="text-center">
                                                 <Button variant="secondary" onClick={() => handleLeaveFeedbackClick(event.id)}>Leave Feedback</Button>
                                             </td>

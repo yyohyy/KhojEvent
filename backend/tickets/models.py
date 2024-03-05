@@ -49,20 +49,9 @@ class Cart(models.Model):
             total_amount = selected_tickets.aggregate(total=Sum('amount'))['total'] or Decimal('0.0')
             self.total_amount = total_amount
 
-
     def save(self, *args, **kwargs):
-        # update_fields = kwargs.pop('update_fields', None)
-
-
-
-        # if not update_fields or 'total_amount' in update_fields:
-        #     self.update_total_amount()
-
-        # if not update_fields or 'total_amount' not in update_fields:
-        #     # Only call update_total_amount if total_amount is not being explicitly updated
-        #     self.update_total_amount()
-        
-        if not self.pk:  # Check if the cart is being created for the first time
+      
+        if not self.pk:  
             self.set_expiration_time()
         super().save(*args, **kwargs)
 

@@ -338,7 +338,7 @@ const ProfileDashboard = () => {
         Address:
       </label>
       <div className="col-sm-10 mt-2">
-        {`${userData.organiser_details.street}, ${userData.organiser_details.area}, ${userData.organiser_details.city}, ${userData.organiser_details.district}, ${userData.organiser_details.province}, ${userData.organiser_details.country}`}
+        {`${userData.organiser_details.street}, ${userData.organiser_details.area}`}
       </div>
     </div>
                     </>

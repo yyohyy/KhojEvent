@@ -13,6 +13,7 @@ function EventAnalytics() {
   const [tickets, setTickets] = useState([]);
   const [ticketTypes, setTicketTypes] = useState([]);
   const [interestedCount, setInterestedCount] = useState(0);
+  const [rating, setRating] = useState(0);
   const [ratingsAndReviewsData, setRatingsAndReviewsData] = useState([]);
 
   useEffect(() => {
@@ -51,6 +52,13 @@ function EventAnalytics() {
       console.error('Error fetching ratings and reviews:', error);
     });
 
+    axios.get(`http://127.0.0.1:8000/events/${eventId}/ratings`)
+    .then(response => {
+      setRating(response.data.average_rating);
+    }) .catch (error=> {
+      console.error('Error fetching ratings and reviews:', error);
+    });
+
   }, [eventId]);
 
   const combinedData = ticketTypes.map(ticket => ({
@@ -84,14 +92,29 @@ function EventAnalytics() {
 </Card>
 )}
 <div className="d-flex justify-content-center">
-<Card className="mt-5 p-2" style={{ width: 'fit-content' }}>
+<Card className="mt-5 p-2 border-0" style={{ width: 'fit-content' }}>
+<Card.Body className="d-flex flex-column justify-content-center align-items-center p-2">
+    <h3 className="mb-3">Average Rating:</h3>
+    <div className="d-flex align-items-center mt-1 mb-2">
+        <StarRatings
+          rating={rating}
+          starRatedColor="orange"
+          numberOfStars={5}
+          name='rating'
+          starDimension="25px"
+          starSpacing="2px"
+        />
+      </div>
+  </Card.Body>
+  <h2>-----------------</h2>
   <Card.Body className="d-flex flex-column justify-content-center align-items-center p-2">
     <h3 className="mb-3">Interested Count</h3>
     <div className="d-flex align-items-center">
       <FaUsers size={20} style={{ marginRight: '10px' }} />
       <p className="m-0">{interestedCount}</p>
     </div>
-  </Card.Body>
+    </Card.Body>
+    <h2>-----------------</h2>
 </Card>
 </div>
 {event && event.is_paid===true && (    

@@ -83,11 +83,12 @@ const Feedback = () => {
                     Authorization: `Bearer ${authToken}`,
                 },
             };
+            console.log(rating)
             // Update or create rating
             if (existingRating) {
-                await axios.patch(`http://127.0.0.1:8000/event-ratings/${eventId}/`, {event: eventId, rating: rating,attendee:localStorage.getItem("id") },headers);
+                await axios.patch(`http://127.0.0.1:8000/event-ratings/${eventId}/`, {event: eventId, stars: rating,attendee:localStorage.getItem("id") },headers);
             } else {
-                await axios.post(`http://127.0.0.1:8000/rate-event/`, { event: eventId, rating: rating,attendee:localStorage.getItem("id")  },headers);
+                await axios.post(`http://127.0.0.1:8000/rate-event/`, { event: eventId, stars: rating,attendee:localStorage.getItem("id")  },headers);
             }
             // Update or create review
             if (existingReview !== "") {

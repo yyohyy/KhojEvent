@@ -46,6 +46,7 @@ const AppLogin = () => {
         window.location.reload()
       } else {
         navigate('/user-type-selection');
+        window.location.reload();
       }
 
     } catch (error) {

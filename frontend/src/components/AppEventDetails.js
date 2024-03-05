@@ -47,9 +47,9 @@ function AppEventDetails() {
         }
 
 
-        const ratingResponse = await axios.get(`http://127.0.0.1:8000/events/${event_id}/ratings`);
-        setRating(ratingResponse.data.average_rating);
-        console.log(rating)
+        // const ratingResponse = await axios.get(`http://127.0.0.1:8000/events/${event_id}/ratings`);
+        // setRating(ratingResponse.data.average_rating);
+        // console.log(rating)
 
         const fetchRatingsAndReviews = async () => {
           try {
@@ -166,7 +166,7 @@ function AppEventDetails() {
             )}
 <div className="card-title" style={{ fontFamily: "Comfortaa, cursive", color: "#f64b4b",fontSize: '50px', color: '#333', fontWeight: 'bold' }}><h1>{activeEventData.name}</h1></div>
 
-            <div className="d-flex align-items-center mt-1 mb-2">
+            {/* <div className="d-flex align-items-center mt-1 mb-2">
               <StarRatings
                 rating={rating}
                 starRatedColor="orange"
@@ -177,7 +177,7 @@ function AppEventDetails() {
                 starSpacing="2px"
                 disabled={rated}
               />
-            </div>
+            </div> */}
             <div className="d-flex align-items-center mt-3">
               <span className="me-3">
                 <FaMapMarkerAlt /> {activeEventData.venue}

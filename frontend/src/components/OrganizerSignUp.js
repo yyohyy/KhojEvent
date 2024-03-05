@@ -45,6 +45,9 @@ const OrganizerSignup = () => {
         return;
       }
       console.log(authToken);
+
+      
+
       // Make another API call with the obtained token
       const response = await axios.post('http://127.0.0.1:8000/users/organiser/', organizerData, {
         headers: {
@@ -53,8 +56,16 @@ const OrganizerSignup = () => {
       });
       // If the post request is successful
       if (response.status === 201) {
+        const userResponse = await axios.get('http://127.0.0.1:8000/users/me', {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+        console.log(userResponse);
+         const id=userResponse.data.id
+         console.log(id);
         // Get the organizer ID from the response
-        const id=localStorage.getItem("id")
+        // const id=localStorage.getItem("id")
         // Make a patch request to update phone number
         const updateResponse = await axios.patch(`http://127.0.0.1:8000/users/details/${id}/`, {
           id: id,
@@ -97,6 +108,7 @@ const OrganizerSignup = () => {
       area:"",
       city: "",
       province: "",
+      district:"",
       country: "",
       pan_no: "",
       citizenship_no: "",
