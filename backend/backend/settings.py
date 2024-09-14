@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#_)wgi&yrx$yk-0!9!q&ftez#!%t8+7c$z%v)n7nqcdw&rc&wd'
+#SECRET_KEY = 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -85,25 +85,22 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'KhojEvent',
-        'HOST': 'localhost',
-        'USER': 'root',
-        'PASSWORD': '#Django12',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 
+#         'HOST': 
+#         'USER': 
+#         'PASSWORD': 
+#     }
+# }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST= 'smtp.gmail.com'
-EMAIL_PORT= 587
-EMAIL_HOST_USER ='khojevent@gmail.com' #os.environ.get('EMAIL_USER')
-EMAIL_HOST_PASSWORD= 'uaxilrxjnikktetp' #os.environ.get('EMAIL_PASS')
-EMAIL_USE_TLS = True
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
+# EMAIL_BACKEND = 
+# EMAIL_HOST= 
+# EMAIL_PORT= 
+# EMAIL_HOST_USER =
+# EMAIL_HOST_PASSWORD=
+# EMAIL_USE_TLS = 
 
 
 AUTH_PASSWORD_VALIDATORS = [
